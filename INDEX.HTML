@@ -55,7 +55,7 @@
         .service-btn.active {
             @apply ring-4 ring-offset-2 ring-red-500;
         }
-        
+
         /* Dark Mode styles */
         body.dark {
             background-color: #1a202c;
@@ -87,6 +87,79 @@
         body.dark .text-gray-700 {
             color: #cbd5e0;
         }
+
+        /* Custom styles for the cart bubble and toast notification */
+        #cart-bubble {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 99;
+        }
+
+        #cart-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        #cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.75rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            background-color: #ef4444;
+            border: 2px solid white;
+        }
+
+        #toast-message {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            z-index: 100;
+            white-space: nowrap;
+            display: none; /* Hidden by default */
+        }
+        
+        .toast-show {
+            display: block !important;
+        }
+        
+        .icon-with-text {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background-color: #f7f7f7;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s;
+        }
+        
+        .icon-with-text:hover {
+            background-color: #ebebeb;
+        }
+
     </style>
 </head>
 
@@ -104,52 +177,40 @@
                 </div>
                 <span class="text-2xl font-bold text-red-600 logo-font">BnM</span>
             </a>
-            <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-4">
                 <!-- Dark/Light Mode Toggle -->
                 <div class="container-mode">
                     <input type="checkbox" name="checkbox" id="mode-toggle" class="hidden" />
                     <label for="mode-toggle"
-                        class="label relative w-20 h-10 bg-gray-200 rounded-full cursor-pointer transition-colors duration-300">
-                        <div class="absolute inset-0 flex items-center justify-between p-2">
-                            <i class="fas fa-sun text-yellow-500"></i>
-                            <i class="fas fa-moon text-gray-700"></i>
-                        </div>
+                        class="label relative w-12 h-6 bg-gray-200 rounded-full cursor-pointer transition-colors duration-300 flex items-center p-1">
+                        <i class="fas fa-sun text-yellow-500 text-sm"></i>
                         <div
-                            class="absolute top-1 left-1 w-8 h-8 bg-white rounded-full transition-transform duration-300 transform"
+                            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 transform"
                             id="toggle-ball">
                         </div>
+                        <i class="fas fa-moon text-gray-700 text-sm ml-auto"></i>
                     </label>
                 </div>
-                <!-- Navigation links visible to customers/public -->
-                <div id="public-nav" class="hidden md:flex space-x-6 items-center">
-                    <a href="#menu" class="text-gray-600 hover:text-red-600 transition duration-300">Menu</a>
-                    <a href="#about" class="text-gray-600 hover:text-red-600 transition duration-300">About Us</a>
-                    <a href="#contact" class="text-gray-600 hover:text-red-600 transition duration-300">Contact</a>
-                </div>
-                <button id="order-online-btn"
-                    class="bg-yellow-400 text-gray-900 font-semibold px-4 py-2 rounded-full hover:bg-yellow-500 transition duration-300">
-                    Order Online
+                <!-- Auth Button (changes based on login status) -->
+                <button id="auth-button"
+                    class="bg-red-600 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700 transition duration-300">
+                    Login
                 </button>
-                <div id="auth-buttons" class="flex space-x-4">
-                    <button id="change-password-btn"
-                        class="hidden bg-blue-600 text-white font-semibold px-4 py-2 rounded-full hover:bg-blue-700 transition duration-300">
-                        Change Password
-                    </button>
-                    <button id="login-btn"
-                        class="bg-red-600 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700 transition duration-300">
-                        Login
-                    </button>
-                    <button id="logout-btn"
-                        class="hidden bg-gray-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-gray-600 transition duration-300">
-                        Logout
-                    </button>
-                </div>
             </div>
         </nav>
     </header>
 
     <!-- Main Content Container -->
     <main id="main-content" class="page-container"></main>
+
+    <!-- Floating Cart Bubble -->
+    <div id="cart-bubble" class="hidden bg-red-600 text-white flex-col">
+        <i class="fas fa-shopping-cart fa-lg"></i>
+        <div id="cart-count">0</div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast-message" class="opacity-0 translate-y-4"></div>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white">
@@ -171,7 +232,7 @@
     </footer>
 
     <!-- MODALS AND POPUPS -->
-    <!-- Message Modal -->
+    <!-- Message Modal (Still used for "login required" and other critical messages) -->
     <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
             <h3 id="modal-title" class="text-2xl font-bold mb-4"></h3>
@@ -408,13 +469,12 @@
             // DOM ELEMENTS
             // =================================================================
             const mainContent = document.getElementById('main-content');
-            const loginBtn = document.getElementById('login-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            const changePasswordBtn = document.getElementById('change-password-btn');
-            const orderOnlineBtn = document.getElementById('order-online-btn');
+            const authButton = document.getElementById('auth-button');
             const homeLink = document.getElementById('home-link');
-            const publicNav = document.getElementById('public-nav');
             const mainLogoContainer = document.getElementById('logo-container');
+            const cartBubble = document.getElementById('cart-bubble');
+            const cartCount = document.getElementById('cart-count');
+            const toastMessage = document.getElementById('toast-message');
 
             const messageModal = document.getElementById('message-modal');
             const modalTitle = document.getElementById('modal-title');
@@ -457,6 +517,19 @@
             // =================================================================
             // UI & UTILITY FUNCTIONS
             // =================================================================
+            
+            // Function to show a toast message at the bottom of the screen
+            const showToastMessage = (message) => {
+                toastMessage.textContent = message;
+                toastMessage.classList.add('toast-show', 'opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toastMessage.classList.remove('opacity-100', 'translate-y-0');
+                    // Hide the toast after the animation
+                    setTimeout(() => {
+                        toastMessage.classList.remove('toast-show');
+                    }, 300);
+                }, 2000); // Show for 2 seconds
+            };
             
             const showMessageModal = (title, message) => {
                 modalTitle.textContent = title;
@@ -569,27 +642,37 @@
                 saveAppState();
                 updateUIForUser();
                 renderView('customer-website');
-                showMessageModal('Logged Out', 'You have been successfully logged out.');
+                showToastMessage('You have been logged out.');
             };
 
             const updateUIForUser = () => {
                 const isLoggedIn = appState.loggedInUser !== null;
                 const userRole = isLoggedIn ? appState.loggedInUser.role : null;
                 
-                loginBtn.classList.toggle('hidden', isLoggedIn);
-                logoutBtn.classList.toggle('hidden', !isLoggedIn);
-                changePasswordBtn.classList.toggle('hidden', !isLoggedIn || userRole === 'admin' || userRole === 'delivery');
-                
-                if (isLoggedIn && (userRole === 'admin' || userRole === 'delivery')) {
-                    publicNav.classList.add('hidden');
-                    orderOnlineBtn.classList.add('hidden');
-                    renderView(userRole === 'admin' ? 'admin-dashboard' : 'delivery-dashboard');
+                // Update Auth button text and action
+                if (isLoggedIn) {
+                    authButton.textContent = 'Profile';
+                    authButton.dataset.action = 'profile';
                 } else {
-                    publicNav.classList.remove('hidden');
-                    orderOnlineBtn.classList.remove('hidden');
-                    if (appState.currentView !== 'customer-website' && appState.currentView !== 'cart') {
-                        renderView('customer-website');
-                    }
+                    authButton.textContent = 'Login';
+                    authButton.dataset.action = 'login';
+                }
+
+                // Show/hide cart bubble and change its count
+                if (isLoggedIn && userRole === 'customer') {
+                    cartBubble.classList.remove('hidden');
+                    cartCount.textContent = appState.cart.length;
+                } else {
+                    cartBubble.classList.add('hidden');
+                }
+                
+                // Render the correct view based on login state and role
+                if (isLoggedIn && userRole === 'admin') {
+                    renderView('admin-dashboard');
+                } else if (isLoggedIn && userRole === 'delivery') {
+                    renderView('delivery-dashboard');
+                } else {
+                    renderView('customer-website');
                 }
             };
             
@@ -606,7 +689,8 @@
                     'customer-website': renderCustomerWebsite,
                     'admin-dashboard': renderAdminDashboard,
                     'delivery-dashboard': renderDeliveryDashboard,
-                    'cart': renderCartPage
+                    'cart': renderCartPage,
+                    'profile-page': renderProfilePage, // New profile page view
                 };
 
                 const renderFunction = views[viewName] || renderCustomerWebsite;
@@ -615,7 +699,101 @@
             };
 
             // =================================================================
-            // VIEW RENDERING FUNCTIONS
+            // NEW PROFILE VIEW
+            // =================================================================
+            const renderProfilePage = () => {
+                const loggedInUser = appState.loggedInUser;
+                if (!loggedInUser) {
+                    renderView('customer-website');
+                    return;
+                }
+                
+                mainContent.innerHTML = `
+                    <div class="bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen">
+                        <div class="container mx-auto px-4 py-8 max-w-lg">
+                            <div class="flex items-center space-x-4 mb-8">
+                                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                    <i class="fas fa-user-circle fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-3xl font-bold">${loggedInUser.username.toUpperCase()}</h1>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Your Account</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Links Section -->
+                            <div class="grid grid-cols-3 gap-4 mb-8">
+                                <div id="view-orders-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                                    <i class="fas fa-box-open text-red-600 text-2xl mb-2"></i>
+                                    <span class="text-center text-sm font-medium">Your Orders</span>
+                                </div>
+                                <div id="help-support-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                                    <i class="fas fa-headset text-yellow-500 text-2xl mb-2"></i>
+                                    <span class="text-center text-sm font-medium">Help & Support</span>
+                                </div>
+                                <div id="change-password-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                                    <i class="fas fa-lock text-blue-600 text-2xl mb-2"></i>
+                                    <span class="text-center text-sm font-medium">Change Password</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Information Section -->
+                            <div class="space-y-4 bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg mb-8">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Your Information</h3>
+                                <div class="icon-with-text">
+                                    <i class="fas fa-user text-gray-500 dark:text-gray-400 mr-4"></i>
+                                    <span class="font-medium">Profile</span>
+                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                                </div>
+                                <div class="icon-with-text">
+                                    <i class="fas fa-gift text-gray-500 dark:text-gray-400 mr-4"></i>
+                                    <span class="font-medium">Rewards</span>
+                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                                </div>
+                                <div class="icon-with-text">
+                                    <i class="fas fa-credit-card text-gray-500 dark:text-gray-400 mr-4"></i>
+                                    <span class="font-medium">Payment Management</span>
+                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                                </div>
+                                <div class="icon-with-text">
+                                    <i class="fas fa-map-marker-alt text-gray-500 dark:text-gray-400 mr-4"></i>
+                                    <span class="font-medium">Saved Addresses</span>
+                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                                </div>
+                                <div class="icon-with-text">
+                                    <i class="fas fa-bell text-gray-500 dark:text-gray-400 mr-4"></i>
+                                    <span class="font-medium">Notifications</span>
+                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                                </div>
+                            </div>
+
+                            <!-- Logout Button -->
+                            <button id="logout-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Add event listeners for the new profile page buttons
+                document.getElementById('logout-btn').addEventListener('click', logout);
+                document.getElementById('view-orders-btn').addEventListener('click', () => {
+                    // This is a placeholder for a real orders page
+                    showToastMessage('This button will show your order history!');
+                });
+                document.getElementById('help-support-btn').addEventListener('click', () => {
+                    // This is a placeholder for a real help page
+                    showToastMessage('This button will open the Help & Support page.');
+                });
+                document.getElementById('change-password-btn').addEventListener('click', () => {
+                    passwordModal.classList.remove('hidden');
+                    passwordModal.classList.add('flex');
+                    changePasswordForm.reset();
+                });
+            };
+
+            // =================================================================
+            // VIEW RENDERING FUNCTIONS (MODIFIED)
             // =================================================================
             
             const renderCustomerWebsite = () => {
@@ -624,10 +802,6 @@
                         <div class="container mx-auto px-6 py-24 md:py-32 text-center">
                             <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">We Serve You Happiness.</h1>
                             <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Delicious food delivered to your door within a 3km radius. Quick, fresh, and always satisfying!</p>
-                            <div class="flex justify-center space-x-4">
-                                <a href="#menu" class="bg-red-600 text-white font-bold py-3 px-8 rounded-full hover:bg-red-700 transition duration-300">View Menu</a>
-                                <a href="#about" class="bg-white text-red-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300">About Us</a>
-                            </div>
                         </div>
                     </section>
                     <section id="menu" class="py-16 md:py-24 bg-white">
@@ -1029,7 +1203,7 @@
                     setLoggedInUser(username, user.role);
                     hideLoginModal();
                     loginError.classList.add('hidden');
-                    showMessageModal('Login Successful', `Welcome, ${user.role}!`);
+                    showToastMessage(`Welcome, ${user.role}!`);
                 } else {
                     loginError.classList.remove('hidden');
                 }
@@ -1060,7 +1234,7 @@
 
                 appState.users[username] = { password, role: userRole };
                 saveAppState();
-                showMessageModal('Success!', 'Account created successfully. You can now log in.');
+                showToastMessage('Account created successfully. You can now log in.');
                 loginForm.classList.remove('hidden');
                 signupForm.classList.add('hidden');
                 loginFormTitle.textContent = 'Login';
@@ -1082,7 +1256,7 @@
                 saveAppState();
                 renderDeliveryPartners();
                 document.getElementById('add-delivery-form').reset();
-                showMessageModal('Success', `${username} has been added as a delivery partner.`);
+                showToastMessage(`${username} has been added as a delivery partner.`);
             };
 
             const handleChangePassword = (e) => {
@@ -1113,7 +1287,7 @@
                 saveAppState();
                 passwordModal.classList.add('hidden');
                 passwordModal.classList.remove('flex');
-                showMessageModal('Success!', 'Your password has been changed successfully.');
+                showToastMessage('Your password has been changed successfully.');
             };
 
             // =================================================================
@@ -1124,7 +1298,7 @@
                 const newContent = document.getElementById('about-us-textarea').value;
                 appState.aboutUsContent = newContent;
                 saveAppState();
-                showMessageModal('Success', 'About Us content updated successfully!');
+                showToastMessage('About Us content updated successfully!');
             };
             
             const handleUpdateLogo = (e) => {
@@ -1134,7 +1308,7 @@
                     appState.logoUrl = newLogoUrl;
                     saveAppState();
                     renderLogo();
-                    showMessageModal('Success', 'Website logo updated!');
+                    showToastMessage('Website logo updated!');
                 } else {
                     showMessageModal('Error', 'Please provide a valid image URL.');
                 }
@@ -1182,7 +1356,7 @@
                 appState.reviews.splice(indexToDelete, 1);
                 saveAppState();
                 renderAdminReviews();
-                showMessageModal('Success', 'Review deleted successfully.');
+                showToastMessage('Review deleted successfully.');
             };
 
             const handleAddReview = (e) => {
@@ -1204,7 +1378,7 @@
                         image: appState.reviews[editIndex].image
                     };
                     delete document.getElementById('add-review-form').dataset.editIndex;
-                    showMessageModal('Success', 'Review updated successfully!');
+                    showToastMessage('Review updated successfully!');
                 } else {
                     // Add new review
                     appState.reviews.push({
@@ -1213,7 +1387,7 @@
                         comment,
                         image: 'https://placehold.co/100x100/cccccc/ffffff?text=User'
                     });
-                    showMessageModal('Success', 'Review added successfully!');
+                    showToastMessage('Review added successfully!');
                 }
                 
                 saveAppState();
@@ -1251,7 +1425,7 @@
                 delete appState.users[usernameToDelete];
                 saveAppState();
                 renderDeliveryPartners();
-                showMessageModal('Success', `${usernameToDelete} has been deleted.`);
+                showToastMessage(`${usernameToDelete} has been deleted.`);
             };
 
             const handleAddCategory = (e) => {
@@ -1269,7 +1443,7 @@
                 renderCategoriesAdmin();
                 renderMenuItems();
                 document.getElementById('add-category-form').reset();
-                showMessageModal('Success', `${name} category added.`);
+                showToastMessage(`${name} category added.`);
             };
 
             const handleDeleteCategory = (e) => {
@@ -1280,7 +1454,7 @@
                 renderCategoriesAdmin();
                 renderAdminMenu();
                 renderMenuItems();
-                showMessageModal('Success', 'Category and its items have been deleted.');
+                showToastMessage('Category and its items have been deleted.');
             };
 
             const renderCategoriesAdmin = () => {
@@ -1322,14 +1496,14 @@
                         itemToUpdate.image = image;
                         itemToUpdate.categoryId = categoryId;
                     }
-                    showMessageModal('Success', `${name} has been updated.`);
+                    showToastMessage(`${name} has been updated.`);
                 } else {
                     const newItem = {
                         id: 'item-' + Date.now(),
                         name, price, image, categoryId
                     };
                     appState.menuItems.push(newItem);
-                    showMessageModal('Success', `${name} has been added to the menu.`);
+                    showToastMessage(`${name} has been added to the menu.`);
                 }
 
                 saveAppState();
@@ -1391,7 +1565,7 @@
                 saveAppState();
                 renderAdminMenu();
                 renderMenuItems();
-                showMessageModal('Success', `Menu item has been deleted.`);
+                showToastMessage(`Menu item has been deleted.`);
             };
 
             const renderMenuItems = () => {
@@ -1455,7 +1629,8 @@
                     appState.cart.push({ id, name, price, quantity: 1 });
                 }
                 saveAppState();
-                showMessageModal('Item Added!', `${name} added to cart.`);
+                cartCount.textContent = appState.cart.length; // Update the floating cart bubble count
+                showToastMessage(`${name} added to cart.`);
             };
 
             const handleCheckout = () => {
@@ -1627,7 +1802,7 @@
                     order.status = newStatus;
                     saveAppState();
                     renderAdminOrders();
-                    showMessageModal('Success', `Order ${orderId.slice(-4)} status updated to ${newStatus}.`);
+                    showToastMessage(`Order ${orderId.slice(-4)} status updated to ${newStatus}.`);
                 }
             };
 
@@ -1718,12 +1893,12 @@
                 if (!order) return;
 
                 if (action === 'arrived') {
-                    showMessageModal('Customer Notification', `Customer has been notified that you have arrived at their location.`);
+                    showToastMessage(`Customer has been notified that you have arrived at their location.`);
                     order.status = 'Arrived';
                 } else if (action === 'completed') {
                     order.status = 'Completed';
                     order.completedAt = new Date().toLocaleString();
-                    showMessageModal('Order Completed', `Order ${orderId.slice(-4)} has been marked as completed.`);
+                    showToastMessage(`Order ${orderId.slice(-4)} has been marked as completed.`);
                 }
                 saveAppState();
                 renderDeliveryOrders();
@@ -1740,7 +1915,7 @@
                     order.status = 'Damaged';
                     order.damageReason = reason;
                     saveAppState();
-                    showMessageModal('Damage Reported', `Damage reported for order ${orderId.slice(-4)}. Reason: ${reason}`);
+                    showToastMessage(`Damage reported for order ${orderId.slice(-4)}. Reason: ${reason}`);
                     damageModal.classList.remove('flex');
                     damageModal.classList.add('hidden');
                     renderDeliveryOrders();
@@ -1752,10 +1927,10 @@
                 const body = document.body;
                 body.classList.toggle('dark', isDark);
                 if (isDark) {
-                    toggleBall.classList.add('translate-x-10', 'bg-gray-800');
+                    toggleBall.classList.add('translate-x-[24px]', 'bg-gray-800');
                     toggleBall.classList.remove('bg-white');
                 } else {
-                    toggleBall.classList.remove('translate-x-10', 'bg-gray-800');
+                    toggleBall.classList.remove('translate-x-[24px]', 'bg-gray-800');
                     toggleBall.classList.add('bg-white');
                 }
             };
@@ -1764,29 +1939,19 @@
             // INITIALIZATION AND EVENT LISTENERS
             // =================================================================
             
-            loginBtn.addEventListener('click', showLoginModal);
-            logoutBtn.addEventListener('click', logout);
-            changePasswordBtn.addEventListener('click', () => {
-                passwordModal.classList.remove('hidden');
-                passwordModal.classList.add('flex');
-                changePasswordForm.reset();
-            });
-            cancelPasswordChangeBtn.addEventListener('click', () => {
-                passwordModal.classList.add('hidden');
-                passwordModal.classList.remove('flex');
-            });
-            changePasswordForm.addEventListener('submit', handleChangePassword);
-
-            orderOnlineBtn.addEventListener('click', () => {
-                if (appState.cart.length === 0) {
-                    showMessageModal('Cart Empty', 'Your cart is empty. Please add items from the menu first!');
+            authButton.addEventListener('click', (e) => {
+                if (e.currentTarget.dataset.action === 'login') {
+                    showLoginModal();
                 } else {
-                    if (!appState.loggedInUser) {
-                        showMessageModal('Login Required', 'Please log in to proceed to checkout.');
-                        showLoginModal();
-                    } else {
-                        renderView('cart');
-                    }
+                    renderView('profile-page');
+                }
+            });
+
+            cartBubble.addEventListener('click', () => {
+                if (appState.loggedInUser && appState.loggedInUser.role === 'customer') {
+                    renderView('cart');
+                } else {
+                    showMessageModal('Access Denied', 'Please log in as a customer to view your cart.');
                 }
             });
             
@@ -1830,7 +1995,7 @@
             renderLogo();
             updateUIForUser();
             if (!appState.loggedInUser) {
-                showLoginModal();
+                renderView('customer-website');
             }
         });
     </script>
