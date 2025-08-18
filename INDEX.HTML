@@ -12,6 +12,8 @@
         rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Sign-In Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* Custom styles for the app */
         body {
@@ -47,6 +49,11 @@
         .menu-category-btn.active {
             @apply bg-red-600 text-white;
         }
+
+        /* Mobile menu button animation */
+        .mobile-menu-open {
+            display: block;
+        }
     </style>
 </head>
 
@@ -71,7 +78,7 @@
                 <!-- Navigation links visible to customers/public -->
                 <div id="public-nav" class="flex space-x-6 items-center">
                     <a href="#menu" class="text-gray-600 hover:text-red-600 transition duration-300">Menu</a>
-                    <a href="#reviews" class="text-gray-600 hover:text-red-600 transition duration-300">Reviews</a>
+                    <a href="#about" class="text-gray-600 hover:text-red-600 transition duration-300">About Us</a>
                     <a href="#contact" class="text-gray-600 hover:text-red-600 transition duration-300">Contact</a>
                 </div>
                 <button id="order-online-btn"
@@ -100,12 +107,20 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white py-2">
             <a href="#menu" class="block px-6 py-2 text-gray-600 hover:bg-red-50">Menu</a>
-            <a href="#reviews" class="block px-6 py-2 text-gray-600 hover:bg-red-50">Reviews</a>
+            <a href="#about" class="block px-6 py-2 text-gray-600 hover:bg-red-50">About Us</a>
             <a href="#contact" class="block px-6 py-2 text-gray-600 hover:bg-red-50">Contact</a>
             <button id="mobile-order-online-btn"
                 class="block w-full text-left px-6 py-2 bg-yellow-400 text-gray-900 font-semibold m-2 rounded-full text-center">
                 Order Online
             </button>
+            <div id="mobile-auth-buttons" class="flex flex-col space-y-2 px-6 pb-2">
+                 <button id="mobile-login-btn" class="bg-red-600 text-white font-semibold py-2 rounded-full hover:bg-red-700 transition duration-300">
+                    Login
+                </button>
+                <button id="mobile-logout-btn" class="hidden bg-gray-500 text-white font-semibold py-2 rounded-full hover:bg-gray-600 transition duration-300">
+                    Logout
+                </button>
+            </div>
         </div>
     </header>
 
@@ -204,7 +219,6 @@
         </div>
     </div>
 
-
     <!-- SCRIPT FOR ALL FUNCTIONALITY -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -223,6 +237,37 @@
                     'BnM': { password: 'Qwerty@321', role: 'admin' },
                     'Delivery': { password: 'Burger321', role: 'delivery' }
                 },
+                aboutUsContent: `
+                    <p class="text-lg text-gray-600 mb-6">
+                        Welcome to **Bites n' More**, your go-to spot for delicious, high-quality fast food in Kalaburagi. Our mission is simple: to serve you happiness, one bite at a time. We believe in crafting mouth-watering meals using the freshest ingredients, all prepared with a touch of love.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-6">
+                        From our crispy, loaded French fries to our juicy, perfectly seasoned burgers, every item on our menu is designed to give you a memorable culinary experience. We're proud to offer quick and efficient service, whether you're dining in, taking away, or getting it delivered right to your doorstep within a 3km radius.
+                    </p>
+                    <p class="text-lg text-gray-600">
+                        Join us at Bites n' More and discover why we're more than just a food joint—we're a place where great food meets great times.
+                    </p>
+                `,
+                reviews: [
+                    {
+                        name: 'Anjali Gupta',
+                        rating: 5,
+                        comment: "Absolutely fantastic! The Tandoori Pizza was loaded with toppings and had the perfect cheesy pull. The staff is friendly and the service is quick. A must-visit spot in Kalaburagi!",
+                        image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2960&auto=format&fit=crop'
+                    },
+                    {
+                        name: 'Vikram Singh',
+                        rating: 5,
+                        comment: "Ordered from here for the first time and was super impressed. The delivery was right on time, and the food was packed neatly. The prices are very reasonable for the quality you get. The loaded fries are a game-changer!",
+                        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2787&auto=format&fit=crop'
+                    },
+                    {
+                        name: 'Sneha Patil',
+                        rating: 4.5,
+                        comment: "A great place to hang out with friends. The vibe is very chill and modern. Their Watermelon Mojito is so refreshing! We had a great time and will definitely be back for more.",
+                        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2787&auto=format&fit=crop'
+                    },
+                ],
                 adminCode: 'admin123',
                 deliveryCode: 'delivery456',
                 deliveryPartners: [],
@@ -285,6 +330,11 @@
             const orderOnlineBtn = document.getElementById('order-online-btn');
             const homeLink = document.getElementById('home-link');
             const publicNav = document.getElementById('public-nav');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLoginBtn = document.getElementById('mobile-login-btn');
+            const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+            const mobileOrderOnlineBtn = document.getElementById('mobile-order-online-btn');
 
             const messageModal = document.getElementById('message-modal');
             const modalTitle = document.getElementById('modal-title');
@@ -302,6 +352,57 @@
             const summaryQuote = document.getElementById('summary-quote');
             const summaryCloseBtn = document.getElementById('summary-close-btn');
 
+            // =================================================================
+            // GOOGLE SIGN-IN INTEGRATION
+            // =================================================================
+            // This function handles the response from Google's Sign-in
+            window.handleCredentialResponse = (response) => {
+                const credential = response.credential;
+                const base64Url = credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const user = JSON.parse(jsonPayload);
+                const username = user.email;
+
+                // Check if user already exists, if not, create a new customer account
+                if (!appState.users[username]) {
+                    appState.users[username] = {
+                        password: '', // Google users don't have a local password
+                        role: 'customer',
+                        googleId: user.sub
+                    };
+                    showMessageModal('Success!', 'Google account linked successfully!');
+                }
+
+                // Log the user in
+                setLoggedInUser(username, appState.users[username].role);
+                saveAppState();
+            };
+
+            // Initializes Google Sign-In button on the login page
+            const renderGoogleSignInButton = () => {
+                const googleButtonContainer = document.getElementById('g_id_onload');
+                if (googleButtonContainer) {
+                    google.accounts.id.initialize({
+                        client_id: "YOUR_GOOGLE_CLIENT_ID", // Replace with your actual client ID
+                        callback: window.handleCredentialResponse,
+                        ux_mode: "popup"
+                    });
+                    google.accounts.id.renderButton(
+                        googleButtonContainer, {
+                            type: "standard",
+                            size: "large",
+                            theme: "outline",
+                            text: "signin_with",
+                            shape: "pill"
+                        }
+                    );
+                }
+            };
+            
             // =================================================================
             // UTILITY FUNCTIONS
             // =================================================================
@@ -335,6 +436,12 @@
                 renderView('customer-website');
             });
 
+            // Handles mobile menu toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('mobile-menu-open');
+                mobileMenuButton.querySelector('i').classList.toggle('fa-bars');
+                mobileMenuButton.querySelector('i').classList.toggle('fa-times');
+            });
 
             // Saves the entire application state to localStorage
             const saveAppState = () => {
@@ -353,6 +460,8 @@
                     appState.cart = parsedState.cart || [];
                     appState.categories = parsedState.categories || appState.categories;
                     appState.users = { ...appState.users, ...(parsedState.users || {}) };
+                    appState.aboutUsContent = parsedState.aboutUsContent || appState.aboutUsContent;
+                    appState.reviews = parsedState.reviews || appState.reviews;
                 }
             };
 
@@ -368,7 +477,8 @@
                 appState.loggedInUser = null;
                 saveAppState();
                 updateUIForUser();
-                renderView('login');
+                renderView('customer-website');
+                showMessageModal('Logged Out', 'You have been successfully logged out.');
             };
 
             // Updates the header and main content based on the logged-in user
@@ -377,14 +487,19 @@
                 loginBtn.classList.toggle('hidden', isLoggedIn);
                 logoutBtn.classList.toggle('hidden', !isLoggedIn);
                 changePasswordBtn.classList.toggle('hidden', !isLoggedIn);
+                mobileLoginBtn.classList.toggle('hidden', isLoggedIn);
+                mobileLogoutBtn.classList.toggle('hidden', !isLoggedIn);
+                
 
                 // Show/hide navigation links based on user role
                 if (isLoggedIn && (appState.loggedInUser.role === 'admin' || appState.loggedInUser.role === 'delivery')) {
                     publicNav.classList.add('hidden');
                     orderOnlineBtn.classList.add('hidden');
+                    mobileOrderOnlineBtn.classList.add('hidden');
                 } else {
                     publicNav.classList.remove('hidden');
                     orderOnlineBtn.classList.remove('hidden');
+                    mobileOrderOnlineBtn.classList.remove('hidden');
                 }
 
                 if (isLoggedIn) {
@@ -431,7 +546,7 @@
                             <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Delicious food delivered to your door within a 3km radius. Quick, fresh, and always satisfying!</p>
                             <div class="flex justify-center space-x-4">
                                 <a href="#menu" class="bg-red-600 text-white font-bold py-3 px-8 rounded-full hover:bg-red-700 transition duration-300">View Menu</a>
-                                <a href="#reviews" class="bg-white text-red-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300">Find Us</a>
+                                <a href="#about" class="bg-white text-red-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300">About Us</a>
                             </div>
                         </div>
                     </section>
@@ -453,40 +568,14 @@
                             </div>
                         </div>
                     </section>
-                    <section id="reviews" class="py-16 md:py-24 bg-gray-50">
+                    <section id="about" class="py-16 md:py-24 bg-gray-50">
                         <div class="container mx-auto px-6">
                             <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">What Our Customers Say</h2>
-                                <p class="text-gray-600 mt-2">The best compliments we can get!</p>
+                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">About Bites n' More</h2>
+                                <p class="text-gray-600 mt-2">More than just a food joint.</p>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <!-- Review 1 -->
-                                <div class="bg-white p-6 rounded-lg shadow-lg text-center flex flex-col">
-                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2960&auto=format&fit=crop" alt="Customer photo" class="w-24 h-24 rounded-full mx-auto mb-4 review-image">
-                                    <div class="text-yellow-400 mb-2">
-                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                    </div>
-                                    <p class="text-gray-600 italic mb-4 flex-grow">"Absolutely fantastic! The Tandoori Pizza was loaded with toppings and had the perfect cheesy pull. The staff is friendly and the service is quick. A must-visit spot in Kalaburagi!"</p>
-                                    <p class="font-semibold text-gray-800">- Anjali Gupta</p>
-                                </div>
-                                <!-- Review 2 -->
-                                <div class="bg-white p-6 rounded-lg shadow-lg text-center flex flex-col">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2787&auto=format&fit=crop" alt="Customer photo" class="w-24 h-24 rounded-full mx-auto mb-4 review-image">
-                                    <div class="text-yellow-400 mb-2">
-                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                    </div>
-                                    <p class="text-gray-600 italic mb-4 flex-grow">"Ordered from here for the first time and was super impressed. The delivery was right on time, and the food was packed neatly. The prices are very reasonable for the quality you get. The loaded fries are a game-changer!"</p>
-                                    <p class="font-semibold text-gray-800">- Vikram Singh</p>
-                                </div>
-                                <!-- Review 3 -->
-                                <div class="bg-white p-6 rounded-lg shadow-lg text-center flex flex-col">
-                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2787&auto=format&fit=crop" alt="Customer photo" class="w-24 h-24 rounded-full mx-auto mb-4 review-image">
-                                    <div class="text-yellow-400 mb-2">
-                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                                    </div>
-                                    <p class="text-gray-600 italic mb-4 flex-grow">"A great place to hang out with friends. The vibe is very chill and modern. Their Watermelon Mojito is so refreshing! We had a great time and will definitely be back for more."</p>
-                                    <p class="font-semibold text-gray-800">- Sneha Patil</p>
-                                </div>
+                            <div class="max-w-4xl mx-auto text-center">
+                                ${appState.aboutUsContent}
                             </div>
                         </div>
                     </section>
@@ -499,7 +588,7 @@
                             <div class="grid md:grid-cols-2 gap-12 items-start">
                                 <div class="bg-white p-8 rounded-lg shadow-lg">
                                     <h3 class="text-2xl font-bold mb-6">Send Us a Message</h3>
-                                    <form action="#" method="POST" class="space-y-6">
+                                    <form id="contact-form" class="space-y-6">
                                         <div>
                                             <label for="contact-name" class="block text-sm font-medium text-gray-700">Your Name</label>
                                             <input type="text" name="contact-name" id="contact-name" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
@@ -568,10 +657,16 @@
                                     class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300">
                                     Log In
                                 </button>
-                                <p class="text-center text-sm mt-4">
-                                    Don't have an account? <a href="#" id="go-to-signup" class="text-blue-600 hover:text-blue-800 font-medium">Sign Up</a>
-                                </p>
+                                <div class="relative flex py-5 items-center">
+                                    <div class="flex-grow border-t border-gray-300"></div>
+                                    <span class="flex-shrink mx-4 text-gray-400">OR</span>
+                                    <div class="flex-grow border-t border-gray-300"></div>
+                                </div>
+                                <div id="g_id_onload" class="w-full flex justify-center"></div>
                             </form>
+                            <p class="text-center text-sm mt-4">
+                                Don't have an account? <a href="#" id="go-to-signup" class="text-blue-600 hover:text-blue-800 font-medium">Sign Up</a>
+                            </p>
                         </div>
                     </div>
                 `;
@@ -580,6 +675,7 @@
                     e.preventDefault();
                     renderView('signup');
                 });
+                renderGoogleSignInButton();
             };
 
             // Renders the signup page
@@ -677,7 +773,28 @@
                                 </div>
                             </div>
 
-                            <!-- Section 3: View Orders -->
+                            <!-- Section 3: Manage About Us & Reviews -->
+                            <div class="bg-white p-8 rounded-xl shadow-lg lg:col-span-2">
+                                <h3 class="text-2xl font-bold text-red-600 mb-6">Manage Content</h3>
+                                <div class="mb-8">
+                                    <h4 class="text-xl font-semibold mb-4">About Us Content</h4>
+                                    <textarea id="about-us-textarea" class="w-full p-4 border rounded-md resize-y" rows="8">${appState.aboutUsContent.trim()}</textarea>
+                                    <button id="save-about-us-btn" class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-purple-700 transition">Save About Us</button>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-semibold mb-4">Customer Reviews</h4>
+                                    <div id="admin-reviews-list" class="space-y-4"></div>
+                                    <form id="add-review-form" class="mt-8 space-y-4">
+                                        <h5 class="font-semibold">Add New Review</h5>
+                                        <input type="text" id="review-name" placeholder="Customer Name" required class="w-full px-4 py-2 border rounded-md">
+                                        <input type="number" id="review-rating" placeholder="Rating (1-5)" min="1" max="5" step="0.5" required class="w-full px-4 py-2 border rounded-md">
+                                        <textarea id="review-comment" placeholder="Review Comment" required class="w-full p-4 border rounded-md resize-y" rows="3"></textarea>
+                                        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Add Review</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Section 4: View Orders -->
                             <div class="bg-white p-8 rounded-xl shadow-lg lg:col-span-2">
                                 <h3 class="text-2xl font-bold text-red-600 mb-6">View All Orders</h3>
                                 <div id="admin-orders-list" class="space-y-4">
@@ -685,7 +802,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 4: Payment Gateway (Placeholder) -->
+                            <!-- Section 5: Payment Gateway (Placeholder) -->
                             <div class="bg-white p-8 rounded-xl shadow-lg lg:col-span-2">
                                 <h3 class="text-2xl font-bold text-red-600 mb-6">Payment Gateway API</h3>
                                 <p class="text-gray-600 mb-4">This section would allow you to configure payment gateway API keys.</p>
@@ -705,10 +822,14 @@
                 document.getElementById('add-delivery-form').addEventListener('submit', handleAddDeliveryPartner);
                 document.getElementById('add-category-form').addEventListener('submit', handleAddCategory);
                 document.getElementById('add-menu-item-form').addEventListener('submit', handleAddMenuItem);
+                document.getElementById('save-about-us-btn').addEventListener('click', handleSaveAboutUs);
+                document.getElementById('add-review-form').addEventListener('submit', handleAddReview);
+
                 renderDeliveryPartners();
                 renderCategoriesAdmin();
                 renderAdminMenu();
                 renderAdminOrders();
+                renderAdminReviews();
             };
 
             // Renders the Delivery Partner Dashboard
@@ -759,13 +880,13 @@
                             <div class="mt-8 space-y-4">
                                 <h3 class="text-xl font-semibold">Choose Service Type:</h3>
                                 <div class="flex justify-between space-x-4">
-                                    <button id="service-delivery-btn" class="flex-1 bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
+                                    <button id="service-delivery-btn" class="service-btn flex-1 bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
                                         <i class="fas fa-motorcycle mr-2"></i>Delivery
                                     </button>
-                                    <button id="service-takeaway-btn" class="flex-1 bg-yellow-500 text-gray-900 font-semibold py-3 rounded-lg hover:bg-yellow-600 transition">
+                                    <button id="service-takeaway-btn" class="service-btn flex-1 bg-yellow-500 text-gray-900 font-semibold py-3 rounded-lg hover:bg-yellow-600 transition">
                                         <i class="fas fa-shopping-bag mr-2"></i>Take Away
                                     </button>
-                                    <button id="service-dinein-btn" class="flex-1 bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition">
+                                    <button id="service-dinein-btn" class="service-btn flex-1 bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition">
                                         <i class="fas fa-utensils mr-2"></i>Dine In
                                     </button>
                                 </div>
@@ -969,6 +1090,67 @@
             // =================================================================
             // DATA MANAGEMENT & RENDERING FUNCTIONS
             // =================================================================
+
+            const handleSaveAboutUs = () => {
+                const newContent = document.getElementById('about-us-textarea').value;
+                appState.aboutUsContent = newContent;
+                saveAppState();
+                showMessageModal('Success', 'About Us content updated successfully!');
+            };
+
+            const renderAdminReviews = () => {
+                const reviewsList = document.getElementById('admin-reviews-list');
+                if (!reviewsList) return;
+
+                reviewsList.innerHTML = appState.reviews.map((review, index) => `
+                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
+                        <p class="font-bold text-lg">${review.name}</p>
+                        <p class="text-sm text-gray-600">Rating: ${'⭐'.repeat(Math.floor(review.rating))} ${review.rating % 1 !== 0 ? '½' : ''} (${review.rating})</p>
+                        <p class="italic text-gray-800">"${review.comment}"</p>
+                        <div class="flex justify-end">
+                            <button data-index="${index}" class="delete-review-btn text-red-500 hover:text-red-700 transition">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.delete-review-btn').forEach(button => {
+                    button.addEventListener('click', handleDeleteReview);
+                });
+            };
+
+            const handleDeleteReview = (e) => {
+                const indexToDelete = e.currentTarget.dataset.index;
+                appState.reviews.splice(indexToDelete, 1);
+                saveAppState();
+                renderAdminReviews();
+                showMessageModal('Success', 'Review deleted successfully.');
+            };
+
+            const handleAddReview = (e) => {
+                e.preventDefault();
+                const name = document.getElementById('review-name').value;
+                const rating = parseFloat(document.getElementById('review-rating').value);
+                const comment = document.getElementById('review-comment').value;
+
+                if (rating < 1 || rating > 5) {
+                    showMessageModal('Error', 'Rating must be between 1 and 5.');
+                    return;
+                }
+
+                appState.reviews.push({
+                    name,
+                    rating,
+                    comment,
+                    image: 'https://placehold.co/100x100/cccccc/ffffff?text=User'
+                });
+                saveAppState();
+                renderAdminReviews();
+                document.getElementById('add-review-form').reset();
+                showMessageModal('Success', 'Review added successfully!');
+            };
+
 
             // Renders the list of delivery partners in the admin dashboard
             const renderDeliveryPartners = () => {
@@ -1238,6 +1420,7 @@
                         <p><strong>Name:</strong> ${customerName}</p>
                         <p><strong>Phone:</strong> ${customerPhone}</p>
                         <p><strong>Address:</strong> ${customerAddress}, ${customerLandmark}</p>
+                        <p><strong>Location Pin:</strong> ${orderDetails.deliveryInfo.location}</p>
                     `;
                 } else if (serviceType === 'takeaway') {
                     const orderCode = `BnM-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -1418,12 +1601,23 @@
                 }
             });
             
+            mobileOrderOnlineBtn.addEventListener('click', () => {
+                if (appState.cart.length === 0) {
+                    showMessageModal('Cart Empty', 'Your cart is empty. Please add items from the menu first!');
+                } else {
+                    renderView('cart');
+                }
+            });
+
             document.getElementById('popup-view-cart-btn').addEventListener('click', () => renderView('cart'));
             
             homeLink.addEventListener('click', (e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 renderView('customer-website');
             });
+            mobileLoginBtn.addEventListener('click', () => renderView('login'));
+            mobileLogoutBtn.addEventListener('click', logout);
+
 
             // Initial application setup
             loadAppState();
