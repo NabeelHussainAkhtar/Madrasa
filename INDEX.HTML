@@ -55,148 +55,7 @@
         .service-btn.active {
             @apply ring-4 ring-offset-2 ring-red-500;
         }
-
-        /* Styles for the new login/signup component */
-        .login-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-        }
-
-        /* The user-provided login page styles have been added here */
-        :root {
-            --primary-bg: hsl(213deg 85% 97%);
-            --secondary: #EF4444; /* Changed to Tailwind red-500 */
-            --text-gray: hsl(0deg 0% 30%);
-            --text-dark: hsl(0deg 0% 0%);
-        }
-
-        .login-screen {
-            font-family: 'Poppins', sans-serif;
-            user-select: none;
-            overflow-y: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: hsl(218deg 50% 91%);
-            height: 100vh;
-            margin: 0;
-        }
-
-        .screen-1 {
-            background: var(--primary-bg);
-            padding: 2em;
-            display: flex;
-            flex-direction: column;
-            border-radius: 30px;
-            box-shadow: 0 0 2em hsl(231deg 62% 94%);
-            gap: 2em;
-            align-items: center;
-            max-width: 400px;
-            width: 90%;
-            z-index: 210;
-        }
         
-        @media (max-width: 768px) {
-            .screen-1 {
-                min-height: 500px;
-                justify-content: center;
-            }
-        }
-
-        .logo-login img {
-            width: 200px;
-            margin-top: -2em;
-        }
-
-        .email,
-        .password {
-            background: #fff;
-            box-shadow: 0 0 2em hsl(231deg 62% 94%);
-            padding: 1em;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5em;
-            border-radius: 20px;
-            color: var(--text-gray);
-            width: 100%;
-        }
-        
-        .email input,
-        .password input {
-            outline: none;
-            border: none;
-            font-size: 1em;
-            width: 90%;
-            background: transparent;
-        }
-        
-        .email input::placeholder,
-        .password input::placeholder {
-            color: var(--text-dark);
-            font-size: 0.9em;
-        }
-        
-        .sec-2 {
-            display: flex;
-            align-items: center;
-            gap: 0.5em;
-        }
-        
-        ion-icon {
-            color: var(--text-gray);
-        }
-        
-        .show-hide {
-            cursor: pointer;
-        }
-        
-        .login-btn-form,
-        .signup-btn-form {
-            padding: 1em;
-            background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s ease;
-        }
-        
-        .login-btn-form:hover,
-        .signup-btn-form:hover {
-            background: #D94444; /* Slightly darker red */
-        }
-        
-        .login-footer {
-            display: flex;
-            font-size: 0.7em;
-            color: hsl(0deg 0% 37%);
-            gap: 5em;
-            padding-bottom: 2em;
-        }
-        
-        .login-footer span {
-            cursor: pointer;
-        }
-        
-        .login-title {
-            text-align: center;
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--text-dark);
-            margin-bottom: 0.5em;
-        }
-
         /* Dark Mode styles */
         body.dark {
             background-color: #1a202c;
@@ -237,12 +96,9 @@
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
             <a href="#" id="home-link" class="flex items-center space-x-2">
                 <div id="logo-container">
-                    <!-- Default SVG Logo -->
-                    <svg class="h-10 w-10 text-red-600" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.83 15.42C16.5 15.75 16.03 16 15.5 16H8.5C7.97 16 7.5 15.75 7.17 15.42C6.55 14.8 6.25 13.97 6.5 13.2L8.28 7.38C8.55 6.56 9.25 6 10.12 6H13.88C14.75 6 15.45 6.56 15.72 7.38L17.5 13.2C17.75 13.97 17.45 14.8 16.83 15.42Z"
-                            fill="#EF4444" />
+                    <!-- Custom SVG Logo -->
+                    <svg class="h-10 w-10 text-red-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.83 15.42C16.5 15.75 16.03 16 15.5 16H8.5C7.97 16 7.5 15.75 7.17 15.42C6.55 14.8 6.25 13.97 6.5 13.2L8.28 7.38C8.55 6.56 9.25 6 10.12 6H13.88C14.75 6 15.45 6.56 15.72 7.38L17.5 13.2C17.75 13.97 17.45 14.8 16.83 15.42Z" fill="#EF4444" />
                         <path d="M12 4C9.79 4 8 5.79 8 8V10H16V8C16 5.79 14.21 4 12 4Z" fill="#FBBF24" />
                     </svg>
                 </div>
@@ -378,63 +234,73 @@
             </div>
         </div>
     </div>
+    
+    <!-- Damage Report Modal -->
+    <div id="damage-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
+            <h3 class="text-2xl font-bold mb-4 text-red-600">Report Damage</h3>
+            <form id="damage-report-form" class="space-y-4">
+                <input type="hidden" id="damage-order-id">
+                <div>
+                    <label for="damage-reason" class="block text-sm font-medium text-gray-700">Reason for damage:</label>
+                    <textarea id="damage-reason" class="w-full px-4 py-2 border rounded-md" rows="4" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" id="cancel-damage-report-btn" class="bg-gray-400 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-500 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="login-popup hidden">
-        <!-- New Login Screen HTML from user prompt -->
-        <div class="screen-1">
-            <div class="logo-login">
-                <!-- Add your logo image here -->
-                <img id="login-logo-img" src="bites-n-more-logo.png" />
-            </div>
+
+    <!-- Simple Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
+        <!-- Login Form -->
+        <div id="login-card" class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
+            <h3 id="login-form-title" class="text-3xl font-bold mb-6 text-center text-gray-900">Login</h3>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                <div id="login-error" class="hidden text-red-500 text-sm">Invalid username or password.</div>
+                <button type="submit" id="login-submit-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">Login</button>
+            </form>
+            <form id="signup-form" class="space-y-4 hidden">
+                <div>
+                    <label for="signup-username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="signup-username" placeholder="Enter a username" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                <div>
+                    <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="signup-password" placeholder="Enter a password" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                <div>
+                    <label for="signup-code" class="block text-sm font-medium text-gray-700">Unique Code (Optional)</label>
+                    <input type="text" id="signup-code" placeholder="Enter a unique code"
+                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                <div id="signup-error" class="hidden text-red-500 text-sm"></div>
+                <button type="submit" id="signup-submit-btn" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300">Sign Up</button>
+            </form>
             
-            <h1 class="login-title" id="login-heading">Login</h1>
-
-            <div id="login-fields" class="w-full space-y-4">
-                <div class="email">
-                    <label for="username-input">Username</label>
-                    <div class="sec-2">
-                        <ion-icon name="person-outline"></ion-icon>
-                        <input type="text" id="username-input" placeholder="Enter username" />
-                    </div>
-                </div>
-
-                <div class="password">
-                    <label for="password-input">Password</label>
-                    <div class="sec-2">
-                        <ion-icon name="lock-closed-outline"></ion-icon>
-                        <input class="pas" type="password" id="password-input" placeholder="············" />
-                        <ion-icon class="show-hide" name="eye-outline" onclick="togglePassword()"></ion-icon>
-                    </div>
-                </div>
-                
-                <div id="signup-fields" class="w-full space-y-4 hidden">
-                    <div class="password">
-                        <label for="confirm-password-input">Confirm Password</label>
-                        <div class="sec-2">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input class="pas" type="password" id="confirm-password-input" placeholder="············" />
-                        </div>
-                    </div>
-                    <div class="email">
-                        <label for="unique-code-input">Unique Code (Optional)</label>
-                        <div class="sec-2">
-                            <ion-icon name="key-outline"></ion-icon>
-                            <input type="text" id="unique-code-input" placeholder="Enter code" />
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="login-tip-container" class="w-full text-center text-sm hidden">
-                    <p class="text-red-500 font-semibold mt-2">Invalid username or password.</p>
-                </div>
-            </div>
-            
-            <button id="auth-submit-btn" class="login-btn-form w-full">Login</button>
-
-            <div class="login-footer">
-                <span id="toggle-signup-link">Sign up</span>
-                <span id="forgot-password-link">Forgot Password?</span>
+            <!-- This container holds links that are always visible in the modal -->
+            <div class="mt-4 flex justify-between items-center text-sm">
+                <a href="#" id="forgot-password-link" class="text-blue-600 hover:underline">Forgot Password?</a>
+                <a href="#" id="toggle-auth-link" class="text-blue-600 hover:underline"></a>
             </div>
         </div>
     </div>
@@ -548,7 +414,6 @@
             const orderOnlineBtn = document.getElementById('order-online-btn');
             const homeLink = document.getElementById('home-link');
             const publicNav = document.getElementById('public-nav');
-            const loginLogoImg = document.getElementById('login-logo-img');
             const mainLogoContainer = document.getElementById('logo-container');
 
             const messageModal = document.getElementById('message-modal');
@@ -568,18 +433,23 @@
             const summaryCloseBtn = document.getElementById('summary-close-btn');
             const printReceiptBtn = document.getElementById('print-receipt-btn');
 
+            const damageModal = document.getElementById('damage-modal');
+            const damageReportForm = document.getElementById('damage-report-form');
+            const cancelDamageReportBtn = document.getElementById('cancel-damage-report-btn');
+            
             const loginModal = document.getElementById('login-modal');
-            const loginHeading = document.getElementById('login-heading');
-            const toggleSignupLink = document.getElementById('toggle-signup-link');
-            const authSubmitBtn = document.getElementById('auth-submit-btn');
-            const loginTipContainer = document.getElementById('login-tip-container');
-            const signupFields = document.getElementById('signup-fields');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginFormTitle = document.getElementById('login-form-title');
+            const loginError = document.getElementById('login-error');
+            const signupError = document.getElementById('signup-error');
+            const toggleAuthLink = document.getElementById('toggle-auth-link');
             const forgotPasswordLink = document.getElementById('forgot-password-link');
-
-            const usernameInput = document.getElementById('username-input');
-            const passwordInput = document.getElementById('password-input');
-            const confirmPasswordInput = document.getElementById('confirm-password-input');
-            const uniqueCodeInput = document.getElementById('unique-code-input');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const signupUsernameInput = document.getElementById('signup-username');
+            const signupPasswordInput = document.getElementById('signup-password');
+            const signupCodeInput = document.getElementById('signup-code');
             
             const modeToggle = document.getElementById('mode-toggle');
             const toggleBall = document.getElementById('toggle-ball');
@@ -588,15 +458,6 @@
             // UI & UTILITY FUNCTIONS
             // =================================================================
             
-            const togglePassword = () => {
-                const passInput = document.getElementById('password-input');
-                const icon = document.querySelector('.show-hide');
-                const isPassword = passInput.getAttribute('type') === 'password';
-                passInput.setAttribute('type', isPassword ? 'text' : 'password');
-                icon.setAttribute('name', isPassword ? 'eye-off-outline' : 'eye-outline');
-            };
-            window.togglePassword = togglePassword; // Expose to global scope for onclick
-
             const showMessageModal = (title, message) => {
                 modalTitle.textContent = title;
                 modalMessage.textContent = message;
@@ -649,16 +510,37 @@
 
             const showLoginModal = () => {
                 loginModal.classList.remove('hidden');
+                loginModal.classList.add('flex');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginFormTitle.textContent = 'Login';
+                toggleAuthLink.textContent = 'Create an account';
+                loginError.classList.add('hidden');
+                signupError.classList.add('hidden');
             };
             
             const hideLoginModal = () => {
                 loginModal.classList.add('hidden');
-                loginTipContainer.classList.add('hidden');
+                loginModal.classList.remove('flex');
                 usernameInput.value = '';
                 passwordInput.value = '';
-                confirmPasswordInput.value = '';
-                uniqueCodeInput.value = '';
+                signupUsernameInput.value = '';
+                signupPasswordInput.value = '';
+                signupCodeInput.value = '';
             };
+
+            const showDamageModal = (orderId) => {
+                document.getElementById('damage-order-id').value = orderId;
+                damageModal.classList.remove('hidden');
+                damageModal.classList.add('flex');
+            };
+
+            cancelDamageReportBtn.addEventListener('click', () => {
+                damageModal.classList.remove('flex');
+                damageModal.classList.add('hidden');
+                document.getElementById('damage-report-form').reset();
+            });
+
 
             const saveAppState = () => {
                 localStorage.setItem('bitesNMoreState', JSON.stringify(appState));
@@ -674,7 +556,6 @@
             
             const renderLogo = () => {
                 mainLogoContainer.innerHTML = `<img src="${appState.logoUrl}" alt="BnM Logo" class="h-10 w-10 rounded-full object-cover">`;
-                loginLogoImg.src = appState.logoUrl;
             };
 
             const setLoggedInUser = (username, role) => {
@@ -753,7 +634,7 @@
                         <div class="container mx-auto px-6">
                             <div class="text-center mb-12">
                                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Our Delicious Menu</h2>
-                                <p class="text-gray-600 mt-2">Crafted with love, just for you.</p>
+                                <p class="text-gray-600 mt-2">Crafsted with love, just for you.</p>
                             </div>
                             <!-- Category Slider -->
                             <div class="flex space-x-4 overflow-x-auto pb-4 mb-8">
@@ -790,15 +671,15 @@
                                     <form id="contact-form" class="space-y-6">
                                         <div>
                                             <label for="contact-name" class="block text-sm font-medium text-gray-700">Your Name</label>
-                                            <input type="text" name="contact-name" id="contact-name" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                            <input type="text" name="contact-name" id="contact-name" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
                                         </div>
                                         <div>
                                             <label for="contact-email" class="block text-sm font-medium text-gray-700">Your Email</label>
-                                            <input type="email" name="contact-email" id="contact-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                            <input type="email" name="contact-email" id="contact-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
                                         </div>
                                         <div>
                                             <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-                                            <textarea name="contact-message" id="contact-message" rows="4" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"></textarea>
+                                            <textarea name="contact-message" id="contact-message" rows="4" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"></textarea>
                                         </div>
                                         <div>
                                             <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">Send Message</button>
@@ -1059,8 +940,8 @@
                             <div class="space-y-2">
                                 <h4 class="text-lg font-semibold">Payment Option:</h4>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <button id="pay-online-btn" class="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
-                                    <button id="pay-cash-btn" class="bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
+                                    <button id="pay-online-btn" class="pay-btn bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
+                                    <button id="pay-cash-btn" class="pay-btn bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
                                 </div>
                             </div>
                         </div>
@@ -1074,8 +955,16 @@
                             location: 'Simulated Map Pin'
                         };
                     });
-                    document.getElementById('pay-online-btn').addEventListener('click', () => appState.paymentMethod = 'Online');
-                    document.getElementById('pay-cash-btn').addEventListener('click', () => appState.paymentMethod = 'Cash on Delivery');
+                    document.getElementById('pay-online-btn').addEventListener('click', () => {
+                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
+                        document.getElementById('pay-online-btn').classList.add('active');
+                        appState.paymentMethod = 'Online';
+                    });
+                    document.getElementById('pay-cash-btn').addEventListener('click', () => {
+                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
+                        document.getElementById('pay-cash-btn').classList.add('active');
+                        appState.paymentMethod = 'Cash on Delivery';
+                    });
                 } else if (serviceType === 'dinein') {
                     optionsContainer.innerHTML = `
                         <div class="mt-6 space-y-4">
@@ -1089,13 +978,21 @@
                         <div class="mt-6 space-y-4">
                             <h4 class="text-lg font-semibold">Payment Option:</h4>
                             <div class="grid grid-cols-2 gap-4">
-                                <button id="pay-online-btn" class="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
-                                <button id="pay-cash-btn" class="bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
+                                <button id="pay-online-btn" class="pay-btn bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
+                                <button id="pay-cash-btn" class="pay-btn bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
                             </div>
                         </div>
                     `;
-                    document.getElementById('pay-online-btn').addEventListener('click', () => appState.paymentMethod = 'Online');
-                    document.getElementById('pay-cash-btn').addEventListener('click', () => appState.paymentMethod = 'Cash on Delivery');
+                    document.getElementById('pay-online-btn').addEventListener('click', () => {
+                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
+                        document.getElementById('pay-online-btn').classList.add('active');
+                        appState.paymentMethod = 'Online';
+                    });
+                    document.getElementById('pay-cash-btn').addEventListener('click', () => {
+                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
+                        document.getElementById('pay-cash-btn').classList.add('active');
+                        appState.paymentMethod = 'Cash on Delivery';
+                    });
                 }
             };
 
@@ -1122,16 +1019,8 @@
             // AUTHENTICATION LOGIC
             // =================================================================
             
-            const handleAuthSubmit = () => {
-                const isLogin = authSubmitBtn.textContent === 'Login';
-                if (isLogin) {
-                    handleLogin();
-                } else {
-                    handleSignup();
-                }
-            };
-
-            const handleLogin = () => {
+            const handleLogin = (e) => {
+                e.preventDefault();
                 const username = usernameInput.value;
                 const password = passwordInput.value;
                 const user = appState.users[username];
@@ -1139,29 +1028,22 @@
                 if (user && user.password === password) {
                     setLoggedInUser(username, user.role);
                     hideLoginModal();
-                    loginTipContainer.classList.add('hidden');
+                    loginError.classList.add('hidden');
                     showMessageModal('Login Successful', `Welcome, ${user.role}!`);
                 } else {
-                    loginTipContainer.textContent = 'Invalid username or password.';
-                    loginTipContainer.classList.remove('hidden');
+                    loginError.classList.remove('hidden');
                 }
             };
 
-            const handleSignup = () => {
-                const username = usernameInput.value;
-                const password = passwordInput.value;
-                const confirmPassword = confirmPasswordInput.value;
-                const uniqueCode = uniqueCodeInput.value;
-
-                if (password !== confirmPassword) {
-                    loginTipContainer.textContent = 'Passwords do not match.';
-                    loginTipContainer.classList.remove('hidden');
-                    return;
-                }
+            const handleSignup = (e) => {
+                e.preventDefault();
+                const username = signupUsernameInput.value;
+                const password = signupPasswordInput.value;
+                const uniqueCode = signupCodeInput.value;
 
                 if (appState.users[username]) {
-                    loginTipContainer.textContent = 'Username already exists.';
-                    loginTipContainer.classList.remove('hidden');
+                    signupError.textContent = 'Username already exists.';
+                    signupError.classList.remove('hidden');
                     return;
                 }
                 
@@ -1171,18 +1053,19 @@
                 } else if (uniqueCode === appState.deliveryCode) {
                     userRole = 'delivery';
                 } else if (uniqueCode) {
-                    loginTipContainer.textContent = 'Invalid unique code.';
-                    loginTipContainer.classList.remove('hidden');
+                    signupError.textContent = 'Invalid unique code.';
+                    signupError.classList.remove('hidden');
                     return;
                 }
 
                 appState.users[username] = { password, role: userRole };
                 saveAppState();
                 showMessageModal('Success!', 'Account created successfully. You can now log in.');
-                loginHeading.textContent = 'Login';
-                authSubmitBtn.textContent = 'Login';
-                signupFields.classList.add('hidden');
-                loginTipContainer.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginFormTitle.textContent = 'Login';
+                toggleAuthLink.textContent = 'Create an account';
+                signupError.classList.add('hidden');
             };
 
             const handleAddDeliveryPartner = (e) => {
@@ -1761,34 +1644,71 @@
                 }
 
                 ordersList.innerHTML = pendingOrders.map(order => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-semibold text-lg">Order ID: ${order.id.slice(-4)}</p>
-                        <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
-                        <p><strong>Payment:</strong> ${order.payment}</p>
-                        ${order.service === 'Take Away' ? `<p><strong>Code:</strong> <span class="font-bold">${order.code}</span></p>` : ''}
-                        ${order.deliveryInfo ? `
-                            <h4 class="font-semibold mt-4">Delivery Info:</h4>
-                            <p><strong>Name:</strong> ${order.deliveryInfo.name}</p>
-                            <p><strong>Phone:</strong> ${order.deliveryInfo.phone}</p>
-                            <p><strong>Address:</strong> ${order.deliveryInfo.address}, ${order.deliveryInfo.landmark}</p>
-                            <p class="mt-2 text-sm text-gray-500">
-                                This is a simulated live pin. In a real app, this would update with the customer's location.
-                            </p>
-                        ` : ''}
-                        <p class="mt-2 pt-2 border-t border-gray-200"><strong>Items:</strong> ${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</p>
-                        <div class="mt-4 space-x-2">
-                            <button data-id="${order.id}" data-action="arrived" class="delivery-action-btn bg-yellow-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">Arrived</button>
-                            <button data-id="${order.id}" data-action="completed" class="delivery-action-btn bg-green-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-600 transition">Mark Completed</button>
-                            <button data-id="${order.id}" data-action="damage" class="delivery-action-btn bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition">Report Damage</button>
+                    <div class="bg-white p-4 rounded-lg shadow space-y-2 flex flex-col md:flex-row md:items-center justify-between">
+                        <div class="flex-grow">
+                            <p class="font-semibold text-lg">Order ID: ${order.id.slice(-4)}</p>
+                            <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
+                            <p class="mt-2"><strong>Items:</strong> ${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</p>
+                            ${order.payment === 'Online' ? `<span class="mt-2 inline-block bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">Online Paid</span>` : ''}
+                            ${order.deliveryInfo ? `
+                                <div class="mt-4">
+                                    <h4 class="font-semibold text-md">Delivery Info:</h4>
+                                    <p><strong>Name:</strong> ${order.deliveryInfo.name}</p>
+                                    <p><strong>Phone:</strong> ${order.deliveryInfo.phone}</p>
+                                    <p><strong>Address:</strong> ${order.deliveryInfo.address}, ${order.deliveryInfo.landmark}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="mt-4 md:mt-0 flex-shrink-0 flex flex-col space-y-2 items-end">
+                            ${order.payment === 'Cash on Delivery' ? `
+                                <button data-id="${order.id}" data-total="${order.total}" class="collect-cash-btn w-full bg-yellow-500 text-gray-900 px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">
+                                    Collect ₹${order.total.toFixed(2)}
+                                </button>
+                            ` : ''}
+                            ${order.service === 'Delivery' ? `
+                                <button data-id="${order.id}" data-address="${order.deliveryInfo.address}" class="start-navigation-btn w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition">
+                                    Start Navigation <i class="fas fa-map-marked-alt ml-2"></i>
+                                </button>
+                            ` : ''}
+                            <button data-id="${order.id}" data-action="arrived" class="delivery-action-btn w-full bg-yellow-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">
+                                Arrived
+                            </button>
+                            <button data-id="${order.id}" data-action="completed" class="delivery-action-btn w-full bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition">
+                                Mark Completed
+                            </button>
+                            <button data-id="${order.id}" class="report-damage-btn w-full bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition">
+                                Report Damage
+                            </button>
                         </div>
                     </div>
                 `).join('');
+
+                document.querySelectorAll('.collect-cash-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const total = e.target.dataset.total;
+                        showMessageModal('Cash on Delivery', `Please collect **₹${total}** from the customer.`);
+                    });
+                });
+                
+                document.querySelectorAll('.start-navigation-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const address = e.target.dataset.address;
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+                        window.open(url, '_blank');
+                    });
+                });
 
                 document.querySelectorAll('.delivery-action-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const orderId = e.target.dataset.id;
                         const action = e.target.dataset.action;
                         handleDeliveryAction(orderId, action);
+                    });
+                });
+                
+                document.querySelectorAll('.report-damage-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        showDamageModal(e.target.dataset.id);
                     });
                 });
             };
@@ -1804,18 +1724,29 @@
                     order.status = 'Completed';
                     order.completedAt = new Date().toLocaleString();
                     showMessageModal('Order Completed', `Order ${orderId.slice(-4)} has been marked as completed.`);
-                } else if (action === 'damage') {
-                    const damageReason = prompt('Please enter the reason for reporting damage:');
-                    if (damageReason) {
-                        order.status = 'Damaged';
-                        order.damageReason = damageReason;
-                        showMessageModal('Damage Reported', `Damage reported for order ${orderId.slice(-4)}. Reason: ${damageReason}`);
-                    }
                 }
                 saveAppState();
                 renderDeliveryOrders();
                 renderAdminOrders();
             };
+            
+            damageReportForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const orderId = document.getElementById('damage-order-id').value;
+                const reason = document.getElementById('damage-reason').value;
+                
+                const order = appState.orders.find(o => o.id === orderId);
+                if (order) {
+                    order.status = 'Damaged';
+                    order.damageReason = reason;
+                    saveAppState();
+                    showMessageModal('Damage Reported', `Damage reported for order ${orderId.slice(-4)}. Reason: ${reason}`);
+                    damageModal.classList.remove('flex');
+                    damageModal.classList.add('hidden');
+                    renderDeliveryOrders();
+                    renderAdminOrders();
+                }
+            });
             
             const updateModeToggleUI = (isDark) => {
                 const body = document.body;
@@ -1864,28 +1795,30 @@
                 renderView('customer-website');
             });
 
-            authSubmitBtn.addEventListener('click', handleAuthSubmit);
+            loginForm.addEventListener('submit', handleLogin);
+            signupForm.addEventListener('submit', handleSignup);
             
-            toggleSignupLink.addEventListener('click', () => {
-                const isLogin = authSubmitBtn.textContent === 'Login';
-                if (isLogin) {
-                    loginHeading.textContent = 'Create Account';
-                    authSubmitBtn.textContent = 'Sign Up';
-                    signupFields.classList.remove('hidden');
-                    loginTipContainer.classList.add('hidden');
+            toggleAuthLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loginForm.classList.contains('hidden')) {
+                    // Currently on signup form, switch to login
+                    signupForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    loginFormTitle.textContent = 'Login';
+                    toggleAuthLink.textContent = 'Create an account';
+                    signupError.classList.add('hidden');
                 } else {
-                    loginHeading.textContent = 'Login';
-                    authSubmitBtn.textContent = 'Login';
-                    signupFields.classList.add('hidden');
-                    loginTipContainer.classList.add('hidden');
+                    // Currently on login form, switch to signup
+                    loginForm.classList.add('hidden');
+                    signupForm.classList.remove('hidden');
+                    loginFormTitle.textContent = 'Sign Up';
+                    toggleAuthLink.textContent = 'Already have an account?';
+                    loginError.classList.add('hidden');
                 }
-                usernameInput.value = '';
-                passwordInput.value = '';
-                confirmPasswordInput.value = '';
-                uniqueCodeInput.value = '';
             });
 
-            forgotPasswordLink.addEventListener('click', () => {
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
                 showMessageModal('Forgot Password', 'This feature is a placeholder. In a real app, we would email a password reset link to your registered email.');
             });
             
@@ -1904,4 +1837,3 @@
 </body>
 
 </html>
-
