@@ -101,7 +101,7 @@
                 </div>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
+                <i class="fas fa-user-circle text-2xl"></i>
             </button>
         </nav>
         <!-- Mobile Menu -->
@@ -332,9 +332,8 @@
             const publicNav = document.getElementById('public-nav');
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            const mobileLoginBtn = document.getElementById('mobile-login-btn');
-            const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-            const mobileOrderOnlineBtn = document.getElementById('mobile-order-online-btn');
+            const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+            
 
             const messageModal = document.getElementById('message-modal');
             const modalTitle = document.getElementById('modal-title');
@@ -439,9 +438,6 @@
             // Handles mobile menu toggle
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('mobile-menu-open');
-                const icon = mobileMenuButton.querySelector('i');
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
             });
 
             // Saves the entire application state to localStorage
@@ -488,21 +484,52 @@
                 loginBtn.classList.toggle('hidden', isLoggedIn);
                 logoutBtn.classList.toggle('hidden', !isLoggedIn);
                 changePasswordBtn.classList.toggle('hidden', !isLoggedIn);
-                mobileLoginBtn.classList.toggle('hidden', isLoggedIn);
-                mobileLogoutBtn.classList.toggle('hidden', !isLoggedIn);
                 
-
-                // Show/hide navigation links based on user role
+                // Show/hide navigation links based on user role for desktop
                 if (isLoggedIn && (appState.loggedInUser.role === 'admin' || appState.loggedInUser.role === 'delivery')) {
                     publicNav.classList.add('hidden');
                     orderOnlineBtn.classList.add('hidden');
-                    mobileOrderOnlineBtn.classList.add('hidden');
                 } else {
                     publicNav.classList.remove('hidden');
                     orderOnlineBtn.classList.remove('hidden');
-                    mobileOrderOnlineBtn.classList.remove('hidden');
                 }
 
+                // Update mobile menu content based on user status
+                if (mobileAuthButtons) {
+                    mobileAuthButtons.innerHTML = '';
+                    if (isLoggedIn) {
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'px-6 py-2 text-gray-800 font-semibold';
+                        userDiv.textContent = `Logged in as: ${appState.loggedInUser.username}`;
+                        mobileAuthButtons.appendChild(userDiv);
+
+                        const changePasswordButton = document.createElement('button');
+                        changePasswordButton.id = 'mobile-change-password-btn';
+                        changePasswordButton.className = 'block w-full text-left px-6 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300';
+                        changePasswordButton.textContent = 'Change Password';
+                        changePasswordButton.addEventListener('click', () => {
+                            passwordModal.classList.remove('hidden');
+                            passwordModal.classList.add('flex');
+                            changePasswordForm.reset();
+                        });
+                        mobileAuthButtons.appendChild(changePasswordButton);
+                        
+                        const logoutButton = document.createElement('button');
+                        logoutButton.id = 'mobile-logout-btn';
+                        logoutButton.className = 'block w-full text-left px-6 py-2 mt-2 bg-gray-500 text-white font-semibold rounded-full hover:bg-gray-600 transition duration-300';
+                        logoutButton.textContent = 'Logout';
+                        logoutButton.addEventListener('click', logout);
+                        mobileAuthButtons.appendChild(logoutButton);
+                    } else {
+                        const loginButton = document.createElement('button');
+                        loginButton.id = 'mobile-login-btn';
+                        loginButton.className = 'block w-full text-left px-6 py-2 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 transition duration-300';
+                        loginButton.textContent = 'Login';
+                        loginButton.addEventListener('click', () => renderView('login'));
+                        mobileAuthButtons.appendChild(loginButton);
+                    }
+                }
+                
                 if (isLoggedIn) {
                     if (appState.loggedInUser.role === 'admin') {
                         renderView('admin-dashboard');
@@ -1602,23 +1629,10 @@
                 }
             });
             
-            mobileOrderOnlineBtn.addEventListener('click', () => {
-                if (appState.cart.length === 0) {
-                    showMessageModal('Cart Empty', 'Your cart is empty. Please add items from the menu first!');
-                } else {
-                    renderView('cart');
-                }
-            });
-
-            document.getElementById('popup-view-cart-btn').addEventListener('click', () => renderView('cart'));
-            
             homeLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 renderView('customer-website');
             });
-            mobileLoginBtn.addEventListener('click', () => renderView('login'));
-            mobileLogoutBtn.addEventListener('click', logout);
-
 
             // Initial application setup
             loadAppState();
