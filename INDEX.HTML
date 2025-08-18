@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bites n' More | Login & Admin</title>
+    <title>Bites n' More</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter for text, Pacifico for logo -->
@@ -19,6 +19,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f7f7f7;
+            scroll-behavior: smooth;
         }
 
         .logo-font {
@@ -50,9 +51,259 @@
             @apply bg-red-600 text-white;
         }
 
-        /* Mobile menu button animation */
-        .mobile-menu-open {
-            display: block;
+        .login-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        /* CSS for the new login/signup component */
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+        #login-container * {
+            box-sizing: border-box;
+        }
+
+        #login-container h1 {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #login-container h2 {
+            text-align: center;
+        }
+
+        #login-container p {
+            font-size: 14px;
+            font-weight: 100;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        #login-container span {
+            font-size: 12px;
+        }
+
+        #login-container a {
+            color: #333;
+            font-size: 14px;
+            text-decoration: none;
+            margin: 15px 0;
+        }
+
+        #login-container button {
+            border-radius: 20px;
+            border: 1px solid #FF4B2B;
+            background-color: #FF4B2B;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+        }
+
+        #login-container button:active {
+            transform: scale(0.95);
+        }
+
+        #login-container button:focus {
+            outline: none;
+        }
+
+        #login-container button.ghost {
+            background-color: transparent;
+            border-color: #FFFFFF;
+        }
+
+        #login-container form {
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 50px;
+            height: 100%;
+            text-align: center;
+        }
+
+        #login-container input {
+            background-color: #eee;
+            border: none;
+            padding: 12px 15px;
+            margin: 8px 0;
+            width: 100%;
+        }
+
+        #login-container .login-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+                0 10px 10px rgba(0, 0, 0, 0.22);
+            position: relative;
+            overflow: hidden;
+            width: 768px;
+            max-width: 90%;
+            min-height: 480px;
+        }
+
+        #login-container .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        #login-container .sign-in-container {
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+
+        #login-container.right-panel-active .sign-in-container {
+            transform: translateX(100%);
+        }
+
+        #login-container .sign-up-container {
+            left: 0;
+            width: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        #login-container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+
+        @keyframes show {
+            0%,
+            49.99% {
+                opacity: 0;
+                z-index: 1;
+            }
+            50%,
+            100% {
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
+        #login-container .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        #login-container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        #login-container .overlay {
+            background: #FF416C;
+            background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
+            background: linear-gradient(to right, #FF4B2B, #FF416C);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        #login-container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        #login-container .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        #login-container .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        #login-container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        #login-container .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        #login-container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+        #login-container .social-container {
+            margin: 20px 0;
+        }
+
+        #login-container .social-container a {
+            border: 1px solid #DDDDDD;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            height: 40px;
+            width: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            #login-container .form-container {
+                width: 100%;
+                z-index: 5;
+            }
+            #login-container .overlay-container {
+                display: none;
+            }
+            #login-container .sign-up-container {
+                opacity: 1;
+            }
+            #login-container.right-panel-active .sign-up-container {
+                transform: none;
+                z-index: 1;
+            }
+            #login-container .sign-in-container {
+                transform: translateX(100%);
+            }
+            #login-container.right-panel-active .sign-in-container {
+                transform: none;
+                z-index: 2;
+            }
         }
     </style>
 </head>
@@ -74,9 +325,9 @@
                 </div>
                 <span class="text-2xl font-bold text-red-600 logo-font">BnM</span>
             </a>
-            <div class="hidden md:flex space-x-6 items-center">
-                <!-- Navigation links visible to customers/public -->
-                <div id="public-nav" class="flex space-x-6 items-center">
+            <div class="flex items-center space-x-6">
+                 <!-- Navigation links visible to customers/public -->
+                <div id="public-nav" class="hidden md:flex space-x-6 items-center">
                     <a href="#menu" class="text-gray-600 hover:text-red-600 transition duration-300">Menu</a>
                     <a href="#about" class="text-gray-600 hover:text-red-600 transition duration-300">About Us</a>
                     <a href="#contact" class="text-gray-600 hover:text-red-600 transition duration-300">Contact</a>
@@ -100,28 +351,7 @@
                     </button>
                 </div>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
-                <i class="fas fa-user-circle text-2xl"></i>
-            </button>
         </nav>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white py-2">
-            <a href="#menu" class="block px-6 py-2 text-gray-600 hover:bg-red-50">Menu</a>
-            <a href="#about" class="block px-6 py-2 text-gray-600 hover:bg-red-50">About Us</a>
-            <a href="#contact" class="block px-6 py-2 text-gray-600 hover:bg-red-50">Contact</a>
-            <button id="mobile-order-online-btn"
-                class="block w-full text-left px-6 py-2 bg-yellow-400 text-gray-900 font-semibold m-2 rounded-full text-center">
-                Order Online
-            </button>
-            <div id="mobile-auth-buttons" class="flex flex-col space-y-2 px-6 pb-2">
-                 <button id="mobile-login-btn" class="bg-red-600 text-white font-semibold py-2 rounded-full hover:bg-red-700 transition duration-300">
-                    Login
-                </button>
-                <button id="mobile-logout-btn" class="hidden bg-gray-500 text-white font-semibold py-2 rounded-full hover:bg-gray-600 transition duration-300">
-                    Logout
-                </button>
-            </div>
-        </div>
     </header>
 
     <!-- Main Content Container -->
@@ -219,6 +449,57 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-popup hidden">
+        <div id="login-container" class="login-card">
+            <div class="form-container sign-up-container">
+                <form id="signup-form">
+                    <h1 class="text-3xl font-bold mb-4">Create Account</h1>
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your email for registration</span>
+                    <input type="text" id="signup-username" placeholder="Username" required />
+                    <input type="password" id="signup-password" placeholder="Password" required />
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required />
+                    <input type="password" id="signup-code" placeholder="Unique Code (Optional)" />
+                    <button type="submit">Sign Up</button>
+                </form>
+            </div>
+            <div class="form-container sign-in-container">
+                <form id="login-form">
+                    <h1 class="text-3xl font-bold mb-4">Sign in</h1>
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your account</span>
+                    <input type="text" id="username" placeholder="Username" required />
+                    <input type="password" id="password" placeholder="Password" required />
+                    <a href="#">Forgot your password?</a>
+                    <button type="submit">Sign In</button>
+                </form>
+            </div>
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1 class="text-3xl font-bold">Welcome Back!</h1>
+                        <p>To keep connected with us please login with your personal info</p>
+                        <button class="ghost" id="signIn">Sign In</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1 class="text-3xl font-bold">Hello, Friend!</h1>
+                        <p>Enter your personal details and start your journey with us</p>
+                        <button class="ghost" id="signUp">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT FOR ALL FUNCTIONALITY -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -226,12 +507,10 @@
             // =================================================================
             // CORE APPLICATION STATE
             // =================================================================
-            // This is our central 'state' object for the single-page application.
-            // It holds the current view, user info, and all dynamic data.
-            // Data is persisted to localStorage for a "don't logout" experience.
             let appState = {
                 currentView: '',
                 loggedInUser: null,
+                previousView: null, // Track the view before login
                 users: {
                     'happy': { password: 'burger', role: 'customer' },
                     'BnM': { password: 'Qwerty@321', role: 'admin' },
@@ -330,10 +609,6 @@
             const orderOnlineBtn = document.getElementById('order-online-btn');
             const homeLink = document.getElementById('home-link');
             const publicNav = document.getElementById('public-nav');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
-            
 
             const messageModal = document.getElementById('message-modal');
             const modalTitle = document.getElementById('modal-title');
@@ -350,11 +625,16 @@
             const summaryDetails = document.getElementById('summary-details');
             const summaryQuote = document.getElementById('summary-quote');
             const summaryCloseBtn = document.getElementById('summary-close-btn');
+            
+            const loginModal = document.getElementById('login-modal');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginContainer = document.getElementById('login-container');
+
 
             // =================================================================
             // GOOGLE SIGN-IN INTEGRATION
             // =================================================================
-            // This function handles the response from Google's Sign-in
             window.handleCredentialResponse = (response) => {
                 const credential = response.credential;
                 const base64Url = credential.split('.')[1];
@@ -366,27 +646,23 @@
                 const user = JSON.parse(jsonPayload);
                 const username = user.email;
 
-                // Check if user already exists, if not, create a new customer account
                 if (!appState.users[username]) {
                     appState.users[username] = {
-                        password: '', // Google users don't have a local password
+                        password: '', 
                         role: 'customer',
                         googleId: user.sub
                     };
                     showMessageModal('Success!', 'Google account linked successfully!');
                 }
-
-                // Log the user in
                 setLoggedInUser(username, appState.users[username].role);
                 saveAppState();
             };
 
-            // Initializes Google Sign-In button on the login page
             const renderGoogleSignInButton = () => {
                 const googleButtonContainer = document.getElementById('g_id_onload');
                 if (googleButtonContainer) {
                     google.accounts.id.initialize({
-                        client_id: "YOUR_GOOGLE_CLIENT_ID", // Replace with your actual client ID
+                        client_id: "882053891586-7rsl93dmfqcit8ahdmntj6aifl76aobq.apps.googleusercontent.com",
                         callback: window.handleCredentialResponse,
                         ux_mode: "popup"
                     });
@@ -405,8 +681,6 @@
             // =================================================================
             // UTILITY FUNCTIONS
             // =================================================================
-
-            // A custom modal to replace alert() and confirm()
             const showMessageModal = (title, message) => {
                 modalTitle.textContent = title;
                 modalMessage.textContent = message;
@@ -419,7 +693,6 @@
                 messageModal.classList.add('hidden');
             });
 
-            // Shows the order summary modal
             const showOrderSummaryModal = (title, message, details, quote) => {
                 summaryTitle.textContent = title;
                 summaryMessage.textContent = message;
@@ -434,18 +707,19 @@
                 orderSummaryModal.classList.add('hidden');
                 renderView('customer-website');
             });
+            
+            const showLoginModal = () => {
+                loginModal.classList.remove('hidden');
+            };
+            
+            const hideLoginModal = () => {
+                loginModal.classList.add('hidden');
+            };
 
-            // Handles mobile menu toggle
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('mobile-menu-open');
-            });
-
-            // Saves the entire application state to localStorage
             const saveAppState = () => {
                 localStorage.setItem('bitesNMoreState', JSON.stringify(appState));
             };
 
-            // Loads the application state from localStorage on startup
             const loadAppState = () => {
                 const storedState = localStorage.getItem('bitesNMoreState');
                 if (storedState) {
@@ -462,14 +736,12 @@
                 }
             };
 
-            // Sets the user's login state
             const setLoggedInUser = (username, role) => {
                 appState.loggedInUser = { username, role };
                 saveAppState();
                 updateUIForUser();
             };
 
-            // Clears the user's login state and redirects to login view
             const logout = () => {
                 appState.loggedInUser = null;
                 saveAppState();
@@ -478,94 +750,48 @@
                 showMessageModal('Logged Out', 'You have been successfully logged out.');
             };
 
-            // Updates the header and main content based on the logged-in user
             const updateUIForUser = () => {
                 const isLoggedIn = appState.loggedInUser !== null;
+                
                 loginBtn.classList.toggle('hidden', isLoggedIn);
                 logoutBtn.classList.toggle('hidden', !isLoggedIn);
                 changePasswordBtn.classList.toggle('hidden', !isLoggedIn);
                 
-                // Show/hide navigation links based on user role for desktop
                 if (isLoggedIn && (appState.loggedInUser.role === 'admin' || appState.loggedInUser.role === 'delivery')) {
                     publicNav.classList.add('hidden');
                     orderOnlineBtn.classList.add('hidden');
+                    if (window.location.pathname !== '/admin.html') {
+                         window.location.href = 'admin.html';
+                    }
                 } else {
                     publicNav.classList.remove('hidden');
                     orderOnlineBtn.classList.remove('hidden');
-                }
-
-                // Update mobile menu content based on user status
-                if (mobileAuthButtons) {
-                    mobileAuthButtons.innerHTML = '';
-                    if (isLoggedIn) {
-                        const userDiv = document.createElement('div');
-                        userDiv.className = 'px-6 py-2 text-gray-800 font-semibold';
-                        userDiv.textContent = `Logged in as: ${appState.loggedInUser.username}`;
-                        mobileAuthButtons.appendChild(userDiv);
-
-                        const changePasswordButton = document.createElement('button');
-                        changePasswordButton.id = 'mobile-change-password-btn';
-                        changePasswordButton.className = 'block w-full text-left px-6 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300';
-                        changePasswordButton.textContent = 'Change Password';
-                        changePasswordButton.addEventListener('click', () => {
-                            passwordModal.classList.remove('hidden');
-                            passwordModal.classList.add('flex');
-                            changePasswordForm.reset();
-                        });
-                        mobileAuthButtons.appendChild(changePasswordButton);
-                        
-                        const logoutButton = document.createElement('button');
-                        logoutButton.id = 'mobile-logout-btn';
-                        logoutButton.className = 'block w-full text-left px-6 py-2 mt-2 bg-gray-500 text-white font-semibold rounded-full hover:bg-gray-600 transition duration-300';
-                        logoutButton.textContent = 'Logout';
-                        logoutButton.addEventListener('click', logout);
-                        mobileAuthButtons.appendChild(logoutButton);
-                    } else {
-                        const loginButton = document.createElement('button');
-                        loginButton.id = 'mobile-login-btn';
-                        loginButton.className = 'block w-full text-left px-6 py-2 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 transition duration-300';
-                        loginButton.textContent = 'Login';
-                        loginButton.addEventListener('click', () => renderView('login'));
-                        mobileAuthButtons.appendChild(loginButton);
+                    if (appState.currentView !== 'customer-website' && appState.currentView !== 'cart') {
+                       renderView('customer-website');
                     }
-                }
-                
-                if (isLoggedIn) {
-                    if (appState.loggedInUser.role === 'admin') {
-                        renderView('admin-dashboard');
-                    } else if (appState.loggedInUser.role === 'delivery') {
-                        renderView('delivery-dashboard');
-                    } else {
-                        renderView('customer-website');
-                    }
-                } else {
-                    renderView('customer-website');
                 }
             };
-
-            // Renders the appropriate view based on the current state
+            
             const renderView = (viewName) => {
                 appState.currentView = viewName;
-                mainContent.innerHTML = ''; // Clear previous content
+                mainContent.innerHTML = '';
+                
+                if (!appState.loggedInUser && (viewName === 'admin-dashboard' || viewName === 'delivery-dashboard')) {
+                    renderView('customer-website');
+                    return;
+                }
 
                 const views = {
                     'customer-website': renderCustomerWebsite,
-                    'login': renderLoginPage,
-                    'signup': renderSignupPage,
                     'admin-dashboard': renderAdminDashboard,
                     'delivery-dashboard': renderDeliveryDashboard,
                     'cart': renderCartPage
                 };
 
-                const renderFunction = views[viewName] || renderCustomerWebsite; // Default to website
+                const renderFunction = views[viewName] || renderCustomerWebsite;
                 renderFunction();
             };
 
-            // =================================================================
-            // VIEW RENDERING FUNCTIONS
-            // =================================================================
-
-            // Renders the main customer-facing website
             const renderCustomerWebsite = () => {
                 mainContent.innerHTML = `
                     <section class="hero-bg text-white">
@@ -659,105 +885,6 @@
                 renderMenuItems();
             };
 
-            // Renders the login page
-            const renderLoginPage = () => {
-                mainContent.innerHTML = `
-                    <div class="flex items-center justify-center min-h-screen bg-gray-100">
-                        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
-                            <div class="flex justify-center mb-6">
-                                <svg class="h-16 w-16 text-red-600" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.83 15.42C16.5 15.75 16.03 16 15.5 16H8.5C7.97 16 7.5 15.75 7.17 15.42C6.55 14.8 6.25 13.97 6.5 13.2L8.28 7.38C8.55 6.56 9.25 6 10.12 6H13.88C14.75 6 15.45 6.56 15.72 7.38L17.5 13.2C17.75 13.97 17.45 14.8 16.83 15.42Z" fill="#EF4444" />
-                                    <path d="M12 4C9.79 4 8 5.79 8 8V10H16V8C16 5.79 14.21 4 12 4Z" fill="#FBBF24" />
-                                </svg>
-                            </div>
-                            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
-                            <p class="text-gray-600 mb-8">Sign in to your account</p>
-                            <form id="login-form" class="space-y-6">
-                                <div>
-                                    <input type="text" id="username" placeholder="Username" required
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                </div>
-                                <div>
-                                    <input type="password" id="password" placeholder="Password" required
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                </div>
-                                <button type="submit"
-                                    class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300">
-                                    Log In
-                                </button>
-                                <div class="relative flex py-5 items-center">
-                                    <div class="flex-grow border-t border-gray-300"></div>
-                                    <span class="flex-shrink mx-4 text-gray-400">OR</span>
-                                    <div class="flex-grow border-t border-gray-300"></div>
-                                </div>
-                                <div id="g_id_onload" class="w-full flex justify-center"></div>
-                            </form>
-                            <p class="text-center text-sm mt-4">
-                                Don't have an account? <a href="#" id="go-to-signup" class="text-blue-600 hover:text-blue-800 font-medium">Sign Up</a>
-                            </p>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('login-form').addEventListener('submit', handleLogin);
-                document.getElementById('go-to-signup').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    renderView('signup');
-                });
-                renderGoogleSignInButton();
-            };
-
-            // Renders the signup page
-            const renderSignupPage = () => {
-                mainContent.innerHTML = `
-                    <div class="flex items-center justify-center min-h-screen bg-gray-100">
-                        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
-                            <div class="flex justify-center mb-6">
-                                <svg class="h-16 w-16 text-red-600" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.83 15.42C16.5 15.75 16.03 16 15.5 16H8.5C7.97 16 7.5 15.75 7.17 15.42C6.55 14.8 6.25 13.97 6.5 13.2L8.28 7.38C8.55 6.56 9.25 6 10.12 6H13.88C14.75 6 15.45 6.56 15.72 7.38L17.5 13.2C17.75 13.97 17.45 14.8 16.83 15.42Z" fill="#EF4444" />
-                                    <path d="M12 4C9.79 4 8 5.79 8 8V10H16V8C16 5.79 14.21 4 12 4Z" fill="#FBBF24" />
-                                </svg>
-                            </div>
-                            <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                            <p class="text-gray-600 mb-8">Join the Bites n' More family</p>
-                            <form id="signup-form" class="space-y-6">
-                                <div>
-                                    <input type="text" id="signup-username" placeholder="Username" required
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                </div>
-                                <div>
-                                    <input type="password" id="signup-password" placeholder="Password" required
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                </div>
-                                <div>
-                                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                </div>
-                                <div class="relative">
-                                    <input type="password" id="signup-code" placeholder="Unique Code (Optional)"
-                                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                                        For Admin/Delivery only
-                                    </span>
-                                </div>
-                                <button type="submit"
-                                    class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300">
-                                    Sign Up
-                                </button>
-                                <p class="text-center text-sm mt-4">
-                                    Already have an account? <a href="#" id="go-to-login" class="text-blue-600 hover:text-blue-800 font-medium">Log In</a>
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('signup-form').addEventListener('submit', handleSignup);
-                document.getElementById('go-to-login').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    renderView('login');
-                });
-            };
-
-            // Renders the Admin Dashboard
             const renderAdminDashboard = () => {
                 mainContent.innerHTML = `
                     <div class="container mx-auto px-6 py-12">
@@ -846,7 +973,6 @@
                     </div>
                 `;
 
-                // Add event listeners and render data for the admin dashboard
                 document.getElementById('add-delivery-form').addEventListener('submit', handleAddDeliveryPartner);
                 document.getElementById('add-category-form').addEventListener('submit', handleAddCategory);
                 document.getElementById('add-menu-item-form').addEventListener('submit', handleAddMenuItem);
@@ -860,7 +986,6 @@
                 renderAdminReviews();
             };
 
-            // Renders the Delivery Partner Dashboard
             const renderDeliveryDashboard = () => {
                 mainContent.innerHTML = `
                     <div class="container mx-auto px-6 py-12">
@@ -876,7 +1001,6 @@
                 renderDeliveryOrders();
             };
 
-            // Renders the cart page
             const renderCartPage = () => {
                 const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 let cartContent = '';
@@ -939,7 +1063,6 @@
                 document.getElementById('service-dinein-btn').addEventListener('click', () => renderServiceOptions('dinein'));
             };
 
-            // Renders the appropriate service options based on the chosen type
             const renderServiceOptions = (serviceType) => {
                 const optionsContainer = document.getElementById('service-options-container');
                 optionsContainer.innerHTML = '';
@@ -956,11 +1079,8 @@
                                 <input type="tel" id="customer-phone" placeholder="Phone Number" required class="w-full px-4 py-2 border rounded-md">
                                 <input type="text" id="customer-address" placeholder="Address" required class="w-full px-4 py-2 border rounded-md">
                                 <input type="text" id="customer-landmark" placeholder="Landmark" required class="w-full px-4 py-2 border rounded-md">
-                                <p class="text-sm text-gray-500">
-                                    Please enter your location on the map below for faster delivery.
-                                </p>
-                                <div class="rounded-lg overflow-hidden shadow-lg mb-6">
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.518661858548!2d76.82999931487766!3d17.32700098801938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc901e0b0000001%3A0x8932c8635c2b554b!2sBites%20n'%20More!5e0!3m2!1sen!2sin!4v1663333333333!5m2!1sen!2sin" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                <div class="rounded-lg overflow-hidden shadow-lg mb-6 h-64">
+                                    <div id="map" class="w-full h-full"></div>
                                 </div>
                             </form>
                         </div>
@@ -971,7 +1091,7 @@
                             phone: document.getElementById('customer-phone').value,
                             address: document.getElementById('customer-address').value,
                             landmark: document.getElementById('customer-landmark').value,
-                            location: 'Simulated Map Pin'
+                            location: {lat: 17.32700098801938, lng: 76.82999931487766} // Simulated default pin
                         };
                     });
                 } else if (serviceType === 'dinein') {
@@ -984,13 +1104,10 @@
                     renderTableButtons();
                 }
                 
-                // Set active class for the selected service button
                 document.querySelectorAll('.service-btn').forEach(btn => btn.classList.remove('active'));
                 document.getElementById(`service-${serviceType}-btn`).classList.add('active');
             };
 
-
-            // Renders the table buttons for dine-in
             const renderTableButtons = () => {
                 const tableGrid = document.getElementById('table-grid');
                 if (!tableGrid) return;
@@ -1008,28 +1125,30 @@
                     tableGrid.appendChild(tableBtn);
                 }
             };
-
+            
             // =================================================================
             // AUTHENTICATION LOGIC
             // =================================================================
-
-            // Handles the login form submission
             const handleLogin = (e) => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
-
                 const user = appState.users[username];
 
                 if (user && user.password === password) {
                     setLoggedInUser(username, user.role);
+                    hideLoginModal();
+                    if(appState.previousView === 'cart') {
+                      renderView('cart');
+                    } else {
+                      window.location.href = 'index.html';
+                    }
                     showMessageModal('Login Successful', `Welcome, ${user.role}!`);
                 } else {
                     showMessageModal('Login Failed', 'Invalid username or password.');
                 }
             };
-            
-            // Handles customer signup
+
             const handleSignup = (e) => {
                 e.preventDefault();
                 const username = document.getElementById('signup-username').value;
@@ -1061,276 +1180,12 @@
                 appState.users[username] = { password, role: userRole };
                 saveAppState();
                 showMessageModal('Success!', 'Account created successfully. You can now log in.');
-                renderView('login');
-            };
-
-            // Handles adding a new delivery partner from the admin dashboard
-            const handleAddDeliveryPartner = (e) => {
-                e.preventDefault();
-                const username = document.getElementById('delivery-username').value;
-                const password = document.getElementById('delivery-password').value;
-
-                if (appState.users[username]) {
-                    showMessageModal('Error', 'A user with this username already exists.');
-                    return;
-                }
-
-                appState.users[username] = { password, role: 'delivery' };
-                appState.deliveryPartners.push(username);
-                saveAppState();
-                renderDeliveryPartners();
-                document.getElementById('add-delivery-form').reset();
-                showMessageModal('Success', `${username} has been added as a delivery partner.`);
-            };
-
-            // Handles password change logic
-            const handleChangePassword = (e) => {
-                e.preventDefault();
-                const oldPassword = document.getElementById('old-password').value;
-                const newPassword = document.getElementById('new-password').value;
-                const confirmNewPassword = document.getElementById('confirm-new-password').value;
-                
-                const loggedInUser = appState.loggedInUser;
-                const currentUser = appState.users[loggedInUser.username];
-
-                if (oldPassword !== currentUser.password) {
-                    showMessageModal('Change Password Failed', 'Incorrect current password.');
-                    return;
-                }
-                
-                if (newPassword !== confirmNewPassword) {
-                    showMessageModal('Change Password Failed', 'New passwords do not match.');
-                    return;
-                }
-                
-                if (newPassword === oldPassword) {
-                    showMessageModal('Change Password Failed', 'New password must be different from the old one.');
-                    return;
-                }
-
-                currentUser.password = newPassword;
-                saveAppState();
-                passwordModal.classList.add('hidden');
-                passwordModal.classList.remove('flex');
-                showMessageModal('Success!', 'Your password has been changed successfully.');
+                loginContainer.classList.remove('right-panel-active');
             };
 
             // =================================================================
-            // DATA MANAGEMENT & RENDERING FUNCTIONS
+            // DATA MANAGEMENT & RENDERING FUNCTIONS (Not in customer view, but needed for state)
             // =================================================================
-
-            const handleSaveAboutUs = () => {
-                const newContent = document.getElementById('about-us-textarea').value;
-                appState.aboutUsContent = newContent;
-                saveAppState();
-                showMessageModal('Success', 'About Us content updated successfully!');
-            };
-
-            const renderAdminReviews = () => {
-                const reviewsList = document.getElementById('admin-reviews-list');
-                if (!reviewsList) return;
-
-                reviewsList.innerHTML = appState.reviews.map((review, index) => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-bold text-lg">${review.name}</p>
-                        <p class="text-sm text-gray-600">Rating: ${'⭐'.repeat(Math.floor(review.rating))} ${review.rating % 1 !== 0 ? '½' : ''} (${review.rating})</p>
-                        <p class="italic text-gray-800">"${review.comment}"</p>
-                        <div class="flex justify-end">
-                            <button data-index="${index}" class="delete-review-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.delete-review-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteReview);
-                });
-            };
-
-            const handleDeleteReview = (e) => {
-                const indexToDelete = e.currentTarget.dataset.index;
-                appState.reviews.splice(indexToDelete, 1);
-                saveAppState();
-                renderAdminReviews();
-                showMessageModal('Success', 'Review deleted successfully.');
-            };
-
-            const handleAddReview = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('review-name').value;
-                const rating = parseFloat(document.getElementById('review-rating').value);
-                const comment = document.getElementById('review-comment').value;
-
-                if (rating < 1 || rating > 5) {
-                    showMessageModal('Error', 'Rating must be between 1 and 5.');
-                    return;
-                }
-
-                appState.reviews.push({
-                    name,
-                    rating,
-                    comment,
-                    image: 'https://placehold.co/100x100/cccccc/ffffff?text=User'
-                });
-                saveAppState();
-                renderAdminReviews();
-                document.getElementById('add-review-form').reset();
-                showMessageModal('Success', 'Review added successfully!');
-            };
-
-
-            // Renders the list of delivery partners in the admin dashboard
-            const renderDeliveryPartners = () => {
-                const deliveryList = document.getElementById('delivery-list');
-                if (!deliveryList) return;
-
-                deliveryList.innerHTML = '';
-                appState.deliveryPartners.forEach(partner => {
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center bg-gray-50 p-3 rounded-md";
-                    li.innerHTML = `
-                        <span class="font-medium">${partner}</span>
-                        <div class="space-x-2">
-                            <button data-username="${partner}" class="delete-delivery-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    `;
-                    deliveryList.appendChild(li);
-                });
-
-                document.querySelectorAll('.delete-delivery-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteDeliveryPartner);
-                });
-            };
-
-            // Handles adding a new category from the admin dashboard
-            const handleAddCategory = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('new-category-name').value;
-                const id = name.toLowerCase().replace(/\s/g, '-');
-                
-                if (appState.categories.some(cat => cat.id === id)) {
-                    showMessageModal('Error', 'Category already exists.');
-                    return;
-                }
-                
-                appState.categories.push({ id, name });
-                saveAppState();
-                renderCategoriesAdmin();
-                renderMenuItems();
-                document.getElementById('add-category-form').reset();
-                showMessageModal('Success', `${name} category added.`);
-            };
-
-            // Renders categories in the admin view
-            const renderCategoriesAdmin = () => {
-                const categorySelect = document.getElementById('item-category');
-                const categoryList = document.getElementById('category-list');
-                
-                if (!categorySelect || !categoryList) return;
-
-                categorySelect.innerHTML = appState.categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
-                
-                categoryList.innerHTML = appState.categories.map(cat => `
-                    <li class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                        <span class="font-medium">${cat.name}</span>
-                        <button data-category-id="${cat.id}" class="delete-category-btn text-red-500 hover:text-red-700 transition">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </li>
-                `).join('');
-
-                document.querySelectorAll('.delete-category-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteCategory);
-                });
-            };
-
-            // Handles deleting a category
-            const handleDeleteCategory = (e) => {
-                const idToDelete = e.currentTarget.dataset.categoryId;
-                appState.categories = appState.categories.filter(cat => cat.id !== idToDelete);
-                // Also remove all menu items from this category
-                appState.menuItems = appState.menuItems.filter(item => item.categoryId !== idToDelete);
-                saveAppState();
-                renderCategoriesAdmin();
-                renderAdminMenu();
-                renderMenuItems();
-                showMessageModal('Success', 'Category and its items have been deleted.');
-            };
-
-            // Handles deleting a delivery partner
-            const handleDeleteDeliveryPartner = (e) => {
-                const usernameToDelete = e.currentTarget.dataset.username;
-                appState.deliveryPartners = appState.deliveryPartners.filter(partner => partner !== usernameToDelete);
-                delete appState.users[usernameToDelete];
-                saveAppState();
-                renderDeliveryPartners();
-                showMessageModal('Success', `${usernameToDelete} has been deleted.`);
-            };
-
-            // Handles adding a new menu item from the admin dashboard
-            const handleAddMenuItem = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('menu-name').value;
-                const price = parseFloat(document.getElementById('menu-price').value);
-                const image = document.getElementById('menu-image').value || 'https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';
-                const categoryId = document.getElementById('item-category').value;
-
-                const newItem = {
-                    id: 'item-' + Date.now(),
-                    name,
-                    price,
-                    image,
-                    categoryId
-                };
-
-                appState.menuItems.push(newItem);
-                saveAppState();
-                renderAdminMenu();
-                renderMenuItems();
-                document.getElementById('add-menu-item-form').reset();
-                showMessageModal('Success', `${name} has been added to the menu.`);
-            };
-
-            // Renders the list of menu items in the admin dashboard
-            const renderAdminMenu = () => {
-                const menuList = document.getElementById('menu-list');
-                if (!menuList) return;
-
-                menuList.innerHTML = '';
-                appState.menuItems.forEach(item => {
-                    const categoryName = appState.categories.find(cat => cat.id === item.categoryId)?.name || 'N/A';
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center bg-gray-50 p-3 rounded-md";
-                    li.innerHTML = `
-                        <span class="font-medium">${item.name} (${categoryName}) - ₹${item.price}</span>
-                        <div class="space-x-2">
-                            <button data-id="${item.id}" class="delete-menu-item-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    `;
-                    menuList.appendChild(li);
-                });
-
-                document.querySelectorAll('.delete-menu-item-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteMenuItem);
-                });
-            };
-
-            // Handles deleting a menu item
-            const handleDeleteMenuItem = (e) => {
-                const idToDelete = e.currentTarget.dataset.id;
-                appState.menuItems = appState.menuItems.filter(item => item.id !== idToDelete);
-                saveAppState();
-                renderAdminMenu();
-                renderMenuItems();
-                showMessageModal('Success', `Menu item has been deleted.`);
-            };
-
-            // Renders the menu items on the main customer-facing page
             const renderMenuItems = () => {
                 const menuGrid = document.getElementById('menu-grid');
                 if (!menuGrid) return;
@@ -1345,7 +1200,6 @@
                     });
                 });
 
-                // Initial render of all items
                 filterAndRenderMenu('all');
             };
 
@@ -1374,8 +1228,12 @@
                 `).join('');
             };
 
-            // Handles adding an item to the cart
             const addToCart = (id, name, price) => {
+                if(!appState.loggedInUser) {
+                    appState.previousView = 'customer-website';
+                    showLoginModal();
+                    return;
+                }
                 const existingItem = appState.cart.find(item => item.id === id);
                 if (existingItem) {
                     existingItem.quantity++;
@@ -1396,7 +1254,6 @@
                 }, 3000);
             };
 
-            // Handles the checkout process
             const handleCheckout = () => {
                 if (appState.cart.length === 0) {
                     showMessageModal('Empty Cart', 'Please add items to your cart before checking out.');
@@ -1404,7 +1261,8 @@
                 }
                 
                 if (!appState.loggedInUser) {
-                    showMessageModal('Login Required', 'Please log in to place your order.');
+                    appState.previousView = 'cart';
+                    showLoginModal();
                     return;
                 }
                 
@@ -1461,6 +1319,395 @@
                         status: 'Pending',
                         timestamp: new Date().toLocaleTimeString()
                     };
+                    confirmationMessage = 'Thank you for your order! It will be ready for pickup shortly. �';
+                    summaryDetailsHtml = `
+                        <p><strong>Order Code:</strong> <span class="font-bold">${orderCode}</span></p>
+                        <p><strong>Service:</strong> Take Away</p>
+                    `;
+                } else if (serviceType === 'dinein') {
+                    if (!appState.tableNumber) {
+                        showMessageModal('Table Required', 'Please select a table number for dine-in service.');
+                        return;
+                    }
+                    orderDetails = {
+                        id: `order-${Date.now()}`,
+                        customer: appState.loggedInUser.username,
+                        items: appState.cart,
+                        service: 'Dine In',
+                        table: appState.tableNumber,
+                        status: 'Pending',
+                        timestamp: new Date().toLocaleTimeString()
+                    };
+                    confirmationMessage = `Your order has been placed for Table ${appState.tableNumber}. Enjoy! 😊`;
+                    summaryDetailsHtml = `
+                        <p><strong>Service:</strong> Dine In</p>
+                        <p><strong>Table:</strong> <span class="font-bold">${appState.tableNumber}</span></p>
+                    `;
+                }
+                
+                appState.orders.push(orderDetails);
+                appState.cart = [];
+                saveAppState();
+                
+                const randomQuote = orderQuotes[Math.floor(Math.random() * orderQuotes.length)];
+                
+                showOrderSummaryModal('Order Placed!', confirmationMessage, summaryDetailsHtml, randomQuote);
+                
+                if (appState.currentView === 'admin-dashboard') {
+                    renderAdminOrders();
+                }
+                if (appState.currentView === 'delivery-dashboard') {
+                    renderDeliveryOrders();
+                }
+            };
+            
+            const renderCartPage = () => {
+                const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                let cartContent = '';
+                if (appState.cart.length === 0) {
+                    cartContent = '<p class="text-gray-500 text-center">Your cart is empty.</p>';
+                } else {
+                    cartContent = appState.cart.map(item => `
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold">${item.name}</p>
+                                <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
+                            </div>
+                            <span class="font-bold">₹${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                mainContent.innerHTML = `
+                    <div class="container mx-auto px-6 py-12">
+                        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                            <h2 class="text-3xl font-bold mb-8 text-gray-900">Your Cart</h2>
+                            <div id="cart-items-container" class="space-y-4">
+                                ${cartContent}
+                            </div>
+                            <div class="mt-8 pt-4 border-t border-gray-200 flex justify-between items-center text-2xl font-bold">
+                                <span>Total:</span>
+                                <span>₹${total.toFixed(2)}</span>
+                            </div>
+                            <div class="mt-8 space-y-4">
+                                <h3 class="text-xl font-semibold">Choose Service Type:</h3>
+                                <div class="flex justify-between space-x-4">
+                                    <button id="service-delivery-btn" class="service-btn flex-1 bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
+                                        <i class="fas fa-motorcycle mr-2"></i>Delivery
+                                    </button>
+                                    <button id="service-takeaway-btn" class="service-btn flex-1 bg-yellow-500 text-gray-900 font-semibold py-3 rounded-lg hover:bg-yellow-600 transition">
+                                        <i class="fas fa-shopping-bag mr-2"></i>Take Away
+                                    </button>
+                                    <button id="service-dinein-btn" class="service-btn flex-1 bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition">
+                                        <i class="fas fa-utensils mr-2"></i>Dine In
+                                    </button>
+                                </div>
+                                <div id="service-options-container"></div>
+                                <div class="mt-8 flex justify-between space-x-4">
+                                    <button id="continue-shopping-btn" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                                        Continue Shopping
+                                    </button>
+                                    <button id="checkout-btn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition">
+                                        Checkout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('continue-shopping-btn').addEventListener('click', () => renderView('customer-website'));
+                document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
+                document.getElementById('service-delivery-btn').addEventListener('click', () => renderServiceOptions('delivery'));
+                document.getElementById('service-takeaway-btn').addEventListener('click', () => renderServiceOptions('takeaway'));
+                document.getElementById('service-dinein-btn').addEventListener('click', () => renderServiceOptions('dinein'));
+            };
+
+            const renderServiceOptions = (serviceType) => {
+                const optionsContainer = document.getElementById('service-options-container');
+                optionsContainer.innerHTML = '';
+                appState.serviceType = serviceType;
+                appState.tableNumber = null;
+                appState.customerInfo = null;
+                
+                if (serviceType === 'delivery') {
+                    optionsContainer.innerHTML = `
+                        <div class="mt-6 space-y-4">
+                            <h4 class="text-lg font-semibold">Delivery Details:</h4>
+                            <form id="delivery-details-form" class="space-y-4">
+                                <input type="text" id="customer-name" placeholder="Your Name" required class="w-full px-4 py-2 border rounded-md">
+                                <input type="tel" id="customer-phone" placeholder="Phone Number" required class="w-full px-4 py-2 border rounded-md">
+                                <input type="text" id="customer-address" placeholder="Address" required class="w-full px-4 py-2 border rounded-md">
+                                <input type="text" id="customer-landmark" placeholder="Landmark" required class="w-full px-4 py-2 border rounded-md">
+                                <div class="rounded-lg overflow-hidden shadow-lg mb-6 h-64">
+                                    <div id="map" class="w-full h-full"></div>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                    
+                    const initMap = () => {
+                        const defaultLocation = { lat: 17.32700098801938, lng: 76.82999931487766 };
+                        const map = new google.maps.Map(document.getElementById('map'), {
+                            zoom: 15,
+                            center: defaultLocation,
+                        });
+                        let marker = new google.maps.Marker({
+                            position: defaultLocation,
+                            map: map,
+                            draggable: true
+                        });
+                        map.addListener('click', (event) => {
+                            marker.setPosition(event.latLng);
+                            appState.customerInfo.location = {
+                                lat: event.latLng.lat(),
+                                lng: event.latLng.lng()
+                            };
+                        });
+                    };
+
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBhLn0CUcyUxslVSg4_5m5UfTUMtKM0PRM&callback=initMap`;
+                    script.defer = true;
+                    document.head.appendChild(script);
+                    window.initMap = initMap;
+                    
+                    document.getElementById('delivery-details-form').addEventListener('input', (e) => {
+                        appState.customerInfo = {
+                            name: document.getElementById('customer-name').value,
+                            phone: document.getElementById('customer-phone').value,
+                            address: document.getElementById('customer-address').value,
+                            landmark: document.getElementById('customer-landmark').value,
+                            location: appState.customerInfo?.location || { lat: 17.32700098801938, lng: 76.82999931487766 }
+                        };
+                    });
+                } else if (serviceType === 'dinein') {
+                    optionsContainer.innerHTML = `
+                        <div class="mt-6 space-y-4">
+                            <h4 class="text-lg font-semibold">Select a Table:</h4>
+                            <div id="table-grid" class="grid grid-cols-4 gap-4"></div>
+                        </div>
+                    `;
+                    renderTableButtons();
+                }
+                
+                document.querySelectorAll('.service-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`service-${serviceType}-btn`).classList.add('active');
+            };
+
+
+            const renderTableButtons = () => {
+                const tableGrid = document.getElementById('table-grid');
+                if (!tableGrid) return;
+                tableGrid.innerHTML = '';
+                for (let i = 1; i <= 7; i++) {
+                    const tableBtn = document.createElement('button');
+                    tableBtn.textContent = `Table ${i}`;
+                    tableBtn.className = "bg-gray-200 text-gray-800 p-3 rounded-lg font-semibold hover:bg-gray-300 transition";
+                    tableBtn.dataset.tableNumber = i;
+                    tableBtn.addEventListener('click', () => {
+                        document.querySelectorAll('#table-grid button').forEach(btn => btn.classList.remove('bg-red-500', 'text-white'));
+                        tableBtn.classList.add('bg-red-500', 'text-white');
+                        appState.tableNumber = i;
+                    });
+                    tableGrid.appendChild(tableBtn);
+                }
+            };
+            
+            // =================================================================
+            // AUTHENTICATION LOGIC
+            // =================================================================
+            const handleLogin = (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const user = appState.users[username];
+
+                if (user && user.password === password) {
+                    setLoggedInUser(username, user.role);
+                    hideLoginModal();
+                    if(appState.previousView === 'cart') {
+                      renderView('cart');
+                    } else if (user.role === 'admin') {
+                      window.location.href = 'admin.html';
+                    } else {
+                      renderView('customer-website');
+                    }
+                    showMessageModal('Login Successful', `Welcome, ${user.role}!`);
+                } else {
+                    showMessageModal('Login Failed', 'Invalid username or password.');
+                }
+            };
+
+            const handleSignup = (e) => {
+                e.preventDefault();
+                const username = document.getElementById('signup-username').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+                const uniqueCode = document.getElementById('signup-code').value;
+
+                if (password !== confirmPassword) {
+                    showMessageModal('Signup Failed', 'Passwords do not match.');
+                    return;
+                }
+
+                if (appState.users[username]) {
+                    showMessageModal('Signup Failed', 'Username already exists.');
+                    return;
+                }
+                
+                let userRole = 'customer';
+                if (uniqueCode === appState.adminCode) {
+                    userRole = 'admin';
+                } else if (uniqueCode === appState.deliveryCode) {
+                    userRole = 'delivery';
+                    appState.deliveryPartners.push(username);
+                } else if (uniqueCode) {
+                    showMessageModal('Signup Failed', 'Invalid unique code.');
+                    return;
+                }
+
+                appState.users[username] = { password, role: userRole };
+                saveAppState();
+                showMessageModal('Success!', 'Account created successfully. You can now log in.');
+                loginContainer.classList.remove('right-panel-active');
+            };
+
+            // =================================================================
+            // DATA MANAGEMENT & RENDERING FUNCTIONS (Not in customer view, but needed for state)
+            // =================================================================
+            const renderMenuItems = () => {
+                const menuGrid = document.getElementById('menu-grid');
+                if (!menuGrid) return;
+                
+                const categoryButtons = document.querySelectorAll('.menu-category-btn');
+                categoryButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        categoryButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        const categoryId = btn.dataset.categoryId;
+                        filterAndRenderMenu(categoryId);
+                    });
+                });
+
+                filterAndRenderMenu('all');
+            };
+
+            const filterAndRenderMenu = (categoryId) => {
+                const menuGrid = document.getElementById('menu-grid');
+                if (!menuGrid) return;
+                
+                let itemsToRender = appState.menuItems;
+                if (categoryId !== 'all') {
+                    itemsToRender = appState.menuItems.filter(item => item.categoryId === categoryId);
+                }
+                
+                menuGrid.innerHTML = itemsToRender.map(item => `
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <img src="${item.image}" alt="${item.name}" class="w-full menu-card-image" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-4 text-red-600">${item.name}</h3>
+                            <div class="space-y-3 text-gray-700">
+                                <div class="flex justify-between items-center">
+                                    <span>Price - ₹${item.price}</span>
+                                    <button class="add-to-cart-btn bg-red-500 text-white px-3 py-1 rounded-full text-sm" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            const addToCart = (id, name, price) => {
+                if(!appState.loggedInUser) {
+                    appState.previousView = 'customer-website';
+                    showLoginModal();
+                    return;
+                }
+                const existingItem = appState.cart.find(item => item.id === id);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    appState.cart.push({ id, name, price, quantity: 1 });
+                }
+                saveAppState();
+                
+                const cartPopup = document.getElementById('cart-popup');
+                const popupText = document.getElementById('popup-text');
+                popupText.textContent = `${name} added to cart!`;
+                cartPopup.classList.remove('translate-y-full', 'opacity-0');
+                cartPopup.classList.add('-translate-y-4');
+                clearTimeout(cartPopup.timeout);
+                cartPopup.timeout = setTimeout(() => {
+                    cartPopup.classList.add('translate-y-full', 'opacity-0');
+                    cartPopup.classList.remove('-translate-y-4');
+                }, 3000);
+            };
+
+            const handleCheckout = () => {
+                if (appState.cart.length === 0) {
+                    showMessageModal('Empty Cart', 'Please add items to your cart before checking out.');
+                    return;
+                }
+                
+                if (!appState.loggedInUser) {
+                    appState.previousView = 'cart';
+                    showLoginModal();
+                    return;
+                }
+                
+                const serviceType = appState.serviceType;
+                
+                if (!serviceType) {
+                    showMessageModal('Service Required', 'Please select a service type before checking out.');
+                    return;
+                }
+                
+                let orderDetails = {};
+                let summaryDetailsHtml = '';
+                let confirmationMessage = '';
+                
+                const customerName = document.getElementById('customer-name')?.value || 'N/A';
+                const customerPhone = document.getElementById('customer-phone')?.value || 'N/A';
+                const customerAddress = document.getElementById('customer-address')?.value || 'N/A';
+                const customerLandmark = document.getElementById('customer-landmark')?.value || 'N/A';
+                
+                if (serviceType === 'delivery') {
+                    if (!customerName || !customerPhone || !customerAddress) {
+                        showMessageModal('Details Required', 'Please fill in all delivery details.');
+                        return;
+                    }
+                    const orderCode = `BnM-${Math.floor(1000 + Math.random() * 9000)}`;
+                    orderDetails = {
+                        id: `order-${Date.now()}`,
+                        code: orderCode,
+                        customer: appState.loggedInUser.username,
+                        items: appState.cart,
+                        service: 'Delivery',
+                        status: 'Pending',
+                        timestamp: new Date().toLocaleTimeString(),
+                        deliveryInfo: { name: customerName, phone: customerPhone, address: customerAddress, landmark: customerLandmark }
+                    };
+                    confirmationMessage = 'Thank you! We have received your order. 😊';
+                    summaryDetailsHtml = `
+                        <p><strong>Order Code:</strong> <span class="font-bold">${orderCode}</span></p>
+                        <p><strong>Service:</strong> Delivery</p>
+                        <h4 class="font-semibold mt-4">Delivery Details:</h4>
+                        <p><strong>Name:</strong> ${customerName}</p>
+                        <p><strong>Phone:</strong> ${customerPhone}</p>
+                        <p><strong>Address:</strong> ${customerAddress}, ${customerLandmark}</p>
+                    `;
+                } else if (serviceType === 'takeaway') {
+                    const orderCode = `BnM-${Math.floor(1000 + Math.random() * 9000)}`;
+                    orderDetails = {
+                        id: `order-${Date.now()}`,
+                        code: orderCode,
+                        customer: appState.loggedInUser.username,
+                        items: appState.cart,
+                        service: 'Take Away',
+                        status: 'Pending',
+                        timestamp: new Date().toLocaleTimeString()
+                    };
                     confirmationMessage = 'Thank you for your order! It will be ready for pickup shortly. 😊';
                     summaryDetailsHtml = `
                         <p><strong>Order Code:</strong> <span class="font-bold">${orderCode}</span></p>
@@ -1502,104 +1749,7 @@
                     renderDeliveryOrders();
                 }
             };
-
-            // Renders orders for the admin view
-            const renderAdminOrders = () => {
-                const ordersList = document.getElementById('admin-orders-list');
-                if (!ordersList) return;
-
-                if (appState.orders.length === 0) {
-                    ordersList.innerHTML = '<p class="text-gray-500">No new orders yet.</p>';
-                    return;
-                }
-
-                ordersList.innerHTML = appState.orders.map(order => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-semibold text-lg">Order ID: ${order.id}</p>
-                        <p><strong>Customer:</strong> ${order.customer}</p>
-                        <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
-                        ${order.code ? `<p><strong>Code:</strong> <span class="font-bold">${order.code}</span></p>` : ''}
-                        ${order.table ? `<p><strong>Table:</strong> <span class="font-bold">${order.table}</span></p>` : ''}
-                        ${order.deliveryInfo ? `
-                            <h4 class="font-semibold mt-4">Delivery Info:</h4>
-                            <p><strong>Name:</strong> ${order.deliveryInfo.name}</p>
-                            <p><strong>Phone:</strong> ${order.deliveryInfo.phone}</p>
-                            <p><strong>Address:</strong> ${order.deliveryInfo.address}, ${order.deliveryInfo.landmark}</p>
-                            <p><strong>Location Pin:</strong> ${order.deliveryInfo.location}</p>
-                        ` : ''}
-                        <div class="mt-2 pt-2 border-t border-gray-200">
-                            <p class="font-semibold">Items:</p>
-                            <ul class="list-disc list-inside">
-                                ${order.items.map(i => `<li>${i.name} (x${i.quantity}) - ₹${i.price * i.quantity}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-                            <p class="font-bold text-lg">Status: <span class="text-blue-500">${order.status}</span></p>
-                            <select data-id="${order.id}" class="status-select bg-white border border-gray-300 rounded-md py-1 px-2">
-                                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-                                <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                                <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                            </select>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.status-select').forEach(select => {
-                    select.addEventListener('change', (e) => handleOrderAction(e.target.value)(e));
-                });
-            };
-
-            // Renders orders for the delivery partner view
-            const renderDeliveryOrders = () => {
-                const ordersList = document.getElementById('delivery-orders-list');
-                if (!ordersList) return;
-
-                const pendingOrders = appState.orders.filter(order => order.status !== 'Completed' && (order.service === 'Delivery' || order.service === 'Take Away'));
-
-                if (pendingOrders.length === 0) {
-                    ordersList.innerHTML = '<p class="text-gray-500">No pending orders to deliver or for takeaway.</p>';
-                    return;
-                }
-
-                ordersList.innerHTML = pendingOrders.map(order => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-semibold text-lg">Order ID: ${order.id}</p>
-                        <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
-                        <p><strong>Code:</strong> <span class="font-bold">${order.code}</span></p>
-                        <p><strong>Items:</strong> ${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</p>
-                        <div class="mt-4 space-x-2">
-                            <button data-id="${order.id}" class="accept-order-btn bg-green-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-600 transition">Accept</button>
-                            <button data-id="${order.id}" class="deliver-order-btn bg-blue-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-600 transition">Mark Completed</button>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.accept-order-btn').forEach(button => {
-                    button.addEventListener('click', handleOrderAction('Accepted'));
-                });
-                document.querySelectorAll('.deliver-order-btn').forEach(button => {
-                    button.addEventListener('click', handleOrderAction('Completed'));
-                });
-            };
-
-            // Handles updating order status
-            const handleOrderAction = (newStatus) => (e) => {
-                const orderId = e.currentTarget.dataset.id;
-                const order = appState.orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = newStatus;
-                    saveAppState();
-                    renderDeliveryOrders();
-                    showMessageModal('Success', `Order ${orderId} has been marked as ${newStatus}.`);
-                }
-            };
-
-            // =================================================================
-            // INITIALIZATION AND EVENT LISTENERS
-            // =================================================================
-
-            // Event delegation for dynamically added buttons
+            
             document.body.addEventListener('click', (e) => {
                 if (e.target.classList.contains('add-to-cart-btn')) {
                     const { id, name, price } = e.target.dataset;
@@ -1607,8 +1757,7 @@
                 }
             });
 
-            // Navigation event listeners
-            loginBtn.addEventListener('click', () => renderView('login'));
+            loginBtn.addEventListener('click', showLoginModal);
             logoutBtn.addEventListener('click', logout);
             changePasswordBtn.addEventListener('click', () => {
                 passwordModal.classList.remove('hidden');
@@ -1625,7 +1774,12 @@
                 if (appState.cart.length === 0) {
                     showMessageModal('Cart Empty', 'Your cart is empty. Please add items from the menu first!');
                 } else {
-                    renderView('cart');
+                    if (!appState.loggedInUser) {
+                        appState.previousView = 'cart';
+                        showLoginModal();
+                    } else {
+                        renderView('cart');
+                    }
                 }
             });
             
@@ -1633,12 +1787,30 @@
                 e.preventDefault();
                 renderView('customer-website');
             });
+            
+            loginForm.addEventListener('submit', handleLogin);
+            signupForm.addEventListener('submit', handleSignup);
+            
+            document.addEventListener('click', (e) => {
+                const signUpButton = e.target.closest('#signUp');
+                const signInButton = e.target.closest('#signIn');
 
-            // Initial application setup
+                if (signUpButton && loginContainer) {
+                    loginContainer.classList.add("right-panel-active");
+                }
+                if (signInButton && loginContainer) {
+                    loginContainer.classList.remove("right-panel-active");
+                }
+            });
+            
             loadAppState();
             updateUIForUser();
+            if (!appState.loggedInUser) {
+                showLoginModal();
+            }
         });
     </script>
 </body>
 
 </html>
+�
