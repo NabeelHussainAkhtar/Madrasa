@@ -439,8 +439,9 @@
             // Handles mobile menu toggle
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('mobile-menu-open');
-                mobileMenuButton.querySelector('i').classList.toggle('fa-bars');
-                mobileMenuButton.querySelector('i').classList.toggle('fa-times');
+                const icon = mobileMenuButton.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
             });
 
             // Saves the entire application state to localStorage
