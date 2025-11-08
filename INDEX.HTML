@@ -178,6 +178,10 @@ Updates:
         place-items:center; 
         margin-inline-start:.6rem
     }
+    
+    /* Ensure brand title font switches properly */
+    [dir="ltr"] #brandTitle { font-family: 'Poppins', sans-serif; }
+    [dir="rtl"] #brandTitle { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif; }
 
   </style>
 </head>
@@ -194,8 +198,9 @@ Updates:
           </div>
         </div>
         <div class="ms-2">
-          <div style="font-size:18px; line-height:1">دارالتعلیم والتربیہ</div>
-          <small style="opacity:.9; font-size:12px">Darut Taleem Wat Tarbiyah</small>
+          <!-- Added IDs for i18n -->
+          <div id="brandTitle" style="font-size:18px; line-height:1">دارالتعلیم والتربیہ</div>
+          <small id="brandSubtitle" style="opacity:.9; font-size:12px">Darut Taleem Wat Tarbiyah</small>
         </div>
       </a>
 
@@ -205,11 +210,13 @@ Updates:
 
       <div class="collapse navbar-collapse" id="navLinks">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#home" data-link>صفحہ اول</a></li>
-          <li class="nav-item"><a class="nav-link" href="#about" data-link>ہمارے بارے میں</a></li>
-          <li class="nav-item"><a class="nav-link" href="#courses" data-link>کورسز</a></li>
-          <li class="nav-item"><a class="nav-link" href="#gallery" data-link>گیلری</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact" data-link>رابطہ کریں</a></li>
+          <!-- Added IDs for i18n -->
+          <li class="nav-item"><a class="nav-link" href="#home" data-link id="navHome">صفحہ اول</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about" data-link id="navAbout">ہمارے بارے میں</a></li>
+          <li class="nav-item"><a class="nav-link" href="#courses" data-link id="navCourses">کورسز</a></li>
+          <li class="nav-item"><a class="nav-link" href="#gallery" data-link id="navGallery">گیلری</a></li>
+          <li class="nav-item"><a class="nav-link" href="#library" data-link id="navLibrary">کتب خانہ</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact" data-link id="navContact">رابطہ کریں</a></li>
           <li class="nav-item"><a class="nav-link btn btn-sm btn-light text-dark ms-2" href="#admin" id="openAdmin">ایڈمن</a></li>
           <li class="nav-item d-flex align-items-center ms-2">
             <select id="langToggle" class="form-select form-select-sm" style="width:auto">
@@ -287,6 +294,15 @@ Updates:
         <div id="galleryGrid" class="gallery-grid">
           <!-- images injected here -->
         </div>
+      </section>
+
+      <!-- Library Section -->
+      <section id="library" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="libraryHeading">کتب خانہ</h2>
+        </div>
+        <iframe id="libraryFrame" src="http://darululoom-deoband.com/books/" style="width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 8px;" title="Online Library"></iframe>
+        <small class="d-block mt-2 text-muted" id="libraryNote">نوٹ: کتب خانہ کا مواد ایک بیرونی ویب سائٹ سے ہے اور اس کا ترجمہ نہیں کیا جا سکتا۔</small>
       </section>
 
       <!-- Contact -->
@@ -462,6 +478,15 @@ Updates:
     // ----------------- i18n content -----------------
     const i18n = {
       ur: {
+        brandTitle: 'دارالتعلیم والتربیہ',
+        brandSubtitle: 'Darut Taleem Wat Tarbiyah',
+        navHome: 'صفحہ اول',
+        navAbout: 'ہمارے بارے میں',
+        navCourses: 'کورسز',
+        navGallery: 'گیلری',
+        navLibrary: 'کتب خانہ',
+        navContact: 'رابطہ کریں',
+        navAdmin: 'ایڈمن',
         homeTitle: 'دارالتعلیم والتربیہ میں خوش آمدید',
         homeSubtitle: 'تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول',
         aboutHeading: 'ہمارے بارے میں',
@@ -475,6 +500,8 @@ Updates:
         lblContactEmail: 'ای میل:',
         lblMap: 'نقشہ:',
         linkMap: 'گوگل میپس پر دیکھیں',
+        libraryHeading: 'کتب خانہ',
+        libraryNote: 'نوٹ: کتب خانہ کا مواد ایک بیرونی ویب سائٹ سے ہے اور اس کا ترجمہ نہیں کیا جا سکتا۔',
         contactFormNote: 'نوٹ: یہ ایک ڈیمو ہے۔ پیغامات کو ایڈمن پینل (لوکل اسٹوریج) میں محفوظ کیا جاتا ہے اور ای میل کے ذریعے نہیں بھیجا جاتا۔',
         donationBtnText: 'عطیہ',
         donationModalTitle: 'عطیہ',
@@ -485,6 +512,15 @@ Updates:
         adminLogo: 'لوگو'
       },
       en: {
+        brandTitle: 'Darut Taleem Wat Tarbiyah',
+        brandSubtitle: 'Knowledge and Upbringing',
+        navHome: 'Home',
+        navAbout: 'About Us',
+        navCourses: 'Courses',
+        navGallery: 'Gallery',
+        navLibrary: 'Library',
+        navContact: 'Contact Us',
+        navAdmin: 'Admin',
         homeTitle: 'Welcome to Darut Taleem Wat Tarbiyah',
         homeSubtitle: 'A nurturing place for knowledge & character',
         aboutHeading: 'About Us',
@@ -498,6 +534,8 @@ Updates:
         lblContactEmail: 'Email:',
         lblMap: 'Map:',
         linkMap: 'View on Google Maps',
+        libraryHeading: 'Library',
+        libraryNote: 'Note: The library content is from an external site and cannot be translated.',
         contactFormNote: 'Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.',
         donationBtnText: 'Donation',
         donationModalTitle: 'Donation',
@@ -858,12 +896,27 @@ Updates:
 
       // apply texts
       const t = i18n[lang]
+      
+      // Navbar
+      document.getElementById('brandTitle').textContent = t.brandTitle
+      document.getElementById('brandSubtitle').textContent = t.brandSubtitle
+      document.getElementById('navHome').textContent = t.navHome
+      document.getElementById('navAbout').textContent = t.navAbout
+      document.getElementById('navCourses').textContent = t.navCourses
+      document.getElementById('navGallery').textContent = t.navGallery
+      document.getElementById('navLibrary').textContent = t.navLibrary
+      document.getElementById('navContact').textContent = t.navContact
+      document.getElementById('openAdmin').textContent = t.navAdmin
+
+      // Page Content
       document.getElementById('heroTitle').textContent = t.homeTitle
       document.getElementById('heroSubtitle').textContent = t.homeSubtitle
       document.getElementById('aboutHeading').textContent = t.aboutHeading
       document.getElementById('aboutText').textContent = t.aboutText
       document.getElementById('coursesHeading').textContent = t.coursesHeading
       document.getElementById('galleryHeading').textContent = t.galleryHeading
+      document.getElementById('libraryHeading').textContent = t.libraryHeading
+      document.getElementById('libraryNote').textContent = t.libraryNote
       document.getElementById('contactHeading').textContent = t.contactHeading
       document.getElementById('lblName').textContent = t.lblName
       document.getElementById('lblEmail').textContent = t.lblEmail
