@@ -4,7 +4,7 @@ SINGLE-FILE VERSION (Firebase + Netlify)
 Features:
 - Firebase Firestore (Database) for all content
 - Firebase Authentication (Admin Login)
-- Firebase Storage (File Uploads for Gallery/Logo)
+- Images stored as base64 data URLs in Firestore (100% Free)
 - Bilingual (Ur/En) and Dark Mode
 -->
 <!doctype html>
@@ -28,7 +28,7 @@ Features:
       --card-bg: #f8f9fa;
     }
     html[dir="rtl"] body{font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Noto Serif', serif;}
-    html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;}
     body{background:var(--bg); color:#222; transition: background-color 0.3s, color 0.3s;}
     .navbar{background:linear-gradient(90deg,var(--primary), rgba(0,122,61,.9));}
     .navbar .nav-link, .navbar-brand{color:#fff !important}
@@ -201,13 +201,12 @@ Features:
 
       <div class="collapse navbar-collapse" id="navLinks">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <!-- Added IDs for i18n -->
           <li class="nav-item"><a class="nav-link" href="#home" data-link id="navHome">صفحہ اول</a></li>
           <li class="nav-item"><a class="nav-link" href="#about" data-link id="navAbout">ہمارے بارے میں</a></li>
           <li class="nav-item"><a class="nav-link" href="#courses" data-link id="navCourses">کورسز</a></li>
-          <li class="nav-item"><a class="nav-link" href="#events" data-link id="navEvents">تقریبات</a></li> <!-- NEW -->
+          <li class="nav-item"><a class="nav-link" href="#events" data-link id="navEvents">تقریبات</a></li>
           <li class="nav-item"><a class="nav-link" href="#gallery" data-link id="navGallery">گیلری</a></li>
-          <li class="nav-item"><a class="nav-link" href="#customSections" data-link id="navSections">شعبے</a></li> <!-- NEW -->
+          <li class="nav-item"><a class="nav-link" href="#customSections" data-link id="navSections">شعبے</a></li>
           <li class="nav-item"><a class="nav-link" href="#library" data-link id="navLibrary">کتب خانہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#donation" data-link id="navDonation">عطیہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact" data-link id="navContact">رابطہ کریں</a></li>
@@ -267,7 +266,7 @@ Features:
         <div class="col-lg-3 col-md-4 col-6">
           <a href="#contact" class="quick-link-card" data-link>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16"><path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.622a2.89 2.89 0 0 1 0 4.134l-.622.622a2.89 2.89 0 0 1-4.134 0l-.622-.622a2.89 2.89 0 0 1 0-4.134zM8 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0v-1A.5.5 0 0 0 8 6m0 3a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-            <path d="m10.273 2.513-.921-.921a1.89 1.89 0 0 0-2.672 0l-.921.921c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707M11.39 8.243c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707l.921.921a1.89 1.89 0 0 1 0 2.672l-.921.921c-.24-.18-.48-.4-.707-.658a4.6 4.6 0 0 0-.658-.707c-.23.204-.48.418-.707.658-.258-.226-.48.46-.707.707l-.921-.921a1.89 1.89 0 0 1 0-2.672l.921-.921zm-6.622 0-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707M4.6 2.513c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707l-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921z"/></svg>
+            <path d="m10.273 2.513-.921-.921a1.89 1.89 0 0 0-2.672 0l-.921.921c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707M11.39 8.243c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707l.921.921a1.89 1.89 0 0 1 0 2.672l-.921.921c-.24-.18-.48-.4-.707-.658a4.6 4.6 0 0 0-.658-.707c-.23.204-.48.418-.707.658-.258-.226-.48.46-.707.707l-.921-.921a1.89 1.89 0 0 1 0-2.672l.921-.921zm-6.622 0-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226-.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707M4.6 2.513c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707l-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226-.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921z"/></svg>
             <h5 id="qLinkFatwa">آن لائن فتویٰ</h5>
           </a>
         </div>
@@ -532,9 +531,9 @@ Features:
                   <button class="list-group-item list-group-item-action" data-panel="home">Homepage (Hero)</button>
                   <button class="list-group-item list-group-item-action" data-panel="about">About Us</button>
                   <button class="list-group-item list-group-item-action" data-panel="courses">Courses</button>
-                  <button class="list-group-item list-group-item-action" data-panel="events">Events</button> <!-- NEW -->
+                  <button class="list-group-item list-group-item-action" data-panel="events">Events</button>
                   <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
-                  <button class="list-group-item list-group-item-action" data-panel="sections">Custom Sections</button> <!-- NEW -->
+                  <button class="list-group-item list-group-item-action" data-panel="sections">Custom Sections</button>
                   <button class="list-group-item list-group-item-action" data-panel="logo">Logo</button>
                   <button class="list-group-item list-group-item-action" data-panel="donationSettings">Donation Settings</button>
                   <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
@@ -598,11 +597,7 @@ Features:
       getAuth, signInWithEmailAndPassword, 
       onAuthStateChanged, signOut 
     } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    // Import Storage (File Uploads)
-    import { 
-      getStorage, ref, uploadBytes, getDownloadURL, 
-      deleteObject 
-    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+    // *** We are NO LONGER importing Firebase Storage ***
 
     // YOUR FIREBASE CONFIG (from the code you provided)
     const firebaseConfig = {
@@ -622,10 +617,9 @@ Features:
     // Initialize Firebase Services
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const storage = getStorage(app);
+    // *** No need to initialize storage ***
 
-    // ----------------- i18n content (REDUCED) -----------------
-    // We removed fields that are now loaded from the database
+    // ----------------- i18n content -----------------
     const i18n = {
       ur: {
         brandTitle: 'دارالتعلیم والتربیہ',
@@ -633,21 +627,20 @@ Features:
         navHome: 'صفحہ اول',
         navAbout: 'ہمارے بارے میں',
         navCourses: 'کورسز',
-        navEvents: 'تقریبات', // NEW
+        navEvents: 'تقریبات',
         navGallery: 'گیلری',
-        navSections: 'شعبے', // NEW
+        navSections: 'شعبے',
         navLibrary: 'کتب خانہ',
         navDonation: 'عطیہ',
         navContact: 'رابطہ کریں',
         navAdmin: 'ایڈمن',
-        // homeTitle, homeSubtitle, aboutText removed
         qLinkDonation: 'آن لائن عطیہ',
         qLinkFatwa: 'آن لائن فتویٰ',
         qLinkBooks: 'کتب خانہ',
         qLinkGallery: 'گیلری',
         aboutHeading: 'ہمارے بارے میں',
         coursesHeading: 'کورسز',
-        eventsHeading: 'تقریبات', // NEW
+        eventsHeading: 'تقریبات',
         galleryHeading: 'گیلری',
         contactHeading: 'رابطہ کریں',
         lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات',
@@ -660,7 +653,7 @@ Features:
         libraryCardTitle: 'دارالعلوم دیوبند - آن لائن کتب',
         libraryCardText: 'درخواست کردہ کتب خانہ کو سیکورٹی پابندیوں کی وجہ سے براہ راست اس صفحہ پر نہیں دکھایا جا سکتا۔ آپ نیچے دیے گئے بٹن پر کلک کر کے مکمل کتب خانہ تک رسائی حاصل کر سکتے ہیں۔',
         libraryCardButton: 'کتب خانہ پر جائیں',
-        contactFormNote: 'نوٹ: پیغامات کو ایڈمن پینل میں محفوظ کیا جاتا ہے۔', // Updated note
+        contactFormNote: 'نوٹ: پیغامات کو ایڈمن پینل میں محفوظ کیا جاتا ہے۔',
         donationHeading: 'عطیہ فارم',
         lblDonationAmount: 'رقمِ عطیہ (ہندوستانی روپیے)',
         lblDonationType: 'عطیہ کی قسم',
@@ -690,21 +683,20 @@ Features:
         navHome: 'Home',
         navAbout: 'About Us',
         navCourses: 'Courses',
-        navEvents: 'Events', // NEW
+        navEvents: 'Events',
         navGallery: 'Gallery',
-        navSections: 'Sections', // NEW
+        navSections: 'Sections',
         navLibrary: 'Library',
         navDonation: 'Donation',
         navContact: 'Contact Us',
         navAdmin: 'Admin',
-        // homeTitle, homeSubtitle, aboutText removed
         qLinkDonation: 'Online Donation',
         qLinkFatwa: 'Online Fatwa',
         qLinkBooks: 'Library',
         qLinkGallery: 'Gallery',
         aboutHeading: 'About Us',
         coursesHeading: 'Courses',
-        eventsHeading: 'Events', // NEW
+        eventsHeading: 'Events',
         galleryHeading: 'Gallery',
         contactHeading: 'Contact Us',
         lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information',
@@ -717,7 +709,7 @@ Features:
         libraryCardTitle: 'Darul Uloom Deoband - Online Books',
         libraryCardText: 'The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.',
         libraryCardButton: 'Visit Library',
-        contactFormNote: 'Note: Messages are saved to the Admin Panel.', // Updated note
+        contactFormNote: 'Note: Messages are saved to the Admin Panel.',
         donationHeading: 'Donation Form',
         lblDonationAmount: 'Donation Amount (Indian Rupees)',
         lblDonationType: 'Donation Type',
@@ -743,6 +735,26 @@ Features:
       }
     };
 
+    // ----------------- NEW HELPER FUNCTION -----------------
+    /**
+     * Converts a File object to a base64 data URL.
+     * @param {File} file The file to convert.
+     * @returns {Promise<string>} A promise that resolves with the base64 string.
+     */
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        // Check file size (1 MiB limit for Firestore docs, base64 is ~33% larger)
+        if (file.size > 750 * 1024) { // ~750KB limit
+           reject(new Error('File is too large. Please use images under 750KB.'));
+           return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
     // ----------------- DOM helpers (unchanged) -----------------
     const setYear = ()=> document.getElementById('year').textContent = new Date().getFullYear()
     setYear()
@@ -766,18 +778,15 @@ Features:
         customToast.show()
     }
 
-    // ----------------- FIREBASE DATA RENDERING (NEW) -----------------
+    // ----------------- FIREBASE DATA RENDERING -----------------
     
-    /**
-     * Global state variables to hold dynamic content
-     */
     let homeData = {};
     let aboutData = {};
-    let eventsData = []; // NEW
-    let sectionsData = []; // NEW
-    let currentLang = 'ur'; // Keep track of current language
+    let eventsData = [];
+    let sectionsData = [];
+    let currentLang = 'ur'; 
 
-    // Render Logo (using a listener for real-time updates)
+    // Render Logo (using base64 string)
     function renderLogo() {
       const logoRef = doc(db, "siteConfig", "logo");
       const logoContainer = document.getElementById('navbarLogoContainer');
@@ -787,8 +796,8 @@ Features:
         </div>`;
 
       onSnapshot(logoRef, (doc) => {
-        if (doc.exists() && doc.data().url) {
-          logoContainer.innerHTML = `<img src="${doc.data().url}" alt="Logo" id="navbarLogo" style="margin-inline-start:.6rem">`;
+        if (doc.exists() && doc.data().logoData) {
+          logoContainer.innerHTML = `<img src="${doc.data().logoData}" alt="Logo" id="navbarLogo" style="margin-inline-start:.6rem">`;
         } else {
           logoContainer.innerHTML = fallbackLogo;
         }
@@ -799,51 +808,46 @@ Features:
     }
     renderLogo();
 
-    // Render Homepage Hero (using a listener for real-time updates)
+    // Render Homepage Hero
     function renderHomepage() {
       const heroTitleEl = document.getElementById('heroTitle');
       const heroSubtitleEl = document.getElementById('heroSubtitle');
 
       onSnapshot(doc(db, "siteConfig", "homepage"), (doc) => {
         if (doc.exists()) {
-          homeData = doc.data(); // Store data globally
-          applyLanguage(currentLang); // Re-apply language
+          homeData = doc.data(); 
+          applyLanguage(currentLang); 
         } else {
-          // Set default text if document doesn't exist
           heroTitleEl.textContent = "Welcome";
           heroSubtitleEl.textContent = "Please set homepage text in admin panel";
         }
-      }, (error) => {
-        console.error("Error fetching homepage data: ", error);
-      });
+      }, (error) => { console.error("Error fetching homepage data: ", error); });
     }
     renderHomepage();
 
-    // Render About Us (using a listener for real-time updates)
+    // Render About Us (with base64 image)
     function renderAbout() {
       const aboutTextEl = document.getElementById('aboutText');
       const aboutImageEl = document.getElementById('aboutImage');
 
       onSnapshot(doc(db, "siteConfig", "about"), (doc) => {
         if (doc.exists()) {
-          aboutData = doc.data(); // Store data globally
-          if (aboutData.imageUrl) {
-            aboutImageEl.src = aboutData.imageUrl;
+          aboutData = doc.data(); 
+          if (aboutData.imageData) { // Use imageData field
+            aboutImageEl.src = aboutData.imageData;
           }
-          applyLanguage(currentLang); // Re-apply language
+          applyLanguage(currentLang); 
         } else {
           aboutTextEl.textContent = "Please set about text in admin panel";
         }
-      }, (error) => {
-        console.error("Error fetching about data: ", error);
-      });
+      }, (error) => { console.error("Error fetching about data: ", error); });
     }
     renderAbout();
 
-    // Render announcements (using a listener for real-time updates)
+    // Render announcements (real-time)
     function renderAnnouncements(){
       const annRef = collection(db, "announcements");
-      const q = query(annRef); // You could add orderBy here if you add a timestamp field
+      const q = query(annRef, orderBy("createdAt", "desc"));
       
       onSnapshot(q, (snapshot) => {
         const anns = [];
@@ -853,7 +857,7 @@ Features:
         if(anns.length === 0){ bar.textContent = 'Welcome' ; return }
 
         const text = anns.map(a=>a.text).join('   •   ');
-        bar.textContent = text + '   •   ' + text + '   •   ' + text; // Repeat for longer scroll
+        bar.textContent = text + '   •   ' + text + '   •   ' + text;
       }, (error) => {
         console.error("Error fetching announcements: ", error);
         document.getElementById('announcementContent').textContent = "Error loading announcements.";
@@ -869,7 +873,7 @@ Features:
       
       try {
         const snapshot = await getDocs(collection(db, "courses"));
-        container.innerHTML = ''; // Clear loading text
+        container.innerHTML = ''; 
         
         if (snapshot.empty) {
           container.innerHTML = '<p>No courses listed yet.</p>';
@@ -897,7 +901,7 @@ Features:
     }
     renderCourses();
 
-    // Render Events (using a listener for real-time updates)
+    // Render Events (real-time)
     function renderEvents() {
       const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
 
@@ -941,7 +945,7 @@ Features:
         snapshot.forEach(doc => {
           const img = doc.data();
           const imgEl = document.createElement('img');
-          imgEl.src = img.url; // We will store the URL, not the data
+          imgEl.src = img.imageData; // Use imageData field
           imgEl.alt = img.name || 'Gallery';
           grid.appendChild(imgEl);
         });
@@ -952,7 +956,7 @@ Features:
     }
     renderGallery();
 
-    // Render Custom Sections (using a listener for real-time updates)
+    // Render Custom Sections (real-time)
     function renderCustomSections() {
       const q = query(collection(db, "customSections"), orderBy("createdAt", "desc"));
 
@@ -1009,7 +1013,7 @@ Features:
       }
     });
 
-    // ----------------- Donation Form Logic (unchanged form, NEW submit) -----------------
+    // ----------------- Donation Form Logic -----------------
     const donationTypeSelect = document.getElementById('donationType');
     const otherDonationTypeContainer = document.getElementById('otherDonationTypeContainer');
     
@@ -1039,13 +1043,10 @@ Features:
       };
       
       try {
-        // Save donation request to Firestore
         await addDoc(collection(db, "donations"), donation);
         
-        // Show payment info
         document.getElementById('donationPaymentInfo').style.display = 'block';
         showToast('Form submitted. Please complete the payment.', 'success');
-        // We don't reset the form here, so user can see details
         
       } catch (error) {
         console.error("Error saving donation: ", error);
@@ -1055,7 +1056,7 @@ Features:
       }
     });
 
-    // ----------------- Admin interactions (NEW) -----------------
+    // ----------------- Admin interactions (Base64) -----------------
     const adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
     document.getElementById('openAdmin').addEventListener('click',()=>{ adminModal.show() });
 
@@ -1067,7 +1068,6 @@ Features:
       
       try {
         await signInWithEmailAndPassword(auth, email, pass);
-        // Success! The onAuthStateChanged listener will handle showing the panel.
         showToast('Login successful!', 'success');
       } catch (error) {
         console.error("Login failed:", error.message);
@@ -1081,15 +1081,13 @@ Features:
       showToast('Logged out', 'success');
     });
 
-    // Auth State Listener (handles showing/hiding admin panel)
+    // Auth State Listener
     onAuthStateChanged(auth, user => {
       if (user) {
-        // User is LOGGED IN
         document.getElementById('adminLoginView').style.display = 'none';
         document.getElementById('adminPanelView').style.display = 'block';
-        loadAdminPanel('ann'); // Load default panel
+        loadAdminPanel('ann'); 
       } else {
-        // User is LOGGED OUT
         document.getElementById('adminLoginView').style.display = 'block';
         document.getElementById('adminPanelView').style.display = 'none';
       }
@@ -1103,7 +1101,6 @@ Features:
       const content = document.getElementById('panelContent');
       content.innerHTML = '<h5>Loading...</h5>';
       
-      // Update active button state
       document.querySelectorAll('[data-panel]').forEach(b => {
         b.classList.toggle('active', b.dataset.panel === panel);
       });
@@ -1127,10 +1124,7 @@ Features:
             await addDoc(collection(db, "announcements"), { text: text, createdAt: new Date() });
             showToast('Announcement added', 'success');
             this.reset();
-            // The onSnapshot listener (renderAnnouncements) will update the list automatically
-          } catch(error) {
-            showToast(error.message, 'danger');
-          }
+          } catch(error) { showToast(error.message, 'danger'); }
         });
 
         const listDiv = document.getElementById('annsList');
@@ -1139,12 +1133,12 @@ Features:
           listDiv.innerHTML = '';
           if (snapshot.empty) listDiv.innerHTML = '<p>No announcements yet.</p>';
           
-          snapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+          snapshot.forEach(snapshotDoc => {
             const a = snapshotDoc.data();
             const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `
               <div class="d-flex justify-content-between align-items-center">
                 <div>${a.text}</div>
-                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div> <!-- FIX: Use snapshotDoc.id -->
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
               </div>
             `;
             listDiv.appendChild(el);
@@ -1153,11 +1147,9 @@ Features:
               const id = e.target.dataset.id;
               if (confirm('Are you sure you want to delete this?')) {
                 try {
-                  await deleteDoc(doc(db, "announcements", id)); // <-- FIX: This 'doc' (the function) is now safe
+                  await deleteDoc(doc(db, "announcements", id));
                   showToast('Deleted', 'success');
-                } catch(error) {
-                  showToast(error.message, 'danger');
-                }
+                } catch(error) { showToast(error.message, 'danger'); }
               }
             });
           });
@@ -1190,7 +1182,6 @@ Features:
           </form>
         `;
 
-        // Load existing data
         const docRef = doc(db, "siteConfig", "homepage");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -1210,16 +1201,13 @@ Features:
             heroSubtitleEn: document.getElementById('heroSubtitleEn').value
           };
           try {
-            await setDoc(docRef, data); // Use setDoc to overwrite
+            await setDoc(docRef, data);
             showToast('Homepage updated!', 'success');
-            // Data will update automatically via onSnapshot
-          } catch(error) {
-            showToast(error.message, 'danger');
-          }
+          } catch(error) { showToast(error.message, 'danger'); }
         });
       }
 
-      // --- About Us Panel ---
+      // --- About Us Panel (Base64) ---
       if(panel === 'about'){
         content.innerHTML = `
           <h5>Edit About Us</h5>
@@ -1233,36 +1221,51 @@ Features:
               <textarea id="aboutTextEn" class="form-control" rows="5"></textarea>
             </div>
             <div class="mb-2">
-              <label class="form-label">Image URL</label>
-              <input id="aboutImageUrl" class="form-control">
+              <label class="form-label">Upload Image (Replaces old one)</label>
+              <input id="aboutImageFile" type="file" accept="image/*" class="form-control">
+              <small>Max 750KB. Leave blank to keep current image.</small>
             </div>
             <button class="btn btn-success btn-sm">Save About Us</button>
           </form>
         `;
 
-        // Load existing data
         const docRef = doc(db, "siteConfig", "about");
         const docSnap = await getDoc(docRef);
+        let existingImageData = '';
         if (docSnap.exists()) {
           const data = docSnap.data();
           document.getElementById('aboutTextUr').value = data.aboutTextUr || '';
           document.getElementById('aboutTextEn').value = data.aboutTextEn || '';
-          document.getElementById('aboutImageUrl').value = data.imageUrl || '';
+          existingImageData = data.imageData || '';
         }
 
         document.getElementById('aboutForm').addEventListener('submit', async function(e){
           e.preventDefault();
-          const data = {
-            aboutTextUr: document.getElementById('aboutTextUr').value,
-            aboutTextEn: document.getElementById('aboutTextEn').value,
-            imageUrl: document.getElementById('aboutImageUrl').value
-          };
+          const submitButton = this.querySelector('button');
+          submitButton.disabled = true;
+          submitButton.innerText = "Saving...";
+          
+          const file = document.getElementById('aboutImageFile').files[0];
+          let newImageData = existingImageData;
+
           try {
-            await setDoc(docRef, data); // Use setDoc to overwrite
+            if (file) {
+              newImageData = await toBase64(file);
+            }
+            
+            const data = {
+              aboutTextUr: document.getElementById('aboutTextUr').value,
+              aboutTextEn: document.getElementById('aboutTextEn').value,
+              imageData: newImageData
+            };
+            
+            await setDoc(docRef, data);
             showToast('About Us updated!', 'success');
-            // Data will update automatically via onSnapshot
           } catch(error) {
             showToast(error.message, 'danger');
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerText = "Save About Us";
           }
         });
       }
@@ -1298,27 +1301,23 @@ Features:
           try {
             await addDoc(collection(db, "courses"), obj);
             showToast('Course added', 'success');
-            renderCourses(); // Re-render public list
-            loadAdminPanel('courses'); // Refresh admin list
-          } catch(error) {
-            showToast(error.message, 'danger');
-          }
+            renderCourses();
+            loadAdminPanel('courses');
+          } catch(error) { showToast(error.message, 'danger'); }
         });
 
         const out = document.getElementById('coursesListAdmin');
         const courseSnapshot = await getDocs(collection(db, "courses"));
-        
         if (courseSnapshot.empty) out.innerHTML = '<p>No courses yet.</p>';
-        
-        courseSnapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+        courseSnapshot.forEach(snapshotDoc => {
           const c = snapshotDoc.data();
           const el = document.createElement('div'); el.className='card mb-2 p-2';
-          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div></div>`; // FIX: Use snapshotDoc.id
+          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div></div>`;
           out.appendChild(el);
           el.querySelector('button').addEventListener('click', async (e)=>{
             const id = e.target.dataset.id;
             if (confirm('Are you sure you want to delete this?')) {
-              await deleteDoc(doc(db, "courses", id)); // <-- FIX: 'doc' function is safe
+              await deleteDoc(doc(db, "courses", id));
               renderCourses();
               loadAdminPanel('courses');
             }
@@ -1357,8 +1356,7 @@ Features:
               createdAt: new Date()
             });
             showToast('Event added!', 'success');
-            // renderEvents() and loadAdminPanel() will be called by onSnapshot
-            loadAdminPanel('events'); // Manual refresh for now
+            loadAdminPanel('events'); // Refresh
           } catch (error) {
             showToast(error.message, 'danger');
           } finally {
@@ -1372,7 +1370,7 @@ Features:
         onSnapshot(q, (snapshot) => {
           out.innerHTML = '';
           if (snapshot.empty) out.innerHTML = '<p>No events yet.</p>';
-          snapshot.forEach(snapshotDoc => { // <-- FIX
+          snapshot.forEach(snapshotDoc => {
             const e = snapshotDoc.data();
             const el = document.createElement('div');
             el.className = 'card mb-2 p-2';
@@ -1389,23 +1387,22 @@ Features:
             el.querySelector('button').addEventListener('click', async (btnEvt) => {
               const id = btnEvt.target.dataset.id;
               if (confirm('Are you sure you want to delete this event?')) {
-                await deleteDoc(doc(db, "events", id)); // <-- FIX
+                await deleteDoc(doc(db, "events", id));
                 showToast('Event deleted', 'success');
-                // List will update via onSnapshot
               }
             });
           });
         });
       }
 
-      // --- Gallery Panel ---
+      // --- Gallery Panel (Base64) ---
       if(panel === 'gallery'){
         content.innerHTML = `
           <h5>Gallery</h5>
           <form id="galleryForm" class="mb-3">
             <div class="mb-2"><input id="galleryFile" type="file" accept="image/*" class="form-control" required></div>
             <div class="mb-2"><input id="galleryName" class="form-control" placeholder="Image name (optional)"></div>
-            <button class="btn btn-success btn-sm" type="submit">Upload</button>
+            <button class="btn btn-success btn-sm" type="submit">Upload (Max 750KB)</button>
           </form>
           <div id="galleryAdminList" class="d-flex flex-wrap gap-2"></div>
         `;
@@ -1421,20 +1418,11 @@ Features:
           submitButton.innerText = "Uploading...";
 
           try {
-            const storagePath = `gallery/${Date.now()}_${file.name}`;
-            const storageRef = ref(storage, storagePath);
+            const base64Data = await toBase64(file);
             
-            // 1. Upload file
-            const uploadResult = await uploadBytes(storageRef, file);
-            
-            // 2. Get download URL
-            const downloadURL = await getDownloadURL(uploadResult.ref);
-            
-            // 3. Save URL to Firestore
             await addDoc(collection(db, "gallery"), {
               name: name || file.name,
-              url: downloadURL,
-              path: storagePath, // Store path for easy deletion
+              imageData: base64Data, // Save base64 string
               createdAt: new Date()
             });
             
@@ -1445,42 +1433,34 @@ Features:
             showToast(error.message, 'danger');
           } finally {
             submitButton.disabled = false;
-            submitButton.innerText = "Upload";
+            submitButton.innerText = "Upload (Max 750KB)";
           }
         });
 
         const out = document.getElementById('galleryAdminList');
         const gallerySnapshot = await getDocs(collection(db, "gallery"));
-        
         if (gallerySnapshot.empty) out.innerHTML = '<p>No images yet.</p>';
-
-        gallerySnapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+        gallerySnapshot.forEach(snapshotDoc => {
           const g = snapshotDoc.data();
           const el = document.createElement('div'); el.style.width='120px';
-          el.innerHTML = `<div style="width:120px"><img src="${g.url}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}" data-path="${g.path}">Del</button></div></div>`; // FIX: Use snapshotDoc.id
+          el.innerHTML = `<div style="width:120px"><img src="${g.imageData}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Del</button></div></div>`;
           out.appendChild(el);
           
           el.querySelector('button').addEventListener('click', async (e)=>{
             const id = e.target.dataset.id;
-            const path = e.target.dataset.path;
             if (confirm('Are you sure you want to delete this image?')) {
               try {
-                // 1. Delete file from Storage
-                if (path) await deleteObject(ref(storage, path));
-                // 2. Delete document from Firestore
-                await deleteDoc(doc(db, "gallery", id)); // <-- FIX: 'doc' function is safe
+                await deleteDoc(doc(db, "gallery", id));
                 showToast('Image deleted', 'success');
                 renderGallery();
                 loadAdminPanel('gallery');
-              } catch (error) {
-                showToast(error.message, 'danger');
-              }
+              } catch (error) { showToast(error.message, 'danger'); }
             }
           });
         });
       }
 
-      // --- Custom Sections Panel ---
+      // --- Custom Sections Panel (Base64) ---
       if (panel === 'sections') {
         content.innerHTML = `
           <h5>Custom Sections</h5>
@@ -1489,7 +1469,7 @@ Features:
             <div class="mb-2"><input id="sectionTitleEn" class="form-control" placeholder="Section Title (English)" required></div>
             <div class="mb-2"><textarea id="sectionTextUr" class="form-control" placeholder="Text (Urdu)" dir="rtl" rows="3"></textarea></div>
             <div class="mb-2"><textarea id="sectionTextEn" class="form-control" placeholder="Text (English)" rows="3"></textarea></div>
-            <div class="mb-2"><label class="form-label">Image (Optional)</label><input id="sectionFile" type="file" accept="image/*" class="form-control"></div>
+            <div class="mb-2"><label class="form-label">Image (Optional, Max 750KB)</label><input id="sectionFile" type="file" accept="image/*" class="form-control"></div>
             <button class="btn btn-success btn-sm" type="submit">Add Section</button>
           </form>
           <div id="sectionsAdminList"></div>
@@ -1502,26 +1482,19 @@ Features:
           submitButton.innerText = "Saving...";
           
           const file = document.getElementById('sectionFile').files[0];
-          let downloadURL = '';
-          let storagePath = '';
+          let base64Data = '';
 
           try {
-            // 1. Upload file if it exists
             if (file) {
-              storagePath = `sections/${Date.now()}_${file.name}`;
-              const storageRef = ref(storage, storagePath);
-              const uploadResult = await uploadBytes(storageRef, file);
-              downloadURL = await getDownloadURL(uploadResult.ref);
+              base64Data = await toBase64(file);
             }
 
-            // 2. Save data to Firestore
             await addDoc(collection(db, "customSections"), {
               titleUr: document.getElementById('sectionTitleUr').value,
               titleEn: document.getElementById('sectionTitleEn').value,
               textUr: document.getElementById('sectionTextUr').value,
               textEn: document.getElementById('sectionTextEn').value,
-              imageUrl: downloadURL,
-              imagePath: storagePath,
+              imageData: base64Data, // Save base64
               createdAt: new Date()
             });
             showToast('Section added!', 'success');
@@ -1539,39 +1512,35 @@ Features:
         onSnapshot(q, (snapshot) => {
           out.innerHTML = '';
           if (snapshot.empty) out.innerHTML = '<p>No sections yet.</p>';
-          snapshot.forEach(snapshotDoc => { // <-- FIX
+          snapshot.forEach(snapshotDoc => {
             const s = snapshotDoc.data();
             const el = document.createElement('div');
             el.className = 'card mb-2 p-2';
             el.innerHTML = `
               <div class="d-flex justify-content-between align-items-start">
                 <strong>${s.titleUr || s.titleEn}</strong>
-                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}" data-path="${s.imagePath || ''}">Delete</button>
+                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button>
               </div>`;
             out.appendChild(el);
             
             el.querySelector('button').addEventListener('click', async (btnEvt) => {
               const id = btnEvt.target.dataset.id;
-              const path = btnEvt.target.dataset.path;
               if (confirm('Are you sure you want to delete this section?')) {
                 try {
-                  if (path) await deleteObject(ref(storage, path));
-                  await deleteDoc(doc(db, "customSections", id)); // <-- FIX
+                  await deleteDoc(doc(db, "customSections", id));
                   showToast('Section deleted', 'success');
-                } catch (error) {
-                  showToast(error.message, 'danger');
-                }
+                } catch (error) { showToast(error.message, 'danger'); }
               }
             });
           });
         });
       }
 
-      // --- Logo Panel ---
+      // --- Logo Panel (Base64) ---
       if(panel === 'logo'){
         content.innerHTML = `
           <h5 id="adminLogoTitle">Logo</h5>
-          <p>Upload a logo to replace the default initial in the navbar. (Updates in real-time)</p>
+          <p>Upload a logo to replace the default initial in the navbar. (Max 750KB)</p>
           <div class="mb-3">
             <label class="form-label">Current Logo</label>
             <div id="adminLogoPreviewContainer">
@@ -1585,11 +1554,10 @@ Features:
           <button class="btn btn-outline-danger btn-sm" id="removeLogoButton">Remove Logo</button>
         `;
 
-        // Real-time preview for admin panel
         const logoPreviewContainer = document.getElementById('adminLogoPreviewContainer');
         onSnapshot(doc(db, "siteConfig", "logo"), (doc) => {
-          if (doc.exists() && doc.data().url) {
-            logoPreviewContainer.innerHTML = `<img src="${doc.data().url}" id="adminLogoPreview" alt="Logo">`;
+          if (doc.exists() && doc.data().logoData) {
+            logoPreviewContainer.innerHTML = `<img src="${doc.data().logoData}" id="adminLogoPreview" alt="Logo">`;
             document.getElementById('removeLogoButton').disabled = false;
           } else {
             logoPreviewContainer.innerHTML = `<span class="text-muted">No logo uploaded</span>`;
@@ -1607,15 +1575,10 @@ Features:
           submitButton.innerText = "Uploading...";
           
           try {
-            const storagePath = `site/logo_${Date.now()}`;
-            const storageRef = ref(storage, storagePath);
-            const uploadResult = await uploadBytes(storageRef, f);
-            const downloadURL = await getDownloadURL(uploadResult.ref);
+            const base64Data = await toBase64(f);
             
-            // Use setDoc to overwrite the single 'logo' document
             await setDoc(doc(db, "siteConfig", "logo"), {
-              url: downloadURL,
-              path: storagePath
+              logoData: base64Data
             });
             showToast('Logo updated!', 'success');
           } catch(error) {
@@ -1628,28 +1591,10 @@ Features:
 
         document.getElementById('removeLogoButton').addEventListener('click', async function(){
           if (!confirm('Are you sure you want to remove the logo?')) return;
-          
           try {
-            // 1. Get the document to find the file path
-            const logoDocRef = doc(db, "siteConfig", "logo");
-            const docSnap = await getDoc(logoDocRef);
-            
-            if (docSnap.exists()) {
-              const logoData = docSnap.data();
-              // 2. Delete file from Storage if path exists
-              if (logoData.path) {
-                await deleteObject(ref(storage, logoData.path));
-              }
-            }
-            
-            // 3. Delete the document from Firestore
-            await deleteDoc(logoDocRef); // <-- FIX: 'doc' function is safe
-            
+            await deleteDoc(doc(db, "siteConfig", "logo"));
             showToast('Logo removed', 'success');
-            // Real-time listener will update the preview
-          } catch(error) {
-            showToast(error.message, 'danger');
-          }
+          } catch(error) { showToast(error.message, 'danger'); }
         });
       }
       
@@ -1666,7 +1611,6 @@ Features:
           </form>
         `;
         
-        // Load existing data
         const docRef = doc(db, "siteConfig", "donations");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -1679,12 +1623,9 @@ Features:
             upiId: document.getElementById('upiId').value
           };
           try {
-            await setDoc(docRef, data); // Use setDoc to overwrite
+            await setDoc(docRef, data);
             showToast('Donation settings updated!', 'success');
-            // Data will update automatically via onSnapshot
-          } catch(error) {
-            showToast(error.message, 'danger');
-          }
+          } catch(error) { showToast(error.message, 'danger'); }
         });
       }
 
@@ -1695,7 +1636,7 @@ Features:
           <div id="msgsList"></div>
         `;
         const out = document.getElementById('msgsList');
-        const msgSnapshot = await getDocs(collection(db, "messages"));
+        const msgSnapshot = await getDocs(query(collection(db, "messages"), orderBy("createdAt", "desc")));
         if (msgSnapshot.empty) {
           out.innerHTML = '<p class="text-muted">No messages yet.</p>';
         }
@@ -1714,7 +1655,7 @@ Features:
           <div id="donationsList"></div>
         `;
         const out = document.getElementById('donationsList');
-        const donSnapshot = await getDocs(collection(db, "donations"));
+        const donSnapshot = await getDocs(query(collection(db, "donations"), orderBy("createdAt", "desc")));
         if (donSnapshot.empty) {
           out.innerHTML = '<p class="text-muted">No donation submissions yet.</p>';
         }
@@ -1743,7 +1684,7 @@ Features:
     const langSelect = document.getElementById('langToggle')
     
     function applyLanguage(lang){
-      currentLang = lang; // Store the current language
+      currentLang = lang;
       const root = document.documentElement
       if(lang === 'ur'){
         root.lang = 'ur'; root.dir = 'rtl'
@@ -1754,7 +1695,6 @@ Features:
       const t = i18n[lang]
       if (!t) return;
       
-      // Helper function
       const setText = (id, key) => {
         const el = document.getElementById(id);
         if (el) el.textContent = t[key];
@@ -1766,9 +1706,9 @@ Features:
       setText('navHome', 'navHome');
       setText('navAbout', 'navAbout');
       setText('navCourses', 'navCourses');
-      setText('navEvents', 'navEvents'); // NEW
+      setText('navEvents', 'navEvents');
       setText('navGallery', 'navGallery');
-      setText('navSections', 'navSections'); // NEW
+      setText('navSections', 'navSections');
       setText('navLibrary', 'navLibrary');
       setText('navDonation', 'navDonation');
       setText('navContact', 'navContact');
@@ -1817,23 +1757,29 @@ Features:
         const text = lang === 'ur' ? s.textUr : s.textEn;
         const el = document.createElement('div');
         el.className = 'row mb-4';
-        el.innerHTML = `
-          <div class="section-title mb-3">
-            <h2>${title}</h2>
-          </div>
-          ${s.imageUrl ? `
+        // Logic for image left/right or no image
+        if (s.imageData) {
+          el.innerHTML = `
+            <div class="section-title mb-3">
+              <h2>${title}</h2>
+            </div>
             <div class="col-lg-6">
               <p>${text}</p>
             </div>
             <div class="col-lg-6">
-              <img src="${s.imageUrl}" alt="${title}" class="img-fluid rounded">
+              <img src="${s.imageData}" alt="${title}" class="img-fluid rounded">
             </div>
-          ` : `
+          `;
+        } else {
+          el.innerHTML = `
+            <div class="section-title mb-3">
+              <h2>${title}</h2>
+            </div>
             <div class="col-lg-12">
               <p>${text}</p>
             </div>
-          `}
-        `;
+          `;
+        }
         sectionsList.appendChild(el);
       });
 
@@ -1844,7 +1790,7 @@ Features:
       setText('qLinkGallery', 'qLinkGallery');
       setText('aboutHeading', 'aboutHeading');
       setText('coursesHeading', 'coursesHeading');
-      setText('eventsHeading', 'eventsHeading'); // NEW
+      setText('eventsHeading', 'eventsHeading');
       setText('galleryHeading', 'galleryHeading');
       
       // Library Section
@@ -1905,6 +1851,17 @@ Features:
     // Smooth scroll for nav links
     document.querySelectorAll('[data-link]').forEach(a=> a.addEventListener('click', function(e){ e.preventDefault(); const id = this.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth'}) }))
 
+    // --- FIX for Modal Accessibility Warning ---
+    const adminModalEl = document.getElementById('adminModal');
+    const openAdminButton = document.getElementById('openAdmin');
+    if (adminModalEl) {
+      adminModalEl.addEventListener('hidden.bs.modal', () => {
+        if (openAdminButton) {
+          openAdminButton.focus();
+        }
+      });
+    }
+
     // ----------------- Dark Mode Toggle (unchanged) -----------------
     const darkModeToggle = document.getElementById('darkModeToggle');
     const sunIcon = darkModeToggle.querySelector('.bi-sun-fill');
@@ -1945,7 +1902,6 @@ Features:
     });
 
     // ----------------- Donation Modal Logic (UPDATED) -----------------
-    // These are now global so they can be updated by Firebase
     let upiId = '9058438854-2@okbizaxis'; // Default fallback
     let upiLink = '';
     let qrUrl = '';
@@ -1960,7 +1916,6 @@ Features:
       document.getElementById('upiIdInput').value = upiId;
     }
 
-    // New listener for donation settings
     function renderDonationSettings() {
       onSnapshot(doc(db, "siteConfig", "donations"), (doc) => {
         let newUpiId = '9058438854-2@okbizaxis'; // Default
@@ -1973,7 +1928,7 @@ Features:
         updateDonationLinks(upiId); // Use default if error
       });
     }
-    renderDonationSettings(); // Call it on load
+    renderDonationSettings();
 
     document.getElementById('copyUpiButton').addEventListener('click', function() {
       const upiInput = document.getElementById('upiIdInput');
