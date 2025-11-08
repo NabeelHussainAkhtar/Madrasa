@@ -80,8 +80,15 @@ Features:
     .admin-panel{min-height:60vh}
     @media(min-width:992px){ .hero{padding:100px 0} }
 
-    [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end; width: 100%;}
-    [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start; width: 100%;}
+    /* UPDATED HEADING ALIGNMENT RULES */
+    [dir="rtl"] .section-title {
+      width: 100%;
+      text-align: right;
+    }
+    [dir="ltr"] .section-title {
+      width: 100%;
+      text-align: left;
+    }
 
     /* Quick Links Grid */
     .quick-link-card {
