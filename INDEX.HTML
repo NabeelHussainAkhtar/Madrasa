@@ -205,7 +205,9 @@ Features:
           <li class="nav-item"><a class="nav-link" href="#home" data-link id="navHome">صفحہ اول</a></li>
           <li class="nav-item"><a class="nav-link" href="#about" data-link id="navAbout">ہمارے بارے میں</a></li>
           <li class="nav-item"><a class="nav-link" href="#courses" data-link id="navCourses">کورسز</a></li>
+          <li class="nav-item"><a class="nav-link" href="#events" data-link id="navEvents">تقریبات</a></li> <!-- NEW -->
           <li class="nav-item"><a class="nav-link" href="#gallery" data-link id="navGallery">گیلری</a></li>
+          <li class="nav-item"><a class="nav-link" href="#customSections" data-link id="navSections">شعبے</a></li> <!-- NEW -->
           <li class="nav-item"><a class="nav-link" href="#library" data-link id="navLibrary">کتب خانہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#donation" data-link id="navDonation">عطیہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact" data-link id="navContact">رابطہ کریں</a></li>
@@ -316,6 +318,17 @@ Features:
         </div>
       </section>
 
+      <!-- Events -->
+      <section id="events" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="eventsHeading">تقریبات</h2>
+        </div>
+        <div id="eventsList" class="row gy-4">
+          <!-- Events injected here from Firebase -->
+          <p>Loading events...</p>
+        </div>
+      </section>
+
       <!-- Gallery -->
       <section id="gallery" class="mb-5">
         <div class="section-title mb-3">
@@ -324,6 +337,14 @@ Features:
         <div id="galleryGrid" class="gallery-grid">
           <!-- images injected here from Firebase -->
           <p>Loading gallery...</p>
+        </div>
+      </section>
+
+      <!-- Custom Sections -->
+      <section id="customSections" class="mb-5">
+        <div id="customSectionsList" class="container">
+          <!-- Custom sections injected here -->
+          <p>Loading sections...</p>
         </div>
       </section>
 
@@ -511,7 +532,9 @@ Features:
                   <button class="list-group-item list-group-item-action" data-panel="home">Homepage (Hero)</button>
                   <button class="list-group-item list-group-item-action" data-panel="about">About Us</button>
                   <button class="list-group-item list-group-item-action" data-panel="courses">Courses</button>
+                  <button class="list-group-item list-group-item-action" data-panel="events">Events</button> <!-- NEW -->
                   <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
+                  <button class="list-group-item list-group-item-action" data-panel="sections">Custom Sections</button> <!-- NEW -->
                   <button class="list-group-item list-group-item-action" data-panel="logo">Logo</button>
                   <button class="list-group-item list-group-item-action" data-panel="donationSettings">Donation Settings</button>
                   <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
@@ -610,7 +633,9 @@ Features:
         navHome: 'صفحہ اول',
         navAbout: 'ہمارے بارے میں',
         navCourses: 'کورسز',
+        navEvents: 'تقریبات', // NEW
         navGallery: 'گیلری',
+        navSections: 'شعبے', // NEW
         navLibrary: 'کتب خانہ',
         navDonation: 'عطیہ',
         navContact: 'رابطہ کریں',
@@ -622,6 +647,7 @@ Features:
         qLinkGallery: 'گیلری',
         aboutHeading: 'ہمارے بارے میں',
         coursesHeading: 'کورسز',
+        eventsHeading: 'تقریبات', // NEW
         galleryHeading: 'گیلری',
         contactHeading: 'رابطہ کریں',
         lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات',
@@ -664,7 +690,9 @@ Features:
         navHome: 'Home',
         navAbout: 'About Us',
         navCourses: 'Courses',
+        navEvents: 'Events', // NEW
         navGallery: 'Gallery',
+        navSections: 'Sections', // NEW
         navLibrary: 'Library',
         navDonation: 'Donation',
         navContact: 'Contact Us',
@@ -676,6 +704,7 @@ Features:
         qLinkGallery: 'Gallery',
         aboutHeading: 'About Us',
         coursesHeading: 'Courses',
+        eventsHeading: 'Events', // NEW
         galleryHeading: 'Gallery',
         contactHeading: 'Contact Us',
         lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information',
@@ -744,6 +773,8 @@ Features:
      */
     let homeData = {};
     let aboutData = {};
+    let eventsData = []; // NEW
+    let sectionsData = []; // NEW
     let currentLang = 'ur'; // Keep track of current language
 
     // Render Logo (using a listener for real-time updates)
@@ -866,6 +897,33 @@ Features:
     }
     renderCourses();
 
+    // Render Events (using a listener for real-time updates)
+    function renderEvents() {
+      const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        const container = document.getElementById('eventsList');
+        container.innerHTML = '';
+        eventsData = []; // Clear cache
+
+        if (snapshot.empty) {
+          container.innerHTML = '<p>No events listed yet.</p>';
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          eventsData.push(doc.data()); // Cache data
+        });
+        
+        applyLanguage(currentLang); // Re-apply language to render
+        
+      }, (error) => {
+        console.error("Error fetching events: ", error);
+        document.getElementById('eventsList').innerHTML = '<p>Error loading events.</p>';
+      });
+    }
+    renderEvents();
+
     // Render gallery (fetch once)
     async function renderGallery(){
       const grid = document.getElementById('galleryGrid');
@@ -893,6 +951,33 @@ Features:
       }
     }
     renderGallery();
+
+    // Render Custom Sections (using a listener for real-time updates)
+    function renderCustomSections() {
+      const q = query(collection(db, "customSections"), orderBy("createdAt", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        const container = document.getElementById('customSectionsList');
+        container.innerHTML = '';
+        sectionsData = []; // Clear cache
+
+        if (snapshot.empty) {
+          container.innerHTML = '<p>No sections added yet.</p>';
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          sectionsData.push(doc.data()); // Cache data
+        });
+
+        applyLanguage(currentLang); // Re-apply language to render
+
+      }, (error) => {
+        console.error("Error fetching custom sections: ", error);
+        document.getElementById('customSectionsList').innerHTML = '<p>Error loading sections.</p>';
+      });
+    }
+    renderCustomSections();
 
     // Contact form submission
     document.getElementById('contactForm').addEventListener('submit', async function(e){
@@ -1052,12 +1137,14 @@ Features:
         const annRef = collection(db, "announcements");
         onSnapshot(annRef, (snapshot) => {
           listDiv.innerHTML = '';
-          snapshot.forEach(doc => {
-            const a = doc.data();
+          if (snapshot.empty) listDiv.innerHTML = '<p>No announcements yet.</p>';
+          
+          snapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+            const a = snapshotDoc.data();
             const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `
               <div class="d-flex justify-content-between align-items-center">
                 <div>${a.text}</div>
-                <div><button class="btn btn-sm btn-danger" data-id="${doc.id}">Delete</button></div>
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div> <!-- FIX: Use snapshotDoc.id -->
               </div>
             `;
             listDiv.appendChild(el);
@@ -1066,7 +1153,7 @@ Features:
               const id = e.target.dataset.id;
               if (confirm('Are you sure you want to delete this?')) {
                 try {
-                  await deleteDoc(doc(db, "announcements", id));
+                  await deleteDoc(doc(db, "announcements", id)); // <-- FIX: This 'doc' (the function) is now safe
                   showToast('Deleted', 'success');
                 } catch(error) {
                   showToast(error.message, 'danger');
@@ -1220,18 +1307,93 @@ Features:
 
         const out = document.getElementById('coursesListAdmin');
         const courseSnapshot = await getDocs(collection(db, "courses"));
-        courseSnapshot.forEach(doc => {
-          const c = doc.data();
+        
+        if (courseSnapshot.empty) out.innerHTML = '<p>No courses yet.</p>';
+        
+        courseSnapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+          const c = snapshotDoc.data();
           const el = document.createElement('div'); el.className='card mb-2 p-2';
-          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${doc.id}">Delete</button></div></div>`;
+          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div></div>`; // FIX: Use snapshotDoc.id
           out.appendChild(el);
           el.querySelector('button').addEventListener('click', async (e)=>{
             const id = e.target.dataset.id;
             if (confirm('Are you sure you want to delete this?')) {
-              await deleteDoc(doc(db, "courses", id));
+              await deleteDoc(doc(db, "courses", id)); // <-- FIX: 'doc' function is safe
               renderCourses();
               loadAdminPanel('courses');
             }
+          });
+        });
+      }
+
+      // --- Events Panel ---
+      if (panel === 'events') {
+        content.innerHTML = `
+          <h5>Events</h5>
+          <form id="eventForm" class="mb-3">
+            <div class="mb-2"><input id="eventTitleUr" class="form-control" placeholder="Event Title (Urdu)" dir="rtl" required></div>
+            <div class="mb-2"><input id="eventTitleEn" class="form-control" placeholder="Event Title (English)" required></div>
+            <div class="mb-2"><input id="eventDate" class="form-control" placeholder="Event Date (e.g., July 20, 2026)"></div>
+            <div class="mb-2"><textarea id="eventDescUr" class="form-control" placeholder="Description (Urdu)" dir="rtl" rows="3"></textarea></div>
+            <div class="mb-2"><textarea id="eventDescEn" class="form-control" placeholder="Description (English)" rows="3"></textarea></div>
+            <button class="btn btn-success btn-sm" type="submit">Add Event</button>
+          </form>
+          <div id="eventsAdminList"></div>
+        `;
+
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.disabled = true;
+          submitButton.innerText = "Saving...";
+          
+          try {
+            await addDoc(collection(db, "events"), {
+              titleUr: document.getElementById('eventTitleUr').value,
+              titleEn: document.getElementById('eventTitleEn').value,
+              date: document.getElementById('eventDate').value,
+              descUr: document.getElementById('eventDescUr').value,
+              descEn: document.getElementById('eventDescEn').value,
+              createdAt: new Date()
+            });
+            showToast('Event added!', 'success');
+            // renderEvents() and loadAdminPanel() will be called by onSnapshot
+            loadAdminPanel('events'); // Manual refresh for now
+          } catch (error) {
+            showToast(error.message, 'danger');
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerText = "Add Event";
+          }
+        });
+
+        const out = document.getElementById('eventsAdminList');
+        const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+          out.innerHTML = '';
+          if (snapshot.empty) out.innerHTML = '<p>No events yet.</p>';
+          snapshot.forEach(snapshotDoc => { // <-- FIX
+            const e = snapshotDoc.data();
+            const el = document.createElement('div');
+            el.className = 'card mb-2 p-2';
+            el.innerHTML = `
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>${e.titleUr || e.titleEn}</strong>
+                  <div class="small text-muted">${e.date || ''}</div>
+                </div>
+                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button>
+              </div>`;
+            out.appendChild(el);
+            
+            el.querySelector('button').addEventListener('click', async (btnEvt) => {
+              const id = btnEvt.target.dataset.id;
+              if (confirm('Are you sure you want to delete this event?')) {
+                await deleteDoc(doc(db, "events", id)); // <-- FIX
+                showToast('Event deleted', 'success');
+                // List will update via onSnapshot
+              }
+            });
           });
         });
       }
@@ -1289,10 +1451,13 @@ Features:
 
         const out = document.getElementById('galleryAdminList');
         const gallerySnapshot = await getDocs(collection(db, "gallery"));
-        gallerySnapshot.forEach(doc => {
-          const g = doc.data();
+        
+        if (gallerySnapshot.empty) out.innerHTML = '<p>No images yet.</p>';
+
+        gallerySnapshot.forEach(snapshotDoc => { // <-- FIX: Renamed 'doc' to 'snapshotDoc'
+          const g = snapshotDoc.data();
           const el = document.createElement('div'); el.style.width='120px';
-          el.innerHTML = `<div style="width:120px"><img src="${g.url}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><button class="btn btn-sm btn-danger" data-id="${doc.id}" data-path="${g.path}">Del</button></div></div>`;
+          el.innerHTML = `<div style="width:120px"><img src="${g.url}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}" data-path="${g.path}">Del</button></div></div>`; // FIX: Use snapshotDoc.id
           out.appendChild(el);
           
           el.querySelector('button').addEventListener('click', async (e)=>{
@@ -1301,9 +1466,9 @@ Features:
             if (confirm('Are you sure you want to delete this image?')) {
               try {
                 // 1. Delete file from Storage
-                await deleteObject(ref(storage, path));
+                if (path) await deleteObject(ref(storage, path));
                 // 2. Delete document from Firestore
-                await deleteDoc(doc(db, "gallery", id));
+                await deleteDoc(doc(db, "gallery", id)); // <-- FIX: 'doc' function is safe
                 showToast('Image deleted', 'success');
                 renderGallery();
                 loadAdminPanel('gallery');
@@ -1311,6 +1476,93 @@ Features:
                 showToast(error.message, 'danger');
               }
             }
+          });
+        });
+      }
+
+      // --- Custom Sections Panel ---
+      if (panel === 'sections') {
+        content.innerHTML = `
+          <h5>Custom Sections</h5>
+          <form id="sectionForm" class="mb-3">
+            <div class="mb-2"><input id="sectionTitleUr" class="form-control" placeholder="Section Title (Urdu)" dir="rtl" required></div>
+            <div class="mb-2"><input id="sectionTitleEn" class="form-control" placeholder="Section Title (English)" required></div>
+            <div class="mb-2"><textarea id="sectionTextUr" class="form-control" placeholder="Text (Urdu)" dir="rtl" rows="3"></textarea></div>
+            <div class="mb-2"><textarea id="sectionTextEn" class="form-control" placeholder="Text (English)" rows="3"></textarea></div>
+            <div class="mb-2"><label class="form-label">Image (Optional)</label><input id="sectionFile" type="file" accept="image/*" class="form-control"></div>
+            <button class="btn btn-success btn-sm" type="submit">Add Section</button>
+          </form>
+          <div id="sectionsAdminList"></div>
+        `;
+
+        document.getElementById('sectionForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.disabled = true;
+          submitButton.innerText = "Saving...";
+          
+          const file = document.getElementById('sectionFile').files[0];
+          let downloadURL = '';
+          let storagePath = '';
+
+          try {
+            // 1. Upload file if it exists
+            if (file) {
+              storagePath = `sections/${Date.now()}_${file.name}`;
+              const storageRef = ref(storage, storagePath);
+              const uploadResult = await uploadBytes(storageRef, file);
+              downloadURL = await getDownloadURL(uploadResult.ref);
+            }
+
+            // 2. Save data to Firestore
+            await addDoc(collection(db, "customSections"), {
+              titleUr: document.getElementById('sectionTitleUr').value,
+              titleEn: document.getElementById('sectionTitleEn').value,
+              textUr: document.getElementById('sectionTextUr').value,
+              textEn: document.getElementById('sectionTextEn').value,
+              imageUrl: downloadURL,
+              imagePath: storagePath,
+              createdAt: new Date()
+            });
+            showToast('Section added!', 'success');
+            loadAdminPanel('sections'); // Refresh
+          } catch (error) {
+            showToast(error.message, 'danger');
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerText = "Add Section";
+          }
+        });
+
+        const out = document.getElementById('sectionsAdminList');
+        const q = query(collection(db, "customSections"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+          out.innerHTML = '';
+          if (snapshot.empty) out.innerHTML = '<p>No sections yet.</p>';
+          snapshot.forEach(snapshotDoc => { // <-- FIX
+            const s = snapshotDoc.data();
+            const el = document.createElement('div');
+            el.className = 'card mb-2 p-2';
+            el.innerHTML = `
+              <div class="d-flex justify-content-between align-items-start">
+                <strong>${s.titleUr || s.titleEn}</strong>
+                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}" data-path="${s.imagePath || ''}">Delete</button>
+              </div>`;
+            out.appendChild(el);
+            
+            el.querySelector('button').addEventListener('click', async (btnEvt) => {
+              const id = btnEvt.target.dataset.id;
+              const path = btnEvt.target.dataset.path;
+              if (confirm('Are you sure you want to delete this section?')) {
+                try {
+                  if (path) await deleteObject(ref(storage, path));
+                  await deleteDoc(doc(db, "customSections", id)); // <-- FIX
+                  showToast('Section deleted', 'success');
+                } catch (error) {
+                  showToast(error.message, 'danger');
+                }
+              }
+            });
           });
         });
       }
@@ -1376,15 +1628,25 @@ Features:
 
         document.getElementById('removeLogoButton').addEventListener('click', async function(){
           if (!confirm('Are you sure you want to remove the logo?')) return;
+          
           try {
-            // 1. Delete the doc from Firestore
-            await deleteDoc(doc(db, "siteConfig", "logo"));
+            // 1. Get the document to find the file path
+            const logoDocRef = doc(db, "siteConfig", "logo");
+            const docSnap = await getDoc(logoDocRef);
             
-            // 2. (Optional but good practice) Delete the file from Storage.
-            // This requires storing the 'path' in the doc, which we did.
-            // You'd need to fetch the doc *before* deleting it to get the path.
+            if (docSnap.exists()) {
+              const logoData = docSnap.data();
+              // 2. Delete file from Storage if path exists
+              if (logoData.path) {
+                await deleteObject(ref(storage, logoData.path));
+              }
+            }
+            
+            // 3. Delete the document from Firestore
+            await deleteDoc(logoDocRef); // <-- FIX: 'doc' function is safe
             
             showToast('Logo removed', 'success');
+            // Real-time listener will update the preview
           } catch(error) {
             showToast(error.message, 'danger');
           }
@@ -1504,7 +1766,9 @@ Features:
       setText('navHome', 'navHome');
       setText('navAbout', 'navAbout');
       setText('navCourses', 'navCourses');
+      setText('navEvents', 'navEvents'); // NEW
       setText('navGallery', 'navGallery');
+      setText('navSections', 'navSections'); // NEW
       setText('navLibrary', 'navLibrary');
       setText('navDonation', 'navDonation');
       setText('navContact', 'navContact');
@@ -1523,6 +1787,56 @@ Features:
         aboutTextEl.textContent = lang === 'ur' ? aboutData.aboutTextUr : aboutData.aboutTextEn;
       }
       
+      // Render Events
+      const eventsList = document.getElementById('eventsList');
+      eventsList.innerHTML = ''; // Clear
+      if (eventsData.length === 0) eventsList.innerHTML = '<p>No events listed yet.</p>';
+      eventsData.forEach(e => {
+        const title = lang === 'ur' ? e.titleUr : e.titleEn;
+        const desc = lang === 'ur' ? e.descUr : e.descEn;
+        const el = document.createElement('div');
+        el.className = 'col-md-6';
+        el.innerHTML = `
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">${title}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">${e.date || ''}</h6>
+              <p class="card-text">${desc}</p>
+            </div>
+          </div>
+        `;
+        eventsList.appendChild(el);
+      });
+
+      // Render Custom Sections
+      const sectionsList = document.getElementById('customSectionsList');
+      sectionsList.innerHTML = ''; // Clear
+      if (sectionsData.length === 0) sectionsList.innerHTML = '<p>No sections added yet.</p>';
+      sectionsData.forEach(s => {
+        const title = lang === 'ur' ? s.titleUr : s.titleEn;
+        const text = lang === 'ur' ? s.textUr : s.textEn;
+        const el = document.createElement('div');
+        el.className = 'row mb-4';
+        el.innerHTML = `
+          <div class="section-title mb-3">
+            <h2>${title}</h2>
+          </div>
+          ${s.imageUrl ? `
+            <div class="col-lg-6">
+              <p>${text}</p>
+            </div>
+            <div class="col-lg-6">
+              <img src="${s.imageUrl}" alt="${title}" class="img-fluid rounded">
+            </div>
+          ` : `
+            <div class="col-lg-12">
+              <p>${text}</p>
+            </div>
+          `}
+        `;
+        sectionsList.appendChild(el);
+      });
+
       // Page Content (Static)
       setText('qLinkDonation', 'qLinkDonation');
       setText('qLinkFatwa', 'qLinkFatwa');
@@ -1530,6 +1844,7 @@ Features:
       setText('qLinkGallery', 'qLinkGallery');
       setText('aboutHeading', 'aboutHeading');
       setText('coursesHeading', 'coursesHeading');
+      setText('eventsHeading', 'eventsHeading'); // NEW
       setText('galleryHeading', 'galleryHeading');
       
       // Library Section
