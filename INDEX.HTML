@@ -12,6 +12,11 @@ Updates:
 - Prioritized 'Jameel Noori Nastaleeq' font and added 'Noto Nastaliq Urdu' web font.
 - Added specific address, phone, and map link to contact section.
 - Replaced all 'alert()' popups with a non-blocking toast notification system.
+- Added Dark Mode toggle.
+- Added scrolling marquee for announcements.
+- Added Admin Logo upload/remove feature.
+- Added Donation button/modal with UPI QR code and copy button.
+- Updated gallery to use square aspect-ratio tiles.
 -->
 
 <!doctype html>
@@ -19,7 +24,7 @@ Updates:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>دارالتعلیم والتربیہ -nascjkcnkjzsncl</title>
+  <title>دارالتعلیم والتربیہ - Darut Taleem Wat Tarbiyah</title>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,18 +42,54 @@ Updates:
     html[dir="rtl"] body{font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Noto Serif', serif;}
     html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 
-    body{background:var(--bg); color:#222}
+    body{background:var(--bg); color:#222; transition: background-color 0.3s, color 0.3s;}
     .navbar{background:linear-gradient(90deg,var(--primary), rgba(0,122,61,.9));}
     .navbar .nav-link, .navbar-brand{color:#fff !important}
     .hero{background: linear-gradient( rgba(0,0,0,0.25), rgba(0,0,0,0.25) ), url('https://images.unsplash.com/photo-1523942839745-7844d3d58c73?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&s=') center/cover no-repeat; color:#fff; padding:80px 0}
     .accent{color:var(--primary)}
     .card-course{border:1px solid #eee}
-    .announcement-bar{background:var(--primary); color:#fff; padding:.25rem .5rem; font-weight:600}
+    
+    /* Announcement bar - updated for marquee */
+    .announcement-bar {
+      background: var(--primary);
+      color: #fff;
+      padding: .25rem 0;
+      font-weight: 600;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .announcement-text {
+      display: inline-block;
+      padding-left: 100%; /* Start off-screen */
+      animation: marquee 30s linear infinite;
+    }
+    /* RTL marquee */
+    [dir="rtl"] .announcement-text {
+      animation-name: marquee-rtl;
+      padding-right: 100%;
+      padding-left: 0;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+    @keyframes marquee-rtl {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
+    
     .footer{background:#0b5132; color:#fff; padding:20px 0}
 
-    /* Gallery grid */
+    /* Gallery grid - updated for "perfect blocks" */
     .gallery-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px}
-    .gallery-grid img{width:100%; height:160px; object-fit:cover; border-radius:8px}
+    .gallery-grid img{
+      width:100%; 
+      height: auto; /* Changed from 160px */
+      aspect-ratio: 1 / 1; /* Makes it a perfect square */
+      object-fit:cover; 
+      border-radius:8px
+    }
 
     /* Admin panel */
     .admin-panel{min-height:60vh}
@@ -110,6 +151,34 @@ Updates:
       filter: invert(1);
     }
 
+    /* Donation Button */
+    #donationButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px; /* Adjusted for RTL/LTR in script */
+      z-index: 1050;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    #adminLogoPreview, #navbarLogo {
+      height: 40px;
+      width: auto;
+      max-width: 150px;
+      object-fit: contain;
+      border-radius: 6px;
+      background-color: rgba(255,255,255,0.1);
+    }
+    #navbarLogoContainer .fallback-logo {
+        width:46px; 
+        height:46px; 
+        background:var(--secondary); 
+        border-radius:8px; 
+        display:grid; 
+        place-items:center; 
+        margin-inline-start:.6rem
+    }
+
   </style>
 </head>
 <body>
@@ -118,10 +187,13 @@ Updates:
   <nav class="navbar navbar-expand-lg">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="#">
-        <div style="width:46px; height:46px; background:var(--secondary); border-radius:8px; display:grid; place-items:center; margin-inline-start:.6rem">
-          <span style="font-weight:700; color:var(--primary)">د</span>
+        <!-- Logo container -->
+        <div id="navbarLogoContainer" class="d-flex align-items-center">
+          <div class="fallback-logo">
+            <span style="font-weight:700; color:var(--primary)">د</span>
+          </div>
         </div>
-        <div>
+        <div class="ms-2">
           <div style="font-size:18px; line-height:1">دارالتعلیم والتربیہ</div>
           <small style="opacity:.9; font-size:12px">Darut Taleem Wat Tarbiyah</small>
         </div>
@@ -163,7 +235,9 @@ Updates:
   </nav>
 
   <!-- Announcement bar -->
-  <div id="announcementBar" class="announcement-bar text-end" role="region" aria-live="polite"></div>
+  <div id="announcementBar" class="announcement-bar" role="region" aria-live="polite">
+    <div class="announcement-text" id="announcementContent"></div>
+  </div>
 
   <!-- Hero -->
   <header id="home" class="hero text-center">
@@ -241,6 +315,8 @@ Updates:
               </div>
               <button class="btn btn-success" type="submit" id="contactSubmit">ارسال</button>
             </form>
+            <!-- Note about email functionality -->
+            <small class="d-block mt-3 text-muted" id="contactFormNote">Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.</small>
           </div>
           <!-- Updated Contact Info -->
           <div class="col-lg-6">
@@ -305,6 +381,7 @@ Updates:
                   <button class="list-group-item list-group-item-action active" data-panel="ann">Announcements</button>
                   <button class="list-group-item list-group-item-action" data-panel="courses">Courses</button>
                   <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
+                  <button class="list-group-item list-group-item-action" data-panel="logo">Logo</button>
                   <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
                 </div>
 
@@ -328,6 +405,42 @@ Updates:
       </div>
     </div>
   </div>
+
+  <!-- Donation Button -->
+  <button id="donationButton" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#donationModal">
+    <!-- SVG icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
+      <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v1.006c.54.503.885 1.254.964 2.112.098 1.068-.213 2.222-.837 2.846-.696.696-1.54 1.134-2.535 1.254h-1.02a4.01 4.01 0 0 1-3.13 1.134 4.01 4.01 0 0 1-3.13-1.134H4.83c-.996-.12-1.84-.558-2.535-1.254C1.67 8.842 1.36 7.688 1.458 6.62c.079-.858.425-1.61.964-2.112V2.5zm6-1.5a1.5 1.5 0 0 0-3 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a1.5 1.5 0 0 0-3 0V1z"/>
+      <path d="M1 6.62c0 .495.04.98.118 1.443.078.463.18 1.008.36 1.503.182.495.455.99.805 1.443.35.453.784.85 1.28 1.11.498.26.98.347 1.34.37.04.002.078.003.116.003s.076-.001.116-.003c.36-.023.842-.11 1.34-.37.496-.26.93-.657 1.28-1.11.35-.453.623-.948.805-1.443.18-.495.282-1.04.36-1.503C14.96 7.6 15 7.115 15 6.62v-1.42c0-.495-.04-.98-.118-1.443-.078-.463-.18-1.008-.36-1.503C14.34 1.76 14.068 1.266 13.718.813c-.35-.453-.784-.85-1.28-1.11C11.94.26 11.458.173 11.098.15c-.04-.002-.078-.003-.116-.003s-.076.001-.116.003c-.36.023-.842.11-1.34.37-.496.26-.93.657-1.28 1.11-.35.453-.623.948-.805 1.443C1.68 4.257 1.578 4.802 1.5 5.266 1.04 6.24 1 6.125 1 6.62v1.42z"/>
+    </svg>
+    <span id="donationBtnText" class="ms-2">Donation</span>
+  </button>
+
+  <!-- Donation Modal -->
+  <div class="modal fade" id="donationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="donationModalTitle">Donation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p id="donationModalSubtitle">Please support us by donating via UPI.</p>
+          <img id="donationQR" src="" alt="UPI QR Code" class="img-fluid rounded mb-3" style="max-width: 200px;">
+          <div class="input-group mb-3">
+            <input type="text" id="upiIdInput" class="form-control" value="9058438854-2@okbizaxis" readonly>
+            <button class="btn btn-outline-secondary" type="button" id="copyUpiButton">
+              <span id="copyUpiBtnText">Copy</span>
+            </button>
+          </div>
+          <a id="payNowLink" href="#" class="btn btn-primary" target="_blank">
+            <span id="payNowBtnText">Pay Now</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Custom Toast Notification -->
   <div id="customToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
@@ -357,12 +470,19 @@ Updates:
         galleryHeading: 'گیلری',
         contactHeading: 'رابطہ کریں',
         lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات',
-        // Updated keys
         lblAddress: 'پتہ:',
         lblPhone: 'فون:',
         lblContactEmail: 'ای میل:',
         lblMap: 'نقشہ:',
-        linkMap: 'گوگل میپس پر دیکھیں'
+        linkMap: 'گوگل میپس پر دیکھیں',
+        contactFormNote: 'نوٹ: یہ ایک ڈیمو ہے۔ پیغامات کو ایڈمن پینل (لوکل اسٹوریج) میں محفوظ کیا جاتا ہے اور ای میل کے ذریعے نہیں بھیجا جاتا۔',
+        donationBtnText: 'عطیہ',
+        donationModalTitle: 'عطیہ',
+        donationModalSubtitle: 'برائے مہربانی UPI کے ذریعے عطیہ دے کر ہماری مدد کریں۔',
+        copyUpiBtnText: 'کاپی',
+        payNowBtnText: 'ابھی ادا کریں۔',
+        copiedToast: 'UPI ID کاپی ہو گیا!',
+        adminLogo: 'لوگو'
       },
       en: {
         homeTitle: 'Welcome to Darut Taleem Wat Tarbiyah',
@@ -373,12 +493,19 @@ Updates:
         galleryHeading: 'Gallery',
         contactHeading: 'Contact Us',
         lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information',
-        // Updated keys
         lblAddress: 'Address:',
         lblPhone: 'Phone:',
         lblContactEmail: 'Email:',
         lblMap: 'Map:',
-        linkMap: 'View on Google Maps'
+        linkMap: 'View on Google Maps',
+        contactFormNote: 'Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.',
+        donationBtnText: 'Donation',
+        donationModalTitle: 'Donation',
+        donationModalSubtitle: 'Please support us by donating via UPI.',
+        copyUpiBtnText: 'Copy',
+        payNowBtnText: 'Pay Now',
+        copiedToast: 'UPI ID Copied!',
+        adminLogo: 'Logo'
       }
     };
 
@@ -388,6 +515,7 @@ Updates:
       coursesKey: 'mad_courses_v1',
       galleryKey: 'mad_gallery_v1',
       messagesKey: 'mad_messages_v1',
+      logoKey: 'mad_logo_v1',
 
       getAnnouncements(){ return JSON.parse(localStorage.getItem(this.announcementsKey) || '[]') },
       saveAnnouncements(a){ localStorage.setItem(this.announcementsKey, JSON.stringify(a)) },
@@ -396,7 +524,10 @@ Updates:
       getGallery(){ return JSON.parse(localStorage.getItem(this.galleryKey) || '[]') },
       saveGallery(a){ localStorage.setItem(this.galleryKey, JSON.stringify(a)) },
       getMessages(){ return JSON.parse(localStorage.getItem(this.messagesKey) || '[]') },
-      saveMessages(a){ localStorage.setItem(this.messagesKey, JSON.stringify(a)) }
+      saveMessages(a){ localStorage.setItem(this.messagesKey, JSON.stringify(a)) },
+      getLogo(){ return localStorage.getItem(this.logoKey) || null },
+      saveLogo(data){ localStorage.setItem(this.logoKey, data) },
+      removeLogo(){ localStorage.removeItem(this.logoKey) }
     }
 
     // Seed initial data if empty
@@ -439,11 +570,29 @@ Updates:
     // Render announcements in bar
     function renderAnnouncements(){
       const anns = store.getAnnouncements()
-      const bar = document.getElementById('announcementBar')
+      const bar = document.getElementById('announcementContent')
       if(anns.length === 0){ bar.textContent = '' ; return }
-      bar.textContent = anns.map(a=>a.text).join('  •  ')
+      // Repeat the content for a seamless loop
+      const text = anns.map(a=>a.text).join('  •  ')
+      bar.textContent = text + '  •  ' + text + '  •  ' + text; // Repeat for longer scroll
     }
     renderAnnouncements()
+
+    // Render Logo
+    function renderLogo() {
+      const logoData = store.getLogo();
+      const logoContainer = document.getElementById('navbarLogoContainer');
+      if (logoData) {
+        logoContainer.innerHTML = `<img src="${logoData}" alt="Logo" id="navbarLogo" style="margin-inline-start:.6rem">`;
+      } else {
+        logoContainer.innerHTML = `
+          <div class="fallback-logo">
+            <span style="font-weight:700; color:var(--primary)">د</span>
+          </div>`;
+      }
+    }
+    renderLogo();
+
 
     // Render courses
     function renderCourses(){
@@ -524,6 +673,12 @@ Updates:
 
     function loadAdminPanel(panel){
       const content = document.getElementById('panelContent')
+      
+      // Update active button state
+      document.querySelectorAll('[data-panel]').forEach(b => {
+        b.classList.toggle('active', b.dataset.panel === panel)
+      })
+
       if(panel === 'ann'){
         const anns = store.getAnnouncements()
         content.innerHTML = `
@@ -623,6 +778,49 @@ Updates:
         })
       }
 
+      if(panel === 'logo'){
+        const logo = store.getLogo();
+        content.innerHTML = `
+          <h5 id="adminLogoTitle">Logo</h5>
+          <p>Upload a logo to replace the default initial in the navbar.</p>
+          <div class="mb-3">
+            <label class="form-label">Current Logo</label>
+            <div>
+              ${logo ? `<img src="${logo}" id="adminLogoPreview" alt="Logo">` : '<span class="text-muted">No logo uploaded</span>'}
+            </div>
+          </div>
+          <form id="logoForm" class="mb-3">
+            <div class="mb-2"><input id="logoFile" type="file" accept="image/png, image/jpeg, image/svg+xml, image/webp" class="form-control"></div>
+            <button class="btn btn-success btn-sm">Save Logo</button>
+          </form>
+          <button class="btn btn-outline-danger btn-sm" id="removeLogoButton" ${!logo ? 'disabled' : ''}>Remove Logo</button>
+        `
+
+        document.getElementById('logoForm').addEventListener('submit', function(e){
+          e.preventDefault();
+          const f = document.getElementById('logoFile').files[0];
+          if(!f) {
+            showToast('Please select a file', 'danger');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            store.saveLogo(ev.target.result);
+            renderLogo();
+            loadAdminPanel('logo');
+            showToast('Logo updated!', 'success');
+          }
+          reader.readAsDataURL(f);
+        });
+
+        document.getElementById('removeLogoButton').addEventListener('click', function(){
+          store.removeLogo();
+          renderLogo();
+          loadAdminPanel('logo');
+          showToast('Logo removed', 'success');
+        });
+      }
+
       if(panel === 'messages'){
         const msgs = store.getMessages()
         content.innerHTML = `
@@ -631,6 +829,10 @@ Updates:
         `
         const out = document.getElementById('msgsList')
         out.innerHTML = ''
+        if (msgs.length === 0) {
+          out.innerHTML = '<p class="text-muted">No messages yet.</p>';
+          return;
+        }
         msgs.forEach(m=>{
           const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `<div><strong>${m.name} — ${m.email}</strong><div class="small text-muted">${new Date(m.created).toLocaleString()}</div><p>${m.message}</p></div>`
           out.appendChild(el)
@@ -638,16 +840,21 @@ Updates:
       }
     }
 
-    // Panel switching highlight
-    document.querySelectorAll('.list-group button').forEach(btn=> btn.addEventListener('click', function(){ document.querySelectorAll('.list-group button').forEach(b=>b.classList.remove('active')); this.classList.add('active') }))
-
     // ----------------- Language switching -----------------
     const langSelect = document.getElementById('langToggle')
+    const donationButton = document.getElementById('donationButton');
+    
     function applyLanguage(lang){
       const root = document.documentElement
       if(lang === 'ur'){
         root.lang = 'ur'; root.dir = 'rtl'
-      } else { root.lang = 'en'; root.dir = 'ltr' }
+        donationButton.style.right = '20px';
+        donationButton.style.left = 'auto';
+      } else { 
+        root.lang = 'en'; root.dir = 'ltr' 
+        donationButton.style.right = 'auto';
+        donationButton.style.left = '20px';
+      }
 
       // apply texts
       const t = i18n[lang]
@@ -665,14 +872,25 @@ Updates:
       document.getElementById('contactSubmit').textContent = t.contactSubmit
       document.getElementById('contactInfoHeading').textContent = t.contactInfoHeading
       
-      // Apply new contact info text
       document.getElementById('lblAddress').textContent = t.lblAddress
       document.getElementById('lblPhone').textContent = t.lblPhone
       document.getElementById('lblContactEmail').textContent = t.lblContactEmail
       document.getElementById('lblMap').textContent = t.lblMap
       document.getElementById('linkMap').textContent = t.linkMap
+      document.getElementById('contactFormNote').textContent = t.contactFormNote
 
-      // courses card titles/descriptions can remain as stored (Urdu/English when available)
+      // Donation texts
+      document.getElementById('donationBtnText').textContent = t.donationBtnText
+      document.getElementById('donationModalTitle').textContent = t.donationModalTitle
+      document.getElementById('donationModalSubtitle').textContent = t.donationModalSubtitle
+      document.getElementById('copyUpiBtnText').textContent = t.copyUpiBtnText
+      document.getElementById('payNowBtnText').textContent = t.payNowBtnText
+
+      // Admin panel
+      const logoAdminBtn = document.querySelector('[data-panel="logo"]');
+      if (logoAdminBtn) logoAdminBtn.textContent = t.adminLogo;
+      const logoAdminTitle = document.getElementById('adminLogoTitle');
+      if (logoAdminTitle) logoAdminTitle.textContent = t.adminLogo;
     }
 
     // default language = Urdu
@@ -726,7 +944,34 @@ Updates:
       }
     });
 
+    // ----------------- Donation Modal Logic -----------------
+    const donationModal = new bootstrap.Modal(document.getElementById('donationModal'));
+    const upiId = '9058438854-2@okbizaxis';
+    const upiLink = `upi://pay?pa=${upiId}&pn=Darut%20Taleem%20Wat%20Tarbiyah&am=&cu=INR&tn=Donation`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
+    
+    document.getElementById('donationQR').src = qrUrl;
+    document.getElementById('payNowLink').href = upiLink;
+    document.getElementById('upiIdInput').value = upiId;
+
+    document.getElementById('copyUpiButton').addEventListener('click', function() {
+      const upiInput = document.getElementById('upiIdInput');
+      // Use execCommand for broader compatibility in iframes
+      try {
+        upiInput.select();
+        upiInput.setSelectionRange(0, 99999); // For mobile
+        document.execCommand('copy');
+        
+        // Show "Copied!" toast
+        const lang = document.getElementById('langToggle').value;
+        showToast(i18n[lang].copiedToast, 'success');
+
+      } catch (err) {
+        console.error('Failed to copy UPI ID: ', err);
+        showToast('Failed to copy', 'danger');
+      }
+    });
+
   </script>
 </body>
 </html>
-
