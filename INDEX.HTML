@@ -68,7 +68,7 @@ Features:
     .footer{background:#0b5132; color:#fff; padding:20px 0}
 
     /* Gallery grid */
-    .gallery-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px}
+    .gallery-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:12px}
     .gallery-grid img{
       width:100%; 
       height: auto;
@@ -80,8 +80,8 @@ Features:
     .admin-panel{min-height:60vh}
     @media(min-width:992px){ .hero{padding:100px 0} }
 
-    [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end}
-    [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start}
+    [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end; width: 100%;}
+    [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start; width: 100%;}
 
     /* Quick Links Grid */
     .quick-link-card {
@@ -473,7 +473,7 @@ Features:
             <p id="contactInfo" style="line-height: 1.8;">
               <strong id="lblAddress">پتہ:</strong> <span dir="ltr">H.no: 9, 4-134/5/A/1/1, Raghava Colony, Nadeem Colony, Vali Colony, Toli Chowki, Hyderabad, Telangana 500008</span><br>
               <strong id="lblPhone">فون:</strong> <span dir="ltr"><a href="tel:0905843885" class="text-dark" style="text-decoration:none;">090584 3885</a></span><br>
-              <strong id="lblContactEmail">ای میل:</strong> <span dir="ltr">info@madrasah.example</span><br>
+              <strong id="lblContactEmail">ای میل:</strong> <span dir="ltr"><a href="mailto:madrasadaruttaleemwattarbiyah@gmail.com" class="text-dark" style="text-decoration:none;">madrasadaruttaleemwattarbiyah@gmail.com</a></span><br>
               <strong id="lblMap">نقشہ:</strong> <a id="linkMap" href="https://maps.app.goo.gl/X85qiTVBdRNCRn8X7" target="_blank" rel="noopener noreferrer">گوگل میپس پر دیکھیں</a>
             </p>
           </div>
@@ -1402,7 +1402,8 @@ Features:
           <form id="galleryForm" class="mb-3">
             <div class="mb-2"><input id="galleryFile" type="file" accept="image/*" class="form-control" required></div>
             <div class="mb-2"><input id="galleryName" class="form-control" placeholder="Image name (optional)"></div>
-            <button class="btn btn-success btn-sm" type="submit">Upload (Max 750KB)</button>
+            <button class="btn btn-success btn-sm" type="submit">Upload</button>
+            <small class="d-block mt-2"><b>Note:</b> Images must be under 750KB. If using 1080x1080px images, please save as a medium-quality JPEG.</small>
           </form>
           <div id="galleryAdminList" class="d-flex flex-wrap gap-2"></div>
         `;
@@ -1433,7 +1434,7 @@ Features:
             showToast(error.message, 'danger');
           } finally {
             submitButton.disabled = false;
-            submitButton.innerText = "Upload (Max 750KB)";
+            submitButton.innerText = "Upload";
           }
         });
 
