@@ -1,12 +1,3 @@
-<!--
-Madrasa Website (Bilingual: Urdu default + English)
-SINGLE-FILE VERSION (Firebase + Netlify)
-Features:
-- Firebase Firestore (Database) for all content
-- Firebase Authentication (Admin Login)
-- Images stored as base64 data URLs in Firestore (100% Free)
-- Bilingual (Ur/En) and Dark Mode
--->
 <!doctype html>
 <html lang="ur" dir="rtl">
 <head>
@@ -39,7 +30,11 @@ Features:
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Google Fonts: Poppins for English, Noto Nastaliq Urdu for fallback -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- UPDATED FONT LINK -->
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Inter:wght@300;400;600&family=Lato:wght@300;400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Open+Sans:wght@300;400;600&family=Poppins:wght@300;400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
 
   <style>
     :root{
@@ -47,9 +42,15 @@ Features:
       --secondary:#F7C948; /* gold */
       --bg:#ffffff;
       --card-bg: #f8f9fa;
+      /* Default fonts */
+      --font-ur: 'Noto Nastaliq Urdu', serif;
+      --font-en: 'Poppins', sans-serif;
     }
-    html[dir="rtl"] body{font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Noto Serif', serif;}
-    html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;}
+    
+    /* Dynamic Font Loading */
+    html[dir="rtl"] body{font-family: var(--font-ur), 'Noto Serif', serif;}
+    html[dir="ltr"] body{font-family: var(--font-en), system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+
     body{background:var(--bg); color:#222; transition: background-color 0.3s, color 0.3s;}
     .navbar{background:linear-gradient(90deg,var(--primary), rgba(0,122,61,.9));}
     .navbar .nav-link, .navbar-brand{color:#fff !important}
@@ -71,6 +72,7 @@ Features:
       padding-left: 100%; /* Start off-screen */
       animation: marquee 30s linear infinite;
     }
+    /* RTL marquee */
     [dir="rtl"] .announcement-text {
       animation-name: marquee-rtl;
       padding-right: 100%;
@@ -88,28 +90,32 @@ Features:
     
     .footer{background:#0b5132; color:#fff; padding:20px 0}
 
-    /* Gallery grid */
-    .gallery-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:12px}
+    /* Gallery grid - UPDATED to control max size */
+    .gallery-grid{
+        display:grid; 
+        grid-template-columns: repeat(auto-fit,minmax(300px, 350px)); 
+        gap:12px;
+        /* Center the grid items if they don't fill the row */
+        justify-content: center; 
+    }
     .gallery-grid img{
-      width:100%; 
+      width:100%;  
       height: auto;
       aspect-ratio: 1 / 1; /* Makes it a perfect square */
-      object-fit:cover; 
+      object-fit:cover;  
       border-radius:8px
     }
 
+    /* Admin panel */
     .admin-panel{min-height:60vh}
+
+    /* Responsive tweaks */
     @media(min-width:992px){ .hero{padding:100px 0} }
 
-    /* UPDATED HEADING ALIGNMENT RULES */
-    [dir="rtl"] .section-title {
-      width: 100%;
-      text-align: right;
-    }
-    [dir="ltr"] .section-title {
-      width: 100%;
-      text-align: left;
-    }
+    /* RTL friendly card headings - ALIGNMENT FIX */
+    [dir="rtl"] .section-title { text-align: right; }
+    [dir="ltr"] .section-title { text-align: left; }
+
 
     /* Quick Links Grid */
     .quick-link-card {
@@ -141,9 +147,10 @@ Features:
       margin: 0;
     }
     [dir="rtl"] .quick-link-card h5 {
-      font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+      font-family: var(--font-ur), 'Noto Serif', serif;
       font-size: 1.4rem;
     }
+
 
     /* Dark Mode Styles */
     body.dark-mode {
@@ -162,10 +169,39 @@ Features:
       color: #e0e0e0;
       border-color: #333;
     }
+    body.dark-mode .list-group-item-action:hover {
+      background-color: #282828;
+    }
+    body.dark-mode .list-group-item.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
     body.dark-mode .form-control {
       background-color: #222;
       color: #fff;
       border-color: #444;
+    }
+    body.dark-mode .form-control:focus {
+      background-color: #222;
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(0,122,61,.25);
+    }
+    /* Override Bootstrap's light text classes */
+    body.dark-mode .text-dark {
+      color: #e0e0e0 !important;
+    }
+    body.dark-mode .text-muted {
+      color: #888 !important;
+    }
+    body.dark-mode .btn-light {
+      background-color: #333;
+      color: #fff;
+      border-color: #444;
+    }
+    body.dark-mode .modal-header,
+    body.dark-mode .modal-footer {
+      border-color: #333;
     }
     body.dark-mode .btn-close {
       filter: invert(1);
@@ -180,28 +216,90 @@ Features:
       background-color: rgba(255,255,255,0.1);
     }
     #navbarLogoContainer .fallback-logo {
-        width:46px; 
-        height:46px; 
-        background:var(--secondary); 
-        border-radius:8px; 
-        display:grid; 
-        place-items:center; 
+        width:46px;  
+        height:46px;  
+        background:var(--secondary);  
+        border-radius:8px;  
+        display:grid;  
+        place-items:center;  
         margin-inline-start:.6rem
     }
     
     /* Ensure brand title font switches properly */
-    [dir="ltr"] #brandTitle { font-family: 'Poppins', sans-serif; }
-    [dir="rtl"] #brandTitle { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif; }
+    [dir="ltr"] #brandTitle { font-family: var(--font-en), sans-serif; }
+    [dir="rtl"] #brandTitle { font-family: var(--font-ur), serif; }
 
+    /* Library card dark mode fix */
     body.dark-mode #library .card,
-    body.dark-mode #donationPaymentInfo { 
-      background-color: #222; 
-      border-color: #444; 
+    body.dark-mode #donationPaymentInfo {  
+      background-color: #222;  
+      border-color: #444;  
     }
     
+    /* Contact info LTR fix */
     #contactInfo span[dir="ltr"] {
         display: inline-block;
     }
+
+    /* Admin image previews */
+    .admin-preview-img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    /* Event Card */
+    .event-card {
+      background-color: var(--card-bg);
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .event-card-date {
+      flex-shrink: 0;
+      background-color: var(--primary);
+      color: #fff;
+      border-radius: 8px;
+      width: 70px;
+      height: 70px;
+      text-align: center;
+      padding: 0.5rem;
+    }
+    .event-card-date .day {
+      font-size: 1.75rem;
+      font-weight: 700;
+      display: block;
+      line-height: 1.1;
+    }
+    .event-card-date .month {
+      font-size: 0.9rem;
+      display: block;
+      text-transform: uppercase;
+    }
+    .event-card-body {
+      flex-grow: 1;
+    }
+    .event-card-body h5 {
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    [dir="rtl"] .event-card-body h5 {
+      font-family: var(--font-ur), serif;
+      font-size: 1.5rem;
+    }
+
+    /* Custom Section */
+    .custom-section-img {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
   </style>
 </head>
 <body>
@@ -229,12 +327,12 @@ Features:
 
       <div class="collapse navbar-collapse" id="navLinks">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <!-- Added IDs for i18n -->
           <li class="nav-item"><a class="nav-link" href="#home" data-link id="navHome">صفحہ اول</a></li>
           <li class="nav-item"><a class="nav-link" href="#about" data-link id="navAbout">ہمارے بارے میں</a></li>
           <li class="nav-item"><a class="nav-link" href="#courses" data-link id="navCourses">کورسز</a></li>
-          <li class="nav-item"><a class="nav-link" href="#events" data-link id="navEvents">تقریبات</a></li>
+          <li class="nav-item"><a class="nav-link" href="#events" data-link id="navEvents">پروگرام</a></li>
           <li class="nav-item"><a class="nav-link" href="#gallery" data-link id="navGallery">گیلری</a></li>
-          <li class="nav-item"><a class="nav-link" href="#customSections" data-link id="navSections">شعبے</a></li>
           <li class="nav-item"><a class="nav-link" href="#library" data-link id="navLibrary">کتب خانہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#donation" data-link id="navDonation">عطیہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact" data-link id="navContact">رابطہ کریں</a></li>
@@ -270,11 +368,11 @@ Features:
   <!-- Hero -->
   <header id="home" class="hero text-center">
     <div class="container">
-      <h1 id="heroTitle" class="display-5 fw-bold">Loading...</h1>
-      <p id="heroSubtitle" class="lead"></p>
+      <h1 id="heroTitle" class="display-5 fw-bold">...</h1>
+      <p id="heroSubtitle" class="lead">...</p>
       <div class="mt-4">
-        <a href="#courses" class="btn btn-outline-light btn-lg me-2">مزید جانیں</a>
-        <a href="#contact" class="btn btn-light btn-lg text-dark">رابطہ کریں</a>
+        <a href="#courses" class="btn btn-outline-light btn-lg me-2" id="heroBtn1">...</a>
+        <a href="#contact" class="btn btn-light btn-lg text-dark" id="heroBtn2">...</a>
       </div>
     </div>
   </header>
@@ -293,11 +391,8 @@ Features:
         <!-- Online Fatwa -->
         <div class="col-lg-3 col-md-4 col-6">
           <a href="#contact" class="quick-link-card" data-link>
-            <?xml version="1.0" encoding="utf-8"?>
-
-<!-- License: PD. Made by Jackey Jia: https://www.behance.net/a9294507676066 -->
-<svg width="800px" height="800px" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M952 318.494H73.6c-27.2 59.2-41.6 124.8-41.6 193.6s14.4 134.4 41.6 193.6h876.8c27.2-59.2 41.6-124.8 41.6-193.6s-14.4-134.4-40-193.6z" fill="#9DE8F7" /><path d="M1024 512.094c0-283.2-228.8-512-512-512s-512 228.8-512 512c0 249.6 179.2 457.6 416 502.4l0.032 0.032c13.376 2.56 32.48 5.776 53.024 7.712 11.36 0.912 22.8 1.456 34.272 1.664 1.536 0 3.072 0.016 4.592-0.016 38.784-0.784 89.44-9.248 105.36-12.064C847.44 966.494 1024 759.822 1024 512.094z m-88-225.6h-78.4c-48-104-118.4-177.6-174.4-222.4 108.8 41.6 198.4 121.6 252.8 222.4z m-342.4-248c14.4 8 152 89.6 228.8 248h-180.8c-28.8-120-72-211.2-94.4-252.8 16 1.6 32 3.2 46.4 4.8z m16 248H416c32-129.6 80-222.4 96-251.2 16 28.8 64 121.6 97.6 251.2z m-132.8-252.8c-22.4 41.6-65.6 132.8-94.4 252.8h-180.8c76.8-158.4 216-240 228.8-248 14.4-1.6 30.4-3.2 46.4-4.8z m-136 30.4c-54.4 44.8-126.4 118.4-172.8 222.4H88c54.4-100.8 144-180.8 252.8-222.4z m-308.8 448c0-68.8 14.4-134.4 41.6-193.6H952c25.6 59.2 40 124.8 40 193.6s-14.4 134.4-41.6 193.6H73.6c-27.2-59.2-41.6-124.8-41.6-193.6z m56 225.6h76.8c46.4 102.4 115.2 176 171.2 220.8-105.6-41.6-193.6-121.6-248-220.8z m337.6 246.4c-28.8-17.6-153.6-97.6-225.6-246.4h176c19.2 83.2 51.2 168 100.8 252.8-16-1.6-33.6-3.2-51.2-6.4z m-16-246.4h204.8c-19.2 81.6-52.8 164.8-102.4 248-49.6-84.8-83.2-168-102.4-248z m136 252.8c49.6-84.8 81.6-171.2 100.8-252.8h176c-70.4 148.8-196.8 230.4-224 246.4-17.6 3.2-35.2 4.8-52.8 6.4z m142.4-32c54.4-46.4 124.8-118.4 171.2-220.8H936c-54.4 99.2-142.4 179.2-248 220.8z" fill="" /><path d="M105.6 507.198c0-19.2 3.2-35.2 8-49.6 4.8-9.6 11.2-17.6 17.6-25.6 8-8 16-12.8 24-17.6 11.2-4.8 25.6-8 41.6-8 28.8 0 51.2 8 67.2 25.6 17.6 17.6 25.6 41.6 25.6 72s-8 54.4-25.6 72c-16 17.6-38.4 25.6-67.2 25.6s-51.2-8-67.2-25.6-24-38.4-24-68.8z m40-1.6c0 22.4 4.8 38.4 14.4 49.6 9.6 11.2 22.4 16 38.4 16s27.2-4.8 38.4-16c9.6-11.2 14.4-27.2 14.4-49.6 0-22.4-4.8-38.4-14.4-49.6s-22.4-16-38.4-16-28.8 4.8-38.4 16c-9.6 11.2-14.4 27.2-14.4 49.6zM446.4 601.598h-36.8v-70.4c0-14.4 0-24-1.6-28.8s-4.8-8-8-9.6c-3.2-3.2-8-3.2-12.8-3.2-6.4 0-12.8 1.6-17.6 4.8-4.8 3.2-8 8-9.6 14.4s-3.2 16-3.2 32v62.4H320v-137.6h33.6v20.8c12.8-16 27.2-24 44.8-24 8 0 16 1.6 22.4 4.8 6.4 3.2 11.2 6.4 14.4 11.2 3.2 4.8 6.4 9.6 6.4 16 1.6 6.4 1.6 14.4 1.6 24l3.2 83.2zM483.2 601.598v-192H520v190.4h-36.8v1.6zM556.8 444.798v-33.6h36.8v33.6h-36.8z m0 156.8v-137.6h36.8v137.6h-36.8zM756.8 601.598H720v-70.4c0-14.4 0-24-1.6-28.8s-4.8-8-8-9.6c-3.2-3.2-8-3.2-12.8-3.2-6.4 0-12.8 1.6-17.6 4.8-4.8 3.2-8 8-9.6 14.4s-3.2 16-3.2 32v62.4h-36.8v-137.6H664v20.8c12.8-16 27.2-24 44.8-24 8 0 16 1.6 22.4 4.8 6.4 3.2 11.2 6.4 14.4 11.2s6.4 9.6 6.4 16c1.6 6.4 1.6 14.4 1.6 24l3.2 83.2zM873.6 556.798l36.8 6.4c-4.8 12.8-12.8 24-22.4 30.4s-22.4 11.2-38.4 11.2c-24 0-41.6-8-52.8-24-9.6-12.8-14.4-28.8-14.4-48 0-22.4 6.4-41.6 17.6-54.4 11.2-12.8 27.2-19.2 44.8-19.2 20.8 0 36.8 6.4 48 20.8 11.2 12.8 17.6 33.6 17.6 62.4h-91.2c0 11.2 3.2 19.2 9.6 25.6s12.8 9.6 20.8 9.6c6.4 0 11.2-1.6 14.4-4.8s8-8 9.6-16z m3.2-36.8c0-11.2-3.2-19.2-8-24s-11.2-8-19.2-8-14.4 3.2-19.2 8c-4.8 6.4-8 14.4-8 24h54.4z" fill="" /></svg>
-            <path d="m10.273 2.513-.921-.921a1.89 1.89 0 0 0-2.672 0l-.921.921c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707M11.39 8.243c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707l.921.921a1.89 1.89 0 0 1 0 2.672l-.921.921c-.24-.18-.48-.4-.707-.658a4.6 4.6 0 0 0-.658-.707c-.23.204-.48.418-.707.658-.258-.226-.48.46-.707.707l-.921-.921a1.89 1.89 0 0 1 0-2.672l.921-.921zm-6.622 0-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226-.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707M4.6 2.513c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707l-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258-.226-.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16"><path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.622a2.89 2.89 0 0 1 0 4.134l-.622.622a2.89 2.89 0 0 1-4.134 0l-.622-.622a2.89 2.89 0 0 1 0-4.134zM8 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0v-1A.5.5 0 0 0 8 6m0 3a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+            <path d="m10.273 2.513-.921-.921a1.89 1.89 0 0 0-2.672 0l-.921.921c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48.418.707-.658.258-.226.48-.46.707-.707M11.39 8.243c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707l.921.921a1.89 1.89 0 0 1 0 2.672l-.921.921c-.24-.18-.48-.4-.707-.658a4.6 4.6 0 0 0-.658-.707c-.23.204-.48.418-.707.658-.258.226-.48.46-.707.707l-.921-.921a1.89 1.89 0 0 1 0-2.672l.921-.921zm-6.622 0-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707M4.6 2.513c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707l-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921z"/></svg>
             <h5 id="qLinkFatwa">آن لائن فتویٰ</h5>
           </a>
         </div>
@@ -325,14 +420,14 @@ Features:
       <!-- About -->
       <section id="about" class="mb-5">
         <div class="section-title mb-3">
-          <h2 style="margin:0" id="aboutHeading">ہمارے بارے میں</h2>
+          <h2 id="aboutHeading">...</h2>
         </div>
-        <div class="row">
+        <div class="row gy-4 align-items-center">
           <div class="col-lg-6">
-            <p id="aboutText">Loading about info...</p>
+            <p id="aboutText">...</p>
           </div>
           <div class="col-lg-6">
-            <img src="https://images.unsplash.com/photo-1542736667-069246bdbc6d?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Madrasa" class="img-fluid rounded" id="aboutImage">
+            <img id="aboutImage" src="https://images.unsplash.com/photo-1542736667-069246bdbc6d?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Madrasa" class="img-fluid rounded">
           </div>
         </div>
       </section>
@@ -343,21 +438,24 @@ Features:
           <h2 id="coursesHeading">کورسز</h2>
         </div>
         <div id="coursesList" class="row gy-3">
-          <!-- Course cards injected here from Firebase -->
-          <p>Loading courses...</p>
+          <!-- Course cards injected here -->
         </div>
       </section>
 
       <!-- Events -->
       <section id="events" class="mb-5">
         <div class="section-title mb-3">
-          <h2 id="eventsHeading">تقریبات</h2>
+          <h2 id="eventsHeading">پروگرام</h2>
         </div>
         <div id="eventsList" class="row gy-4">
-          <!-- Events injected here from Firebase -->
-          <p>Loading events...</p>
+          <!-- Event cards injected here -->
         </div>
       </section>
+
+      <!-- Custom Sections Container -->
+      <div id="customSectionsContainer">
+        <!-- Custom sections injected here -->
+      </div>
 
       <!-- Gallery -->
       <section id="gallery" class="mb-5">
@@ -365,20 +463,11 @@ Features:
           <h2 id="galleryHeading">گیلری</h2>
         </div>
         <div id="galleryGrid" class="gallery-grid">
-          <!-- images injected here from Firebase -->
-          <p>Loading gallery...</p>
+          <!-- images injected here -->
         </div>
       </section>
 
-      <!-- Custom Sections -->
-      <section id="customSections" class="mb-5">
-        <div id="customSectionsList" class="container">
-          <!-- Custom sections injected here -->
-          <p>Loading sections...</p>
-        </div>
-      </section>
-
-      <!-- Library Section -->
+      <!-- Library Section - Updated to be a link card -->
       <section id="library" class="mb-5">
         <div class="section-title mb-3">
           <h2 id="libraryHeading">کتب خانہ</h2>
@@ -458,7 +547,7 @@ Features:
               <p id="donationPaymentSubtitle">Please support us by donating via UPI.</p>
               <img id="donationQR" src="" alt="UPI QR Code" class="img-fluid rounded mb-3" style="max-width: 200px;">
               <div class="input-group mb-3">
-                <input type="text" id="upiIdInput" class="form-control" value="loading..." readonly>
+                <input type="text" id="upiIdInput" class="form-control" value="your-upi-id@ok" readonly>
                 <button class="btn btn-outline-secondary" type="button" id="copyUpiButton">
                   <span id="copyUpiBtnText">Copy</span>
                 </button>
@@ -497,6 +586,8 @@ Features:
               </div>
               <button class="btn btn-success" type="submit" id="contactSubmit">ارسال</button>
             </form>
+            <!-- Note about email functionality -->
+            <small class="d-block mt-3 text-muted" id="contactFormNote">Note: This is a demo. Messages are saved to your Firebase Admin Panel (Firestore) and are not sent via email.</small>
           </div>
           <!-- Updated Contact Info with LTR fixes -->
           <div class="col-lg-6">
@@ -504,7 +595,7 @@ Features:
             <p id="contactInfo" style="line-height: 1.8;">
               <strong id="lblAddress">پتہ:</strong> <span dir="ltr">H.no: 9, 4-134/5/A/1/1, Raghava Colony, Nadeem Colony, Vali Colony, Toli Chowki, Hyderabad, Telangana 500008</span><br>
               <strong id="lblPhone">فون:</strong> <span dir="ltr"><a href="tel:0905843885" class="text-dark" style="text-decoration:none;">090584 3885</a></span><br>
-              <strong id="lblContactEmail">ای میل:</strong> <span dir="ltr"><a href="mailto:madrasadaruttaleemwattarbiyah@gmail.com" class="text-dark" style="text-decoration:none;">madrasadaruttaleemwattarbiyah@gmail.com</a></span><br>
+              <strong id="lblContactEmail">ای میل:</strong> <span dir="ltr"><a id="contactEmailLink" href="mailto:madrasadaruttaleemwattarbiyah@gmail.com" class="text-dark" style="text-decoration:none;">madrasadaruttaleemwattarbiyah@gmail.com</a></span><br>
               <strong id="lblMap">نقشہ:</strong> <a id="linkMap" href="https://maps.app.goo.gl/X85qiTVBdRNCRn8X7" target="_blank" rel="noopener noreferrer">گوگل میپس پر دیکھیں</a>
             </p>
           </div>
@@ -542,12 +633,12 @@ Features:
           <div id="adminLoginView">
             <form id="adminLoginForm">
               <div class="mb-3">
-                <label>Email (e.g., admin@madrasa.com)</label>
-                <input class="form-control" id="adminUser" value="">
+                <label id="lblAdminEmail">Email</label>
+                <input class="form-control" id="adminUser" value="admin@madrasa.com">
               </div>
               <div class="mb-3">
-                <label>Password</label>
-                <input class="form-control" id="adminPass" type="password" value="">
+                <label id="lblAdminPass">Password</label>
+                <input class="form-control" id="adminPass" type="password" value="password">
               </div>
               <button class="btn btn-primary">Login</button>
             </form>
@@ -556,17 +647,18 @@ Features:
           <!-- Panel view -->
           <div id="adminPanelView" style="display:none">
             <div class="row admin-panel">
-              <div class="col-lg-4">
+              <div class="col-lg-3">
                 <div class="list-group mb-3">
                   <button class="list-group-item list-group-item-action active" data-panel="ann">Announcements</button>
-                  <button class="list-group-item list-group-item-action" data-panel="home">Homepage (Hero)</button>
+                  <button class="list-group-item list-group-item-action" data-panel="hero">Homepage (Hero)</button>
                   <button class="list-group-item list-group-item-action" data-panel="about">About Us</button>
                   <button class="list-group-item list-group-item-action" data-panel="courses">Courses</button>
                   <button class="list-group-item list-group-item-action" data-panel="events">Events</button>
+                  <button class="list-group-item list-group-item-action" data-panel="customSections">Custom Sections</button>
                   <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
-                  <button class="list-group-item list-group-item-action" data-panel="sections">Custom Sections</button>
                   <button class="list-group-item list-group-item-action" data-panel="logo">Logo</button>
-                  <button class="list-group-item list-group-item-action" data-panel="donationSettings">Donation Settings</button>
+                  <button class="list-group-item list-group-item-action" data-panel="donation">Donation Settings</button>
+                  <button class="list-group-item list-group-item-action" data-panel="fonts">Font Settings</button>
                   <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
                   <button class="list-group-item list-group-item-action" data-panel="donations" id="adminNavDonations">Donations</button>
                 </div>
@@ -576,7 +668,7 @@ Features:
                 </div>
               </div>
 
-              <div class="col-lg-8">
+              <div class="col-lg-9">
                 <div id="panelContent">
                   <!-- dynamic admin content injected here -->
                 </div>
@@ -608,29 +700,19 @@ Features:
   <!-- Bootstrap + Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- 
-    ******************************************************************
-    ** FIREBASE SCRIPT - THIS IS THE NEW MODULAR SDK SCRIPT **
-    ******************************************************************
-  -->
+  <!-- ADD FIREBASE SDKs (Modular) -->
   <script type="module">
     // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
-    // Import Firestore (Database)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { 
-      getFirestore, collection, getDocs, addDoc, 
-      deleteDoc, doc, query, onSnapshot, orderBy,
-      setDoc, getDoc
-    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-    // Import Auth (Login)
+      getFirestore, collection, getDocs, onSnapshot, doc, getDoc, 
+      addDoc, setDoc, deleteDoc, updateDoc, query, where, orderBy 
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
     import { 
-      getAuth, signInWithEmailAndPassword, 
-      onAuthStateChanged, signOut 
-    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    // *** We are NO LONGER importing Firebase Storage ***
-
-    // YOUR FIREBASE CONFIG (from the code you provided)
+      getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyANp3lRfm2eruX3Y3M9_T5GIyfN6bRp0j8",
       authDomain: "madrasa-website-12926.firebaseapp.com",
@@ -643,12 +725,8 @@ Features:
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    
-    // Initialize Firebase Services
     const db = getFirestore(app);
     const auth = getAuth(app);
-    // *** No need to initialize storage ***
 
     // ----------------- i18n content -----------------
     const i18n = {
@@ -658,20 +736,20 @@ Features:
         navHome: 'صفحہ اول',
         navAbout: 'ہمارے بارے میں',
         navCourses: 'کورسز',
-        navEvents: 'تقریبات',
+        navEvents: 'پروگرام',
         navGallery: 'گیلری',
-        navSections: 'شعبے',
         navLibrary: 'کتب خانہ',
         navDonation: 'عطیہ',
         navContact: 'رابطہ کریں',
         navAdmin: 'ایڈمن',
+        heroBtn1: 'مزید جانیں',
+        heroBtn2: 'رابطہ کریں',
         qLinkDonation: 'آن لائن عطیہ',
         qLinkFatwa: 'آن لائن فتویٰ',
         qLinkBooks: 'کتب خانہ',
         qLinkGallery: 'گیلری',
-        aboutHeading: 'ہمارے بارے میں',
+        eventsHeading: 'پروگرام',
         coursesHeading: 'کورسز',
-        eventsHeading: 'تقریبات',
         galleryHeading: 'گیلری',
         contactHeading: 'رابطہ کریں',
         lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات',
@@ -684,7 +762,7 @@ Features:
         libraryCardTitle: 'دارالعلوم دیوبند - آن لائن کتب',
         libraryCardText: 'درخواست کردہ کتب خانہ کو سیکورٹی پابندیوں کی وجہ سے براہ راست اس صفحہ پر نہیں دکھایا جا سکتا۔ آپ نیچے دیے گئے بٹن پر کلک کر کے مکمل کتب خانہ تک رسائی حاصل کر سکتے ہیں۔',
         libraryCardButton: 'کتب خانہ پر جائیں',
-        contactFormNote: 'نوٹ: پیغامات کو ایڈمن پینل میں محفوظ کیا جاتا ہے۔',
+        contactFormNote: 'نوٹ: یہ ایک ڈیمو ہے۔ پیغامات کو ایڈمن پینل (فائربیس) میں محفوظ کیا جاتا ہے اور ای میل کے ذریعے نہیں بھیجا جاتا۔',
         donationHeading: 'عطیہ فارم',
         lblDonationAmount: 'رقمِ عطیہ (ہندوستانی روپیے)',
         lblDonationType: 'عطیہ کی قسم',
@@ -706,7 +784,15 @@ Features:
         payNowBtnText: 'ابھی ادا کریں۔',
         copiedToast: 'UPI ID کاپی ہو گیا!',
         adminLogo: 'لوگو',
-        adminDonations: 'عطیات'
+        adminDonations: 'عطیات',
+        adminHomepage: 'Homepage (Hero)',
+        adminAbout: 'About Us',
+        adminDonationSettings: 'Donation Settings',
+        adminEvents: 'Events',
+        adminCustomSections: 'Custom Sections',
+        adminFontSettings: 'Font Settings',
+        lblAdminEmail: 'ای میل',
+        lblAdminPass: 'پاسورڈ',
       },
       en: {
         brandTitle: 'Darut Taleem Wat Tarbiyah',
@@ -716,18 +802,18 @@ Features:
         navCourses: 'Courses',
         navEvents: 'Events',
         navGallery: 'Gallery',
-        navSections: 'Sections',
         navLibrary: 'Library',
         navDonation: 'Donation',
         navContact: 'Contact Us',
         navAdmin: 'Admin',
+        heroBtn1: 'Learn More',
+        heroBtn2: 'Contact Us',
         qLinkDonation: 'Online Donation',
         qLinkFatwa: 'Online Fatwa',
         qLinkBooks: 'Library',
         qLinkGallery: 'Gallery',
-        aboutHeading: 'About Us',
-        coursesHeading: 'Courses',
         eventsHeading: 'Events',
+        coursesHeading: 'Courses',
         galleryHeading: 'Gallery',
         contactHeading: 'Contact Us',
         lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information',
@@ -740,7 +826,7 @@ Features:
         libraryCardTitle: 'Darul Uloom Deoband - Online Books',
         libraryCardText: 'The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.',
         libraryCardButton: 'Visit Library',
-        contactFormNote: 'Note: Messages are saved to the Admin Panel.',
+        contactFormNote: 'Note: This is a demo. Messages are saved to your Firebase Admin Panel (Firestore) and are not sent via email.',
         donationHeading: 'Donation Form',
         lblDonationAmount: 'Donation Amount (Indian Rupees)',
         lblDonationType: 'Donation Type',
@@ -762,35 +848,60 @@ Features:
         payNowBtnText: 'Pay Now',
         copiedToast: 'UPI ID Copied!',
         adminLogo: 'Logo',
-        adminDonations: 'Donations'
+        adminDonations: 'Donations',
+        adminHomepage: 'Homepage (Hero)',
+        adminAbout: 'About Us',
+        adminDonationSettings: 'Donation Settings',
+        adminEvents: 'Events',
+        adminCustomSections: 'Custom Sections',
+        adminFontSettings: 'Font Settings',
+        lblAdminEmail: 'Email',
+        lblAdminPass: 'Password',
       }
     };
+    
+    // NEW: Font options
+    const fontOptions = {
+      ur: [
+        { name: 'Jameel Noori Nastaleeq', value: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif" },
+        { name: 'Noto Nastaliq Urdu', value: "'Noto Nastaliq Urdu', serif" },
+        { name: 'Noto Naskh Arabic', value: "'Noto Naskh Arabic', sans-serif" },
+        { name: 'Almarai', value: "'Almarai', sans-serif" }
+      ],
+      en: [
+        { name: 'Poppins', value: "'Poppins', sans-serif" },
+        { name: 'Roboto', value: "'Roboto', sans-serif" },
+        { name: 'Open Sans', value: "'Open Sans', sans-serif" },
+        { name: 'Lato', value: "'Lato', sans-serif" },
+        { name: 'Inter', value: "'Inter', sans-serif" }
+      ]
+    };
 
-    // ----------------- NEW HELPER FUNCTION -----------------
-    /**
-     * Converts a File object to a base64 data URL.
-     * @param {File} file The file to convert.
-     * @returns {Promise<string>} A promise that resolves with the base64 string.
-     */
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        // Check file size (1 MiB limit for Firestore docs, base64 is ~33% larger)
-        if (file.size > 750 * 1024) { // ~750KB limit
-           reject(new Error('File is too large. Please use images under 750KB.'));
-           return;
-        }
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
+    // ----------------- Simple data store (Now in-memory) -----------------
+    // We use this to hold dynamic config loaded from Firestore
+    const siteData = {
+      lang: 'ur',
+      config: {
+        heroTitleUr: "دارالتعلیم والتربیہ میں خوش آمدید",
+        heroTitleEn: "Welcome to Darut Taleem Wat Tarbiyah",
+        heroSubtitleUr: "تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول",
+        heroSubtitleEn: "A nurturing place for knowledge & character",
+        aboutTextUr: "دارالتعلیم والتربیہ ایک معروف مدرسہ ہے...",
+        aboutTextEn: "Darut Taleem Wat Tarbiyah is a madrasa...",
+        aboutImage: "https://images.unsplash.com/photo-1542736667-069246bdbc6d?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=",
+        upiId: "your-upi-id@ok",
+        fontUr: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif",
+        fontEn: "'Poppins', sans-serif"
+      },
+      logo: null
+    };
 
-    // ----------------- DOM helpers (unchanged) -----------------
+
+    // ----------------- DOM helpers -----------------
     const setYear = ()=> document.getElementById('year').textContent = new Date().getFullYear()
     setYear()
 
-    // ----------------- Toast Notification Helper (unchanged) -----------------
+    // ----------------- Toast Notification Helper -----------------
     const customToastEl = document.getElementById('customToast')
     const customToast = new bootstrap.Toast(customToastEl.querySelector('.toast'))
     const toastBody = document.getElementById('toastBody')
@@ -799,6 +910,7 @@ Features:
     function showToast(message, type = 'success') {
         toastBody.textContent = message
         
+        // Remove old classes, add new
         toastEl.classList.remove('bg-success', 'bg-danger')
         if (type === 'danger') {
             toastEl.classList.add('bg-danger')
@@ -808,239 +920,295 @@ Features:
         
         customToast.show()
     }
-
-    // ----------------- FIREBASE DATA RENDERING -----------------
     
-    let homeData = {};
-    let aboutData = {};
-    let eventsData = [];
-    let sectionsData = [];
-    let currentLang = 'ur'; 
+    // ----------------- Base64 Image Resizer -----------------
+    // Converts a file to a base64 string, with resizing
+    function fileToResizedBase64(file, options = {}) {
+      return new Promise((resolve, reject) => {
+        const { maxWidth = 800, maxHeight = 800, quality = 0.8 } = options;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
 
-    // Render Logo (using base64 string)
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Get the data URL
+            const dataUrl = canvas.toDataURL(file.type, quality);
+            
+            // Check file size (Firestore limit is 1MiB)
+            // 1,048,576 bytes. Base64 is ~33% larger, so limit to ~750KB.
+            if (dataUrl.length > 1048576 * 0.75) {
+              reject(new Error(`Image is too large after compression (size ${dataUrl.length} bytes). Please use a smaller image.`));
+            } else {
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ----------------- Render Dynamic Content -----------------
+
+    // Render announcements in bar (Real-time)
+    function renderAnnouncements(){
+      const bar = document.getElementById('announcementContent');
+      onSnapshot(collection(db, "announcements"), (snapshot) => {
+        const anns = [];
+        snapshot.forEach(doc => anns.push(doc.data()));
+        
+        if(anns.length === 0){ bar.textContent = '' ; return }
+        const text = anns.map(a=>a.text).join('   •   ');
+        bar.textContent = text + '   •   ' + text + '   •   ' + text; // Repeat for longer scroll
+      });
+    }
+
+    // Render Logo (Real-time)
     function renderLogo() {
-      const logoRef = doc(db, "siteConfig", "logo");
       const logoContainer = document.getElementById('navbarLogoContainer');
       const fallbackLogo = `
         <div class="fallback-logo">
           <span style="font-weight:700; color:var(--primary)">د</span>
         </div>`;
-
-      onSnapshot(logoRef, (doc) => {
-        if (doc.exists() && doc.data().logoData) {
-          logoContainer.innerHTML = `<img src="${doc.data().logoData}" alt="Logo" id="navbarLogo" style="margin-inline-start:.6rem">`;
+      
+      onSnapshot(doc(db, "siteConfig", "logo"), (docSnap) => {
+        if (docSnap.exists() && docSnap.data().logoData) {
+          siteData.logo = docSnap.data().logoData;
+          logoContainer.innerHTML = `<img src="${siteData.logo}" alt="Logo" id="navbarLogo" style="margin-inline-start:.6rem">`;
         } else {
+          siteData.logo = null;
           logoContainer.innerHTML = fallbackLogo;
         }
-      }, (error) => {
-        console.error("Error fetching logo: ", error);
-        logoContainer.innerHTML = fallbackLogo;
       });
     }
-    renderLogo();
 
-    // Render Homepage Hero
+    // Render Homepage (Hero)
     function renderHomepage() {
-      const heroTitleEl = document.getElementById('heroTitle');
-      const heroSubtitleEl = document.getElementById('heroSubtitle');
-
-      onSnapshot(doc(db, "siteConfig", "homepage"), (doc) => {
-        if (doc.exists()) {
-          homeData = doc.data(); 
-          applyLanguage(currentLang); 
-        } else {
-          heroTitleEl.textContent = "Welcome";
-          heroSubtitleEl.textContent = "Please set homepage text in admin panel";
-        }
-      }, (error) => { console.error("Error fetching homepage data: ", error); });
+      document.getElementById('heroTitle').textContent = siteData.lang === 'ur' ? siteData.config.heroTitleUr : siteData.config.heroTitleEn;
+      document.getElementById('heroSubtitle').textContent = siteData.lang === 'ur' ? siteData.config.heroSubtitleUr : siteData.config.heroSubtitleEn;
     }
-    renderHomepage();
 
-    // Render About Us (with base64 image)
+    // Render About Us
     function renderAbout() {
-      const aboutTextEl = document.getElementById('aboutText');
-      const aboutImageEl = document.getElementById('aboutImage');
-
-      onSnapshot(doc(db, "siteConfig", "about"), (doc) => {
-        if (doc.exists()) {
-          aboutData = doc.data(); 
-          if (aboutData.imageData) { // Use imageData field
-            aboutImageEl.src = aboutData.imageData;
-          }
-          applyLanguage(currentLang); 
-        } else {
-          aboutTextEl.textContent = "Please set about text in admin panel";
-        }
-      }, (error) => { console.error("Error fetching about data: ", error); });
+      document.getElementById('aboutHeading').textContent = siteData.lang === 'ur' ? i18n.ur.adminAbout : i18n.en.adminAbout;
+      document.getElementById('aboutText').textContent = siteData.lang === 'ur' ? siteData.config.aboutTextUr : siteData.config.aboutTextEn;
+      document.getElementById('aboutImage').src = siteData.config.aboutImage;
     }
-    renderAbout();
-
-    // Render announcements (real-time)
-    function renderAnnouncements(){
-      const annRef = collection(db, "announcements");
-      const q = query(annRef, orderBy("createdAt", "desc"));
+    
+    // Render Donation Settings
+    function renderDonationSettings() {
+      const upiId = siteData.config.upiId || 'your-upi-id@ok';
+      const upiLink = `upi://pay?pa=${upiId}&pn=Darut%20Taleem%20Wat%20Tarbiyah&am=&cu=INR&tn=Donation`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
       
-      onSnapshot(q, (snapshot) => {
-        const anns = [];
-        snapshot.forEach(doc => anns.push(doc.data()));
-        
-        const bar = document.getElementById('announcementContent');
-        if(anns.length === 0){ bar.textContent = 'Welcome' ; return }
-
-        const text = anns.map(a=>a.text).join('   •   ');
-        bar.textContent = text + '   •   ' + text + '   •   ' + text;
-      }, (error) => {
-        console.error("Error fetching announcements: ", error);
-        document.getElementById('announcementContent').textContent = "Error loading announcements.";
-      });
+      document.getElementById('donationQR').src = qrUrl;
+      document.getElementById('payNowLink').href = upiLink;
+      document.getElementById('upiIdInput').value = upiId;
     }
-    renderAnnouncements();
+    
+    // Render Fonts
+    function renderFonts() {
+      document.documentElement.style.setProperty('--font-ur', siteData.config.fontUr);
+      document.documentElement.style.setProperty('--font-en', siteData.config.fontEn);
+    }
+    
+    // Load and Render all Site Config data
+    async function renderSiteConfig() {
+      const docRef = doc(db, "siteConfig", "main");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        // Merge fetched config with defaults
+        siteData.config = { ...siteData.config, ...docSnap.data() };
+      }
+      // Now render all components that depend on this config
+      renderHomepage();
+      renderAbout();
+      renderDonationSettings();
+      renderFonts();
+      
+      // Also apply language
+      applyLanguage(siteData.lang);
+    }
 
-
-    // Render courses (fetch once)
+    // Render courses
     async function renderCourses(){
       const container = document.getElementById('coursesList');
       container.innerHTML = '<p>Loading courses...</p>';
       
-      try {
-        const snapshot = await getDocs(collection(db, "courses"));
-        container.innerHTML = ''; 
-        
-        if (snapshot.empty) {
-          container.innerHTML = '<p>No courses listed yet.</p>';
-          return;
-        }
-        
-        snapshot.forEach(doc => {
-          const c = doc.data();
-          const col = document.createElement('div'); col.className = 'col-md-6 col-lg-4';
-          col.innerHTML = `
-            <div class="card card-course h-100">
-              <div class="card-body">
-                <h5 class="card-title">${c.titleUr || c.titleEn}</h5>
-                <p class="card-text">${c.descUr || c.descEn}</p>
-              </div>
-              <div class="card-footer small text-muted">${c.duration || ''}</div>
-            </div>
-          `;
-          container.appendChild(col);
-        });
-      } catch (error) {
-        console.error("Error fetching courses: ", error);
-        container.innerHTML = '<p>Error loading courses.</p>';
+      const snapshot = await getDocs(collection(db, "courses"));
+      
+      container.innerHTML = '';
+      if (snapshot.empty) {
+        container.innerHTML = '<p>No courses added yet.</p>';
+        return;
       }
-    }
-    renderCourses();
-
-    // Render Events (real-time)
-    function renderEvents() {
-      const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
-
-      onSnapshot(q, (snapshot) => {
-        const container = document.getElementById('eventsList');
-        container.innerHTML = '';
-        eventsData = []; // Clear cache
-
-        if (snapshot.empty) {
-          container.innerHTML = '<p>No events listed yet.</p>';
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          eventsData.push(doc.data()); // Cache data
-        });
-        
-        applyLanguage(currentLang); // Re-apply language to render
-        
-      }, (error) => {
-        console.error("Error fetching events: ", error);
-        document.getElementById('eventsList').innerHTML = '<p>Error loading events.</p>';
+      
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        const col = document.createElement('div'); col.className = 'col-md-6 col-lg-4';
+        col.innerHTML = `
+          <div class="card card-course h-100">
+            <div class="card-body">
+              <h5 class="card-title">${siteData.lang === 'ur' ? c.titleUr : c.titleEn}</h5>
+              <p class="card-text">${siteData.lang === 'ur' ? c.descUr : c.descEn}</p>
+            </div>
+            <div class="card-footer small text-muted">${c.duration || ''}</div>
+          </div>
+        `;
+        container.appendChild(col);
       });
     }
-    renderEvents();
 
-    // Render gallery (fetch once)
+    // Render events
+    async function renderEvents(){
+      const container = document.getElementById('eventsList');
+      container.innerHTML = '<p>Loading events...</p>';
+      
+      const snapshot = await getDocs(collection(db, "events"));
+      
+      container.innerHTML = '';
+      if (snapshot.empty) {
+        container.innerHTML = '<p>No events scheduled.</p>';
+        return;
+      }
+      
+      const lang = siteData.lang;
+      const months = lang === 'ur' 
+        ? ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"]
+        : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+      snapshot.forEach(doc => {
+        const event = doc.data();
+        const eventDate = new Date(event.date);
+        const day = eventDate.getDate();
+        const month = months[eventDate.getMonth()];
+
+        const col = document.createElement('div'); col.className = 'col-md-6';
+        col.innerHTML = `
+          <div class="event-card h-100">
+            <div class="event-card-date">
+              <span class="day">${day}</span>
+              <span class="month">${month}</span>
+            </div>
+            <div class="event-card-body">
+              <h5>${lang === 'ur' ? event.titleUr : event.titleEn}</h5>
+              <p>${lang === 'ur' ? event.descUr : event.descEn}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    }
+    
+    // Render Custom Sections
+    async function renderCustomSections() {
+      const container = document.getElementById('customSectionsContainer');
+      container.innerHTML = '';
+      
+      const snapshot = await getDocs(collection(db, "customSections"));
+      
+      if (snapshot.empty) {
+        return;
+      }
+      
+      const lang = siteData.lang;
+      snapshot.forEach(doc => {
+        const section = doc.data();
+        const sectionEl = document.createElement('section');
+        sectionEl.className = 'mb-5';
+        
+        // Image position logic
+        const imgCol = `<div class="col-lg-6"><img src="${section.imageData}" alt="${lang === 'ur' ? section.titleUr : section.titleEn}" class="custom-section-img"></div>`;
+        const textCol = `
+          <div class="col-lg-6">
+            <h3>${lang === 'ur' ? section.titleUr : section.titleEn}</h3>
+            <p>${lang === 'ur' ? section.textUr : section.textEn}</p>
+          </div>
+        `;
+        
+        const rowContent = section.imagePosition === 'right' 
+          ? `${textCol} ${imgCol}` 
+          : `${imgCol} ${textCol}`;
+
+        sectionEl.innerHTML = `
+          <div class="section-title mb-3">
+            <h2>${lang === 'ur' ? section.titleUr : section.titleEn}</h2>
+          </div>
+          <div classs="row gy-4 align-items-center">
+            ${rowContent}
+          </div>
+        `;
+        // This is a bug in the original code, classs="row" should be class="row"
+        // Fixing it now:
+        sectionEl.querySelector('[classs="row gy-4 align-items-center"]').setAttribute('class', 'row gy-4 align-items-center');
+        
+        container.appendChild(sectionEl);
+      });
+    }
+
+    // Render gallery
     async function renderGallery(){
       const grid = document.getElementById('galleryGrid');
       grid.innerHTML = '<p>Loading gallery...</p>';
       
-      try {
-        const snapshot = await getDocs(collection(db, "gallery"));
-        grid.innerHTML = '';
-        
-        if (snapshot.empty) {
-          grid.innerHTML = '<p>No gallery images yet.</p>';
-          return;
-        }
-        
-        snapshot.forEach(doc => {
-          const img = doc.data();
-          const imgEl = document.createElement('img');
-          imgEl.src = img.imageData; // Use imageData field
-          imgEl.alt = img.name || 'Gallery';
-          grid.appendChild(imgEl);
-        });
-      } catch (error) {
-        console.error("Error fetching gallery: ", error);
-        grid.innerHTML = '<p>Error loading gallery.</p>';
+      const snapshot = await getDocs(collection(db, "gallery"));
+      
+      grid.innerHTML = '';
+      if (snapshot.empty) {
+        grid.innerHTML = '<p>No images in gallery yet.</p>';
+        return;
       }
-    }
-    renderGallery();
 
-    // Render Custom Sections (real-time)
-    function renderCustomSections() {
-      const q = query(collection(db, "customSections"), orderBy("createdAt", "desc"));
-
-      onSnapshot(q, (snapshot) => {
-        const container = document.getElementById('customSectionsList');
-        container.innerHTML = '';
-        sectionsData = []; // Clear cache
-
-        if (snapshot.empty) {
-          container.innerHTML = '<p>No sections added yet.</p>';
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          sectionsData.push(doc.data()); // Cache data
-        });
-
-        applyLanguage(currentLang); // Re-apply language to render
-
-      }, (error) => {
-        console.error("Error fetching custom sections: ", error);
-        document.getElementById('customSectionsList').innerHTML = '<p>Error loading sections.</p>';
+      snapshot.forEach(doc => {
+        const img = doc.data();
+        const imgEl = document.createElement('img');
+        imgEl.src = img.imageData;
+        imgEl.alt = img.name || 'Gallery';
+        grid.appendChild(imgEl);
       });
     }
-    renderCustomSections();
 
     // Contact form submission
     document.getElementById('contactForm').addEventListener('submit', async function(e){
       e.preventDefault();
-      const form = this;
-      const submitButton = form.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
-      submitButton.innerText = "Sending...";
-
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const subject = document.getElementById('contactSubject').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      
       try {
-        const msg = {
-          name: document.getElementById('contactName').value.trim(),
-          email: document.getElementById('contactEmail').value.trim(),
-          subject: document.getElementById('contactSubject').value.trim(),
-          message: document.getElementById('contactMessage').value.trim(),
-          createdAt: new Date()
-        };
-        
-        await addDoc(collection(db, "messages"), msg);
-        
-        form.reset();
+        await addDoc(collection(db, "messages"), {
+          name, email, subject, message,
+          created: new Date().toISOString()
+        });
+        this.reset();
         showToast('پیغام موصول ہوگیا — ہم جلد رابطہ کریں گے', 'success');
       } catch (error) {
-        console.error("Error saving message: ", error);
-        showToast('Error sending message.', 'danger');
-      } finally {
-        submitButton.disabled = false;
-        submitButton.innerText = i18n[langSelect.value].contactSubmit;
+        console.error("Error adding message: ", error);
+        showToast('Error sending message. Please try again.', 'danger');
       }
     });
 
@@ -1054,8 +1222,6 @@ Features:
     
     document.getElementById('donationForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const submitButton = this.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
       
       let donationType = donationTypeSelect.value;
       if (donationType === 'Other') {
@@ -1070,26 +1236,54 @@ Features:
         address: document.getElementById('donationAddress').value.trim(),
         email: document.getElementById('donationEmail').value.trim(),
         docId: document.getElementById('donationDocId').value.trim(),
-        createdAt: new Date()
+        created: new Date().toISOString()
       };
       
       try {
+        // Save donation request
         await addDoc(collection(db, "donations"), donation);
         
+        // Show payment info
         document.getElementById('donationPaymentInfo').style.display = 'block';
         showToast('Form submitted. Please complete the payment.', 'success');
         
       } catch (error) {
         console.error("Error saving donation: ", error);
-        showToast('Error submitting form. Please try again.', 'danger');
-      } finally {
-        submitButton.disabled = false;
+        showToast('Error saving submission. Please try again.', 'danger');
+      }
+    });
+    
+    // Copy UPI button
+    document.getElementById('copyUpiButton').addEventListener('click', function() {
+      const upiInput = document.getElementById('upiIdInput');
+      try {
+        upiInput.select();
+        upiInput.setSelectionRange(0, 99999); // For mobile
+        document.execCommand('copy');
+        
+        const lang = siteData.lang;
+        showToast(i18n[lang].copiedToast, 'success');
+
+      } catch (err) {
+        console.error('Failed to copy UPI ID: ', err);
+        showToast('Failed to copy', 'danger');
       }
     });
 
-    // ----------------- Admin interactions (Base64) -----------------
-    const adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
-    document.getElementById('openAdmin').addEventListener('click',()=>{ adminModal.show() });
+    // ----------------- Admin interactions -----------------
+    const adminModalEl = document.getElementById('adminModal');
+    const adminModal = new bootstrap.Modal(adminModalEl);
+    const adminButton = document.getElementById('openAdmin');
+    
+    adminButton.addEventListener('click',(e)=>{ 
+      e.preventDefault();
+      adminModal.show();
+    });
+    
+    // Fix modal focus bug (aria-hidden warning)
+    adminModalEl.addEventListener('hidden.bs.modal', () => {
+      adminButton.focus();
+    });
 
     // Admin Login
     document.getElementById('adminLoginForm').addEventListener('submit', async function(e){
@@ -1099,6 +1293,7 @@ Features:
       
       try {
         await signInWithEmailAndPassword(auth, email, pass);
+        // On success, onAuthStateChanged will handle panel switching
         showToast('Login successful!', 'success');
       } catch (error) {
         console.error("Login failed:", error.message);
@@ -1109,16 +1304,18 @@ Features:
     // Admin Logout
     document.getElementById('adminLogout').addEventListener('click', ()=>{
       signOut(auth);
-      showToast('Logged out', 'success');
+      showToast('Logged out.', 'success');
     });
 
-    // Auth State Listener
+    // Auth state brain
     onAuthStateChanged(auth, user => {
       if (user) {
+        // User is LOGGED IN
         document.getElementById('adminLoginView').style.display = 'none';
         document.getElementById('adminPanelView').style.display = 'block';
-        loadAdminPanel('ann'); 
+        loadAdminPanel('ann'); // Load default panel
       } else {
+        // User is LOGGED OUT
         document.getElementById('adminLoginView').style.display = 'block';
         document.getElementById('adminPanelView').style.display = 'none';
       }
@@ -1126,25 +1323,40 @@ Features:
 
     // Panel nav buttons
     document.querySelectorAll('[data-panel]').forEach(btn=> btn.addEventListener('click', ()=> loadAdminPanel(btn.dataset.panel) ))
-
-    // Admin Panel Loader
+    
+    // Main Admin Panel Loader
     async function loadAdminPanel(panel){
       const content = document.getElementById('panelContent');
-      content.innerHTML = '<h5>Loading...</h5>';
+      content.innerHTML = `<h5>Loading ${panel}...</h5>`;
       
+      // Update active button state
       document.querySelectorAll('[data-panel]').forEach(b => {
-        b.classList.toggle('active', b.dataset.panel === panel);
+        b.classList.toggle('active', b.dataset.panel === panel)
       });
 
       // --- Announcements Panel ---
       if(panel === 'ann'){
+        const snapshot = await getDocs(collection(db, "announcements"));
+        let listHtml = '';
+        snapshot.forEach(snapshotDoc => { // Renamed doc to snapshotDoc
+          const a = snapshotDoc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>${a.text}</div>
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
+              </div>
+            </div>
+          `;
+        });
+        
         content.innerHTML = `
           <h5>Announcements</h5>
           <form id="annForm" class="mb-3">
-            <div class="mb-2"><textarea id="annText" class="form-control" rows="2" placeholder="Add announcement in Urdu or English" required></textarea></div>
+            <div class="mb-2"><textarea id="annText" class="form-control" rows="2" placeholder="Add announcement in Urdu or English"></textarea></div>
             <button class="btn btn-success btn-sm">Add</button>
           </form>
-          <div id="annsList"></div>
+          <div id="annsList">${listHtml}</div>
         `;
         
         document.getElementById('annForm').addEventListener('submit', async function(e){
@@ -1152,157 +1364,134 @@ Features:
           const text = document.getElementById('annText').value.trim(); 
           if(!text) return;
           try {
-            await addDoc(collection(db, "announcements"), { text: text, createdAt: new Date() });
-            showToast('Announcement added', 'success');
-            this.reset();
-          } catch(error) { showToast(error.message, 'danger'); }
+            await addDoc(collection(db, "announcements"), { text });
+            showToast('Announcement added!', 'success');
+            loadAdminPanel('ann');
+          } catch(err) { showToast(err.message, 'danger'); }
         });
-
-        const listDiv = document.getElementById('annsList');
-        const annRef = collection(db, "announcements");
-        onSnapshot(annRef, (snapshot) => {
-          listDiv.innerHTML = '';
-          if (snapshot.empty) listDiv.innerHTML = '<p>No announcements yet.</p>';
-          
-          snapshot.forEach(snapshotDoc => {
-            const a = snapshotDoc.data();
-            const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `
-              <div class="d-flex justify-content-between align-items-center">
-                <div>${a.text}</div>
-                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
-              </div>
-            `;
-            listDiv.appendChild(el);
-            
-            el.querySelector('button').addEventListener('click', async (e)=>{
-              const id = e.target.dataset.id;
-              if (confirm('Are you sure you want to delete this?')) {
-                try {
-                  await deleteDoc(doc(db, "announcements", id));
-                  showToast('Deleted', 'success');
-                } catch(error) { showToast(error.message, 'danger'); }
-              }
-            });
-          });
+        
+        document.getElementById('annsList').addEventListener('click', async (e) => {
+          if (e.target.dataset.id) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            try {
+              await deleteDoc(doc(db, "announcements", e.target.dataset.id)); // doc() is available
+              showToast('Deleted!', 'success');
+              loadAdminPanel('ann');
+            } catch(err) { showToast(err.message, 'danger'); }
+          }
         });
       }
 
       // --- Homepage (Hero) Panel ---
-      if(panel === 'home'){
+      if(panel === 'hero'){
         content.innerHTML = `
-          <h5>Edit Homepage (Hero)</h5>
-          <form id="homeForm" class="mb-3">
-            <div class="mb-2">
-              <label class="form-label">Title (Urdu)</label>
-              <input id="heroTitleUr" class="form-control" dir="rtl">
+          <h5>Homepage (Hero)</h5>
+          <form id="heroForm">
+            <div class="mb-3">
+              <label class="form-label">Hero Title (Urdu)</label>
+              <input type="text" id="heroTitleUr" class="form-control" value="${siteData.config.heroTitleUr}">
             </div>
-            <div class="mb-2">
-              <label class="form-label">Title (English)</label>
-              <input id="heroTitleEn" class="form-control">
+            <div class="mb-3">
+              <label class="form-label">Hero Title (English)</label>
+              <input type="text" id="heroTitleEn" class="form-control" value="${siteData.config.heroTitleEn}">
             </div>
-            <hr>
-            <div class="mb-2">
-              <label class="form-label">Subtitle (Urdu)</label>
-              <input id="heroSubtitleUr" class="form-control" dir="rtl">
+            <div class="mb-3">
+              <label class="form-label">Hero Subtitle (Urdu)</label>
+              <input type="text" id="heroSubtitleUr" class="form-control" value="${siteData.config.heroSubtitleUr}">
             </div>
-            <div class="mb-2">
-              <label class="form-label">Subtitle (English)</label>
-              <input id="heroSubtitleEn" class="form-control">
+            <div class="mb-3">
+              <label class="form-label">Hero Subtitle (English)</label>
+              <input type="text" id="heroSubtitleEn" class="form-control" value="${siteData.config.heroSubtitleEn}">
             </div>
-            <button class="btn btn-success btn-sm">Save Homepage</button>
+            <button class="btn btn-primary">Save Settings</button>
           </form>
         `;
-
-        const docRef = doc(db, "siteConfig", "homepage");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById('heroTitleUr').value = data.heroTitleUr || '';
-          document.getElementById('heroTitleEn').value = data.heroTitleEn || '';
-          document.getElementById('heroSubtitleUr').value = data.heroSubtitleUr || '';
-          document.getElementById('heroSubtitleEn').value = data.heroSubtitleEn || '';
-        }
-
-        document.getElementById('homeForm').addEventListener('submit', async function(e){
+        
+        document.getElementById('heroForm').addEventListener('submit', async (e) => {
           e.preventDefault();
-          const data = {
+          const newConfig = {
             heroTitleUr: document.getElementById('heroTitleUr').value,
             heroTitleEn: document.getElementById('heroTitleEn').value,
             heroSubtitleUr: document.getElementById('heroSubtitleUr').value,
             heroSubtitleEn: document.getElementById('heroSubtitleEn').value
           };
           try {
-            await setDoc(docRef, data);
+            await setDoc(doc(db, "siteConfig", "main"), newConfig, { merge: true });
+            // Update local state and re-render
+            siteData.config = { ...siteData.config, ...newConfig };
+            renderHomepage();
             showToast('Homepage updated!', 'success');
-          } catch(error) { showToast(error.message, 'danger'); }
+          } catch(err) { showToast(err.message, 'danger'); }
         });
       }
-
-      // --- About Us Panel (Base64) ---
+      
+      // --- About Us Panel ---
       if(panel === 'about'){
         content.innerHTML = `
-          <h5>Edit About Us</h5>
-          <form id="aboutForm" class="mb-3">
-            <div class="mb-2">
+          <h5>About Us</h5>
+          <form id="aboutForm">
+            <div class="mb-3">
               <label class="form-label">About Text (Urdu)</label>
-              <textarea id="aboutTextUr" class="form-control" dir="rtl" rows="5"></textarea>
+              <textarea id="aboutTextUr" class="form-control" rows="4">${siteData.config.aboutTextUr}</textarea>
             </div>
-            <div class="mb-2">
+            <div class="mb-3">
               <label class="form-label">About Text (English)</label>
-              <textarea id="aboutTextEn" class="form-control" rows="5"></textarea>
+              <textarea id="aboutTextEn" class="form-control" rows="4">${siteData.config.aboutTextEn}</textarea>
             </div>
-            <div class="mb-2">
-              <label class="form-label">Upload Image (Replaces old one)</label>
-              <input id="aboutImageFile" type="file" accept="image/*" class="form-control">
-              <small>Max 750KB. Leave blank to keep current image.</small>
+            <div class="mb-3">
+              <label class="form-label">About Image</label>
+              <input type="file" id="aboutImageFile" class="form-control" accept="image/png, image/jpeg, image/webp">
+              <small>Upload new image, or leave blank to keep current one.</small>
+              <img src="${siteData.config.aboutImage}" class="admin-preview-img" id="aboutImgPreview">
             </div>
-            <button class="btn btn-success btn-sm">Save About Us</button>
+            <button class="btn btn-primary">Save Settings</button>
           </form>
         `;
-
-        const docRef = doc(db, "siteConfig", "about");
-        const docSnap = await getDoc(docRef);
-        let existingImageData = '';
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById('aboutTextUr').value = data.aboutTextUr || '';
-          document.getElementById('aboutTextEn').value = data.aboutTextEn || '';
-          existingImageData = data.imageData || '';
-        }
-
-        document.getElementById('aboutForm').addEventListener('submit', async function(e){
+        
+        document.getElementById('aboutForm').addEventListener('submit', async (e) => {
           e.preventDefault();
-          const submitButton = this.querySelector('button');
-          submitButton.disabled = true;
-          submitButton.innerText = "Saving...";
           
+          let newImageData = siteData.config.aboutImage;
           const file = document.getElementById('aboutImageFile').files[0];
-          let newImageData = existingImageData;
-
+          
           try {
             if (file) {
-              newImageData = await toBase64(file);
+              showToast('Compressing image...', 'success');
+              newImageData = await fileToResizedBase64(file, { maxWidth: 1024, maxHeight: 1024 });
             }
             
-            const data = {
+            const newConfig = {
               aboutTextUr: document.getElementById('aboutTextUr').value,
               aboutTextEn: document.getElementById('aboutTextEn').value,
-              imageData: newImageData
+              aboutImage: newImageData
             };
             
-            await setDoc(docRef, data);
+            await setDoc(doc(db, "siteConfig", "main"), newConfig, { merge: true });
+            // Update local state and re-render
+            siteData.config = { ...siteData.config, ...newConfig };
+            renderAbout();
+            document.getElementById('aboutImgPreview').src = newImageData;
             showToast('About Us updated!', 'success');
-          } catch(error) {
-            showToast(error.message, 'danger');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = "Save About Us";
-          }
+            
+          } catch(err) { showToast(err.message, 'danger'); }
         });
       }
 
       // --- Courses Panel ---
       if(panel === 'courses'){
+        const snapshot = await getDocs(collection(db, "courses"));
+        let listHtml = '';
+        snapshot.forEach(snapshotDoc => {
+          const c = snapshotDoc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
+              <div class="d-flex justify-content-between align-items-start">
+                <div><strong>${c.titleUr || c.titleEn}</strong><div class="small text-muted">${c.duration || ''}</div></div>
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
+              </div>
+            </div>`;
+        });
+        
         content.innerHTML = `
           <h5>Courses</h5>
           <form id="courseForm" class="mb-3">
@@ -1317,12 +1506,12 @@ Features:
             <div class="mt-2"><textarea id="courseDescUr" class="form-control" placeholder="Short description (Urdu)"></textarea></div>
             <div class="mt-2"><button class="btn btn-success btn-sm">Add Course</button></div>
           </form>
-          <div id="coursesListAdmin"></div>
+          <div id="coursesListAdmin">${listHtml}</div>
         `;
         
         document.getElementById('courseForm').addEventListener('submit', async function(e){
           e.preventDefault();
-          const obj = {
+          const course = {
             titleUr: document.getElementById('courseTitleUr').value || '',
             titleEn: document.getElementById('courseTitleEn').value || '',
             descUr: document.getElementById('courseDescUr').value || '',
@@ -1330,295 +1519,269 @@ Features:
             duration: document.getElementById('courseDuration').value || ''
           };
           try {
-            await addDoc(collection(db, "courses"), obj);
-            showToast('Course added', 'success');
+            await addDoc(collection(db, "courses"), course);
+            showToast('Course added!', 'success');
             renderCourses();
             loadAdminPanel('courses');
-          } catch(error) { showToast(error.message, 'danger'); }
+          } catch(err) { showToast(err.message, 'danger'); }
         });
 
-        const out = document.getElementById('coursesListAdmin');
-        const courseSnapshot = await getDocs(collection(db, "courses"));
-        if (courseSnapshot.empty) out.innerHTML = '<p>No courses yet.</p>';
-        courseSnapshot.forEach(snapshotDoc => {
-          const c = snapshotDoc.data();
-          const el = document.createElement('div'); el.className='card mb-2 p-2';
-          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div></div>`;
-          out.appendChild(el);
-          el.querySelector('button').addEventListener('click', async (e)=>{
-            const id = e.target.dataset.id;
-            if (confirm('Are you sure you want to delete this?')) {
-              await deleteDoc(doc(db, "courses", id));
+        document.getElementById('coursesListAdmin').addEventListener('click', async (e) => {
+          if (e.target.dataset.id) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            try {
+              await deleteDoc(doc(db, "courses", e.target.dataset.id));
+              showToast('Deleted!', 'success');
               renderCourses();
               loadAdminPanel('courses');
-            }
-          });
+            } catch(err) { showToast(err.message, 'danger'); }
+          }
         });
       }
 
       // --- Events Panel ---
-      if (panel === 'events') {
+      if(panel === 'events'){
+        const snapshot = await getDocs(collection(db, "events"));
+        let listHtml = '';
+        snapshot.forEach(snapshotDoc => {
+          const e = snapshotDoc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
+              <div class="d-flex justify-content-between align-items-start">
+                <div><strong>${e.titleUr || e.titleEn}</strong><div class="small text-muted">${e.date}</div></div>
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
+              </div>
+            </div>`;
+        });
+
         content.innerHTML = `
           <h5>Events</h5>
           <form id="eventForm" class="mb-3">
-            <div class="mb-2"><input id="eventTitleUr" class="form-control" placeholder="Event Title (Urdu)" dir="rtl" required></div>
-            <div class="mb-2"><input id="eventTitleEn" class="form-control" placeholder="Event Title (English)" required></div>
-            <div class="mb-2"><input id="eventDate" class="form-control" placeholder="Event Date (e.g., July 20, 2026)"></div>
-            <div class="mb-2"><textarea id="eventDescUr" class="form-control" placeholder="Description (Urdu)" dir="rtl" rows="3"></textarea></div>
-            <div class="mb-2"><textarea id="eventDescEn" class="form-control" placeholder="Description (English)" rows="3"></textarea></div>
-            <button class="btn btn-success btn-sm" type="submit">Add Event</button>
+            <div class="row g-2">
+              <div class="col-md-6"><input id="eventTitleUr" class="form-control" placeholder="Event Title (Urdu)" required></div>
+              <div class="col-md-6"><input id="eventTitleEn" class="form-control" placeholder="Event Title (English)"></div>
+            </div>
+            <div class="row g-2 mt-2">
+              <div class="col-md-6"><input id="eventDate" type="date" class="form-control" required></div>
+            </div>
+            <div class="mt-2"><textarea id="eventDescUr" class="form-control" placeholder="Short description (Urdu)"></textarea></div>
+            <div class="mt-2"><textarea id="eventDescEn" class="form-control" placeholder="Short description (English)"></textarea></div>
+            <div class="mt-2"><button class="btn btn-success btn-sm">Add Event</button></div>
           </form>
-          <div id="eventsAdminList"></div>
+          <div id="eventsListAdmin">${listHtml}</div>
         `;
-
-        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        
+        document.getElementById('eventForm').addEventListener('submit', async function(e){
           e.preventDefault();
-          const submitButton = this.querySelector('button[type="submit"]');
-          submitButton.disabled = true;
-          submitButton.innerText = "Saving...";
-          
+          const event = {
+            titleUr: document.getElementById('eventTitleUr').value || '',
+            titleEn: document.getElementById('eventTitleEn').value || '',
+            descUr: document.getElementById('eventDescUr').value || '',
+            descEn: document.getElementById('eventDescEn').value || '',
+            date: document.getElementById('eventDate').value
+          };
           try {
-            await addDoc(collection(db, "events"), {
-              titleUr: document.getElementById('eventTitleUr').value,
-              titleEn: document.getElementById('eventTitleEn').value,
-              date: document.getElementById('eventDate').value,
-              descUr: document.getElementById('eventDescUr').value,
-              descEn: document.getElementById('eventDescEn').value,
-              createdAt: new Date()
-            });
+            await addDoc(collection(db, "events"), event);
             showToast('Event added!', 'success');
-            loadAdminPanel('events'); // Refresh
-          } catch (error) {
-            showToast(error.message, 'danger');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = "Add Event";
+            renderEvents();
+            loadAdminPanel('events');
+          } catch(err) { showToast(err.message, 'danger'); }
+        });
+        
+        document.getElementById('eventsListAdmin').addEventListener('click', async (e) => {
+          if (e.target.dataset.id) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            try {
+              await deleteDoc(doc(db, "events", e.target.dataset.id));
+              showToast('Event deleted!', 'success');
+              renderEvents();
+              loadAdminPanel('events');
+            } catch(err) { showToast(err.message, 'danger'); }
           }
         });
-
-        const out = document.getElementById('eventsAdminList');
-        const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-          out.innerHTML = '';
-          if (snapshot.empty) out.innerHTML = '<p>No events yet.</p>';
-          snapshot.forEach(snapshotDoc => {
-            const e = snapshotDoc.data();
-            const el = document.createElement('div');
-            el.className = 'card mb-2 p-2';
-            el.innerHTML = `
+      }
+      
+      // --- Custom Sections Panel ---
+      if (panel === 'customSections') {
+        const snapshot = await getDocs(collection(db, "customSections"));
+        let listHtml = '';
+        snapshot.forEach(snapshotDoc => {
+          const s = snapshotDoc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
               <div class="d-flex justify-content-between align-items-start">
                 <div>
-                  <strong>${e.titleUr || e.titleEn}</strong>
-                  <div class="small text-muted">${e.date || ''}</div>
+                  <strong>${s.titleUr || s.titleEn}</strong>
+                  <img src="${s.imageData}" style="width: 50px; height: 50px; object-fit: cover; margin-left: 10px;">
                 </div>
-                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button>
-              </div>`;
-            out.appendChild(el);
+                <div><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button></div>
+              </div>
+            </div>`;
+        });
+
+        content.innerHTML = `
+          <h5>Custom Homepage Sections</h5>
+          <form id="customSectionForm" class="mb-3">
+            <div class="row g-2">
+              <div class="col-md-6"><input id="csTitleUr" class="form-control" placeholder="Title (Urdu)" required></div>
+              <div class="col-md-6"><input id="csTitleEn" class="form-control" placeholder="Title (English)"></div>
+            </div>
+            <div class="mt-2"><textarea id="csTextUr" class="form-control" placeholder="Text (Urdu)"></textarea></div>
+            <div class="mt-2"><textarea id="csTextEn" class="form-control" placeholder="Text (English)"></textarea></div>
+            <div class="row g-2 mt-2">
+              <div class="col-md-6">
+                <label class="form-label">Image</label>
+                <input type="file" id="csFile" class="form-control" accept="image/png, image/jpeg, image/webp" required>
+                <small>Image will be resized to ~800px width.</small>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Image Position</label>
+                <select id="csImgPos" class="form-select">
+                  <option value="left" selected>Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-2"><button class="btn btn-success btn-sm">Add Section</button></div>
+          </form>
+          <div id="customSectionsListAdmin">${listHtml}</div>
+        `;
+
+        document.getElementById('customSectionForm').addEventListener('submit', async function(e){
+          e.preventDefault();
+          const file = document.getElementById('csFile').files[0];
+          if (!file) {
+            showToast('Please select an image.', 'danger');
+            return;
+          }
+          
+          try {
+            showToast('Uploading image...', 'success');
+            const imageData = await fileToResizedBase64(file, { maxWidth: 800 });
             
-            el.querySelector('button').addEventListener('click', async (btnEvt) => {
-              const id = btnEvt.target.dataset.id;
-              if (confirm('Are you sure you want to delete this event?')) {
-                await deleteDoc(doc(db, "events", id));
-                showToast('Event deleted', 'success');
-              }
-            });
-          });
+            const section = {
+              titleUr: document.getElementById('csTitleUr').value || '',
+              titleEn: document.getElementById('csTitleEn').value || '',
+              textUr: document.getElementById('csTextUr').value || '',
+              textEn: document.getElementById('csTextEn').value || '',
+              imagePosition: document.getElementById('csImgPos').value,
+              imageData: imageData
+            };
+            
+            await addDoc(collection(db, "customSections"), section);
+            showToast('Section added!', 'success');
+            renderCustomSections();
+            loadAdminPanel('customSections');
+            
+          } catch(err) { showToast(err.message, 'danger'); }
+        });
+
+        document.getElementById('customSectionsListAdmin').addEventListener('click', async (e) => {
+          if (e.target.dataset.id) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            try {
+              await deleteDoc(doc(db, "customSections", e.target.dataset.id));
+              showToast('Section deleted!', 'success');
+              renderCustomSections();
+              loadAdminPanel('customSections');
+            } catch(err) { showToast(err.message, 'danger'); }
+          }
         });
       }
 
-      // --- Gallery Panel (Base64) ---
+      // --- Gallery Panel ---
       if(panel === 'gallery'){
+        const snapshot = await getDocs(collection(db, "gallery"));
+        let listHtml = '';
+        snapshot.forEach(snapshotDoc => {
+          const g = snapshotDoc.data();
+          listHtml += `
+            <div class="d-inline-block text-center me-2 mb-2">
+              <img src="${g.imageData}" style="width:100px; height:100px; object-fit:cover; border-radius:6px">
+              <button class="btn btn-sm btn-danger mt-1" data-id="${snapshotDoc.id}">Delete</button>
+            </div>`;
+        });
+        
         content.innerHTML = `
           <h5>Gallery</h5>
           <form id="galleryForm" class="mb-3">
             <div class="mb-2"><input id="galleryFile" type="file" accept="image/*" class="form-control" required></div>
             <div class="mb-2"><input id="galleryName" class="form-control" placeholder="Image name (optional)"></div>
-            <button class="btn btn-success btn-sm" type="submit">Upload</button>
-            <small class="d-block mt-2"><b>Note:</b> Images must be under 750KB. If using 1080x1080px images, please save as a medium-quality JPEG.</small>
+            <small>Note: Images will be compressed and resized to 800x800. Please use JPG/PNG files under 750KB.</small>
+            <div class="mt-2"><button class="btn btn-success btn-sm">Upload</button></div>
           </form>
-          <div id="galleryAdminList" class="d-flex flex-wrap gap-2"></div>
+          <div id="galleryAdminList">${listHtml}</div>
         `;
         
         document.getElementById('galleryForm').addEventListener('submit', async function(e){
           e.preventDefault(); 
           const file = document.getElementById('galleryFile').files[0];
-          const name = document.getElementById('galleryName').value.trim();
-          if(!file) { showToast('Please select a file', 'danger'); return; }
+          if(!file){ return }
           
-          const submitButton = this.querySelector('button[type="submit"]');
-          submitButton.disabled = true;
-          submitButton.innerText = "Uploading...";
-
           try {
-            const base64Data = await toBase64(file);
+            showToast('Uploading image...', 'success');
+            const imageData = await fileToResizedBase64(file, { maxWidth: 800, maxHeight: 800 });
+            const name = document.getElementById('galleryName').value || file.name;
             
-            await addDoc(collection(db, "gallery"), {
-              name: name || file.name,
-              imageData: base64Data, // Save base64 string
-              createdAt: new Date()
-            });
+            await addDoc(collection(db, "gallery"), { imageData, name });
             
-            showToast('Image uploaded!', 'success');
+            showToast('Image added!', 'success');
             renderGallery();
             loadAdminPanel('gallery');
-          } catch(error) {
-            showToast(error.message, 'danger');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = "Upload";
-          }
-        });
-
-        const out = document.getElementById('galleryAdminList');
-        const gallerySnapshot = await getDocs(collection(db, "gallery"));
-        if (gallerySnapshot.empty) out.innerHTML = '<p>No images yet.</p>';
-        gallerySnapshot.forEach(snapshotDoc => {
-          const g = snapshotDoc.data();
-          const el = document.createElement('div'); el.style.width='120px';
-          el.innerHTML = `<div style="width:120px"><img src="${g.imageData}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Del</button></div></div>`;
-          out.appendChild(el);
-          
-          el.querySelector('button').addEventListener('click', async (e)=>{
-            const id = e.target.dataset.id;
-            if (confirm('Are you sure you want to delete this image?')) {
-              try {
-                await deleteDoc(doc(db, "gallery", id));
-                showToast('Image deleted', 'success');
-                renderGallery();
-                loadAdminPanel('gallery');
-              } catch (error) { showToast(error.message, 'danger'); }
-            }
-          });
-        });
-      }
-
-      // --- Custom Sections Panel (Base64) ---
-      if (panel === 'sections') {
-        content.innerHTML = `
-          <h5>Custom Sections</h5>
-          <form id="sectionForm" class="mb-3">
-            <div class="mb-2"><input id="sectionTitleUr" class="form-control" placeholder="Section Title (Urdu)" dir="rtl" required></div>
-            <div class="mb-2"><input id="sectionTitleEn" class="form-control" placeholder="Section Title (English)" required></div>
-            <div class="mb-2"><textarea id="sectionTextUr" class="form-control" placeholder="Text (Urdu)" dir="rtl" rows="3"></textarea></div>
-            <div class="mb-2"><textarea id="sectionTextEn" class="form-control" placeholder="Text (English)" rows="3"></textarea></div>
-            <div class="mb-2"><label class="form-label">Image (Optional, Max 750KB)</label><input id="sectionFile" type="file" accept="image/*" class="form-control"></div>
-            <button class="btn btn-success btn-sm" type="submit">Add Section</button>
-          </form>
-          <div id="sectionsAdminList"></div>
-        `;
-
-        document.getElementById('sectionForm').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const submitButton = this.querySelector('button[type="submit"]');
-          submitButton.disabled = true;
-          submitButton.innerText = "Saving...";
-          
-          const file = document.getElementById('sectionFile').files[0];
-          let base64Data = '';
-
-          try {
-            if (file) {
-              base64Data = await toBase64(file);
-            }
-
-            await addDoc(collection(db, "customSections"), {
-              titleUr: document.getElementById('sectionTitleUr').value,
-              titleEn: document.getElementById('sectionTitleEn').value,
-              textUr: document.getElementById('sectionTextUr').value,
-              textEn: document.getElementById('sectionTextEn').value,
-              imageData: base64Data, // Save base64
-              createdAt: new Date()
-            });
-            showToast('Section added!', 'success');
-            loadAdminPanel('sections'); // Refresh
-          } catch (error) {
-            showToast(error.message, 'danger');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = "Add Section";
-          }
-        });
-
-        const out = document.getElementById('sectionsAdminList');
-        const q = query(collection(db, "customSections"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-          out.innerHTML = '';
-          if (snapshot.empty) out.innerHTML = '<p>No sections yet.</p>';
-          snapshot.forEach(snapshotDoc => {
-            const s = snapshotDoc.data();
-            const el = document.createElement('div');
-            el.className = 'card mb-2 p-2';
-            el.innerHTML = `
-              <div class="d-flex justify-content-between align-items-start">
-                <strong>${s.titleUr || s.titleEn}</strong>
-                <button class="btn btn-sm btn-danger" data-id="${snapshotDoc.id}">Delete</button>
-              </div>`;
-            out.appendChild(el);
             
-            el.querySelector('button').addEventListener('click', async (btnEvt) => {
-              const id = btnEvt.target.dataset.id;
-              if (confirm('Are you sure you want to delete this section?')) {
-                try {
-                  await deleteDoc(doc(db, "customSections", id));
-                  showToast('Section deleted', 'success');
-                } catch (error) { showToast(error.message, 'danger'); }
-              }
-            });
-          });
+          } catch(err) { showToast(err.message, 'danger'); }
+        });
+        
+        document.getElementById('galleryAdminList').addEventListener('click', async (e) => {
+          if (e.target.dataset.id) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            try {
+              await deleteDoc(doc(db, "gallery", e.target.dataset.id));
+              showToast('Image deleted!', 'success');
+              renderGallery();
+              loadAdminPanel('gallery');
+            } catch(err) { showToast(err.message, 'danger'); }
+          }
         });
       }
 
-      // --- Logo Panel (Base64) ---
+      // --- Logo Panel ---
       if(panel === 'logo'){
         content.innerHTML = `
           <h5 id="adminLogoTitle">Logo</h5>
-          <p>Upload a logo to replace the default initial in the navbar. (Max 750KB)</p>
+          <p>Upload a logo to replace the default initial in the navbar. Use a PNG with a transparent background.</p>
           <div class="mb-3">
             <label class="form-label">Current Logo</label>
-            <div id="adminLogoPreviewContainer">
-              <!-- Logo will be loaded by the real-time listener -->
+            <div>
+              ${siteData.logo ? `<img src="${siteData.logo}" id="adminLogoPreview" alt="Logo">` : '<span class="text-muted">No logo uploaded</span>'}
             </div>
           </div>
           <form id="logoForm" class="mb-3">
-            <div class="mb-2"><input id="logoFile" type="file" accept="image/png, image/jpeg, image/svg+xml, image/webp" class="form-control"></div>
+            <div class="mb-2">
+              <input id="logoFile" type="file" accept="image/png, image/jpeg, image/svg+xml, image/webp" class="form-control">
+              <small>Logo will be resized to 100px height.</small>
+            </div>
             <button class="btn btn-success btn-sm">Save Logo</button>
           </form>
-          <button class="btn btn-outline-danger btn-sm" id="removeLogoButton">Remove Logo</button>
+          <button class="btn btn-outline-danger btn-sm" id="removeLogoButton" ${!siteData.logo ? 'disabled' : ''}>Remove Logo</button>
         `;
-
-        const logoPreviewContainer = document.getElementById('adminLogoPreviewContainer');
-        onSnapshot(doc(db, "siteConfig", "logo"), (doc) => {
-          if (doc.exists() && doc.data().logoData) {
-            logoPreviewContainer.innerHTML = `<img src="${doc.data().logoData}" id="adminLogoPreview" alt="Logo">`;
-            document.getElementById('removeLogoButton').disabled = false;
-          } else {
-            logoPreviewContainer.innerHTML = `<span class="text-muted">No logo uploaded</span>`;
-            document.getElementById('removeLogoButton').disabled = true;
-          }
-        });
 
         document.getElementById('logoForm').addEventListener('submit', async function(e){
           e.preventDefault();
-          const f = document.getElementById('logoFile').files[0];
-          if(!f) { showToast('Please select a file', 'danger'); return; }
-          
-          const submitButton = this.querySelector('button');
-          submitButton.disabled = true;
-          submitButton.innerText = "Uploading...";
+          const file = document.getElementById('logoFile').files[0];
+          if(!file) { return }
           
           try {
-            const base64Data = await toBase64(f);
+            showToast('Uploading logo...', 'success');
+            const logoData = await fileToResizedBase64(file, { maxHeight: 100 });
             
-            await setDoc(doc(db, "siteConfig", "logo"), {
-              logoData: base64Data
-            });
+            await setDoc(doc(db, "siteConfig", "logo"), { logoData });
+            
             showToast('Logo updated!', 'success');
-          } catch(error) {
-            showToast(error.message, 'danger');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.innerText = "Save Logo";
-          }
+            // renderLogo() is called by onSnapshot, so it updates automatically
+            loadAdminPanel('logo');
+            
+          } catch(err) { showToast(err.message, 'danger'); }
         });
 
         document.getElementById('removeLogoButton').addEventListener('click', async function(){
@@ -1626,275 +1789,253 @@ Features:
           try {
             await deleteDoc(doc(db, "siteConfig", "logo"));
             showToast('Logo removed', 'success');
-          } catch(error) { showToast(error.message, 'danger'); }
+            // renderLogo() is called by onSnapshot, so it updates automatically
+            loadAdminPanel('logo');
+          } catch(err) { showToast(err.message, 'danger'); }
         });
       }
       
       // --- Donation Settings Panel ---
-      if(panel === 'donationSettings'){
+      if (panel === 'donation') {
         content.innerHTML = `
-          <h5>Edit Donation Settings</h5>
-          <form id="donationSettingsForm" class="mb-3">
-            <div class="mb-2">
-              <label class="form-label">UPI ID (e.g., 9058... @okbizaxis)</label>
-              <input id="upiId" class="form-control">
+          <h5>Donation Settings</h5>
+          <form id="donationSettingsForm">
+            <div class="mb-3">
+              <label class="form-label">UPI ID</label>
+              <input type="text" id="upiId" class="form-control" value="${siteData.config.upiId}">
+              <small>Example: 123456789@okaxis</small>
             </div>
-            <button class="btn btn-success btn-sm">Save Settings</button>
+            <button class="btn btn-primary">Save Settings</button>
           </form>
         `;
         
-        const docRef = doc(db, "siteConfig", "donations");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          document.getElementById('upiId').value = docSnap.data().upiId || '';
-        }
-
-        document.getElementById('donationSettingsForm').addEventListener('submit', async function(e){
+        document.getElementById('donationSettingsForm').addEventListener('submit', async (e) => {
           e.preventDefault();
-          const data = {
+          const newConfig = {
             upiId: document.getElementById('upiId').value
           };
           try {
-            await setDoc(docRef, data);
+            await setDoc(doc(db, "siteConfig", "main"), newConfig, { merge: true });
+            // Update local state and re-render
+            siteData.config = { ...siteData.config, ...newConfig };
+            renderDonationSettings();
             showToast('Donation settings updated!', 'success');
-          } catch(error) { showToast(error.message, 'danger'); }
+          } catch(err) { showToast(err.message, 'danger'); }
+        });
+      }
+      
+      // --- Font Settings Panel ---
+      if (panel === 'fonts') {
+        let urOptionsHtml = fontOptions.ur.map(font => 
+          `<option value="${font.value}" ${siteData.config.fontUr === font.value ? 'selected' : ''}>${font.name}</option>`
+        ).join('');
+        
+        let enOptionsHtml = fontOptions.en.map(font => 
+          `<option value="${font.value}" ${siteData.config.fontEn === font.value ? 'selected' : ''}>${font.name}</option>`
+        ).join('');
+
+        content.innerHTML = `
+          <h5>Font Settings</h5>
+          <form id="fontSettingsForm">
+            <div class="mb-3">
+              <label class="form-label">Urdu Font</label>
+              <select id="fontUrSelect" class="form-select">${urOptionsHtml}</select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">English Font</label>
+              <select id="fontEnSelect" class="form-select">${enOptionsHtml}</select>
+            </div>
+            <button class="btn btn-primary">Save Settings</button>
+          </form>
+        `;
+        
+        document.getElementById('fontSettingsForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const newConfig = {
+            fontUr: document.getElementById('fontUrSelect').value,
+            fontEn: document.getElementById('fontEnSelect').value
+          };
+          try {
+            await setDoc(doc(db, "siteConfig", "main"), newConfig, { merge: true });
+            // Update local state and re-render
+            siteData.config = { ...siteData.config, ...newConfig };
+            renderFonts();
+            showToast('Font settings updated!', 'success');
+          } catch(err) { showToast(err.message, 'danger'); }
         });
       }
 
       // --- Messages Panel ---
       if(panel === 'messages'){
+        const snapshot = await getDocs(collection(db, "messages"));
+        let listHtml = '';
+        snapshot.forEach(doc => {
+          const m = doc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
+              <div>
+                <strong>${m.name} — ${m.email}</strong>
+                <div class="small text-muted">${new Date(m.created).toLocaleString()}</div>
+                <p class="mb-1 mt-1"><strong>Subject:</strong> ${m.subject || 'N/A'}</p>
+                <p>${m.message}</p>
+              </div>
+            </div>`;
+        });
+        
         content.innerHTML = `
           <h5>Messages</h5>
-          <div id="msgsList"></div>
+          <small>These are messages from your contact form.</small>
+          <div id="msgsList" class="mt-3">${listHtml}</div>
         `;
-        const out = document.getElementById('msgsList');
-        const msgSnapshot = await getDocs(query(collection(db, "messages"), orderBy("createdAt", "desc")));
-        if (msgSnapshot.empty) {
-          out.innerHTML = '<p class="text-muted">No messages yet.</p>';
-        }
-        msgSnapshot.forEach(doc => {
-          const m = doc.data();
-          const el = document.createElement('div'); el.className='card mb-2 p-2';
-          el.innerHTML = `<div><strong>${m.name} — ${m.email}</strong><div class="small text-muted">${m.createdAt.toDate().toLocaleString()}</div><p>${m.message}</p></div>`;
-          out.appendChild(el);
-        });
       }
       
       // --- Donations Panel ---
       if(panel === 'donations'){
+        const snapshot = await getDocs(collection(db, "donations"));
+        let listHtml = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          listHtml += `
+            <div class="card mb-2 p-2">
+              <div class="d-flex justify-content-between">
+                <strong>${d.name} (₹${d.amount})</strong>
+                <span class="badge bg-primary">${d.type}</span>
+              </div>
+              <div class="small text-muted">${new Date(d.created).toLocaleString()}</div>
+              <p class="mb-1 mt-2">
+                <strong>Phone:</strong> ${d.phone}<br>
+                <strong>Email:</strong> ${d.email}<br>
+                <strong>Address:</strong> ${d.address}<br>
+                <strong>Doc ID:</strong> ${d.docId}
+              </p>
+            </div>`;
+        });
+        
         content.innerHTML = `
           <h5 id="adminDonationsTitle">Donations</h5>
-          <div id="donationsList"></div>
+          <small>These are donation form submissions.</small>
+          <div id="donationsList" class="mt-3">${listHtml}</div>
         `;
-        const out = document.getElementById('donationsList');
-        const donSnapshot = await getDocs(query(collection(db, "donations"), orderBy("createdAt", "desc")));
-        if (donSnapshot.empty) {
-          out.innerHTML = '<p class="text-muted">No donation submissions yet.</p>';
-        }
-        donSnapshot.forEach(doc => {
-          const d = doc.data();
-          const el = document.createElement('div'); el.className='card mb-2 p-2'; 
-          el.innerHTML = `
-            <div class="d-flex justify-content-between">
-              <strong>${d.name} (₹${d.amount})</strong>
-              <span class="badge bg-primary">${d.type}</span>
-            </div>
-            <div class="small text-muted">${d.createdAt.toDate().toLocaleString()}</div>
-            <p class="mb-1 mt-2">
-              <strong>Phone:</strong> ${d.phone}<br>
-              <strong>Email:</strong> ${d.email}<br>
-              <strong>Address:</strong> ${d.address}<br>
-              <strong>Doc ID:</strong> ${d.docId}
-            </p>
-          `;
-          out.appendChild(el);
-        });
       }
     }
 
-    // ----------------- Language switching (UPDATED) -----------------
+    // ----------------- Language switching -----------------
     const langSelect = document.getElementById('langToggle')
     
     function applyLanguage(lang){
-      currentLang = lang;
+      siteData.lang = lang; // Store current language
       const root = document.documentElement
       if(lang === 'ur'){
         root.lang = 'ur'; root.dir = 'rtl'
-      } else { 
-        root.lang = 'en'; root.dir = 'ltr' 
+      } else {  
+        root.lang = 'en'; root.dir = 'ltr'  
       }
 
+      // apply texts
       const t = i18n[lang]
-      if (!t) return;
       
-      const setText = (id, key) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = t[key];
-      };
-
       // Navbar
-      setText('brandTitle', 'brandTitle');
-      setText('brandSubtitle', 'brandSubtitle');
-      setText('navHome', 'navHome');
-      setText('navAbout', 'navAbout');
-      setText('navCourses', 'navCourses');
-      setText('navEvents', 'navEvents');
-      setText('navGallery', 'navGallery');
-      setText('navSections', 'navSections');
-      setText('navLibrary', 'navLibrary');
-      setText('navDonation', 'navDonation');
-      setText('navContact', 'navContact');
-      setText('openAdmin', 'navAdmin');
-
-      // Page Content (Dynamic)
-      const heroTitleEl = document.getElementById('heroTitle');
-      const heroSubtitleEl = document.getElementById('heroSubtitle');
-      const aboutTextEl = document.getElementById('aboutText');
-
-      if (homeData) {
-        heroTitleEl.textContent = lang === 'ur' ? homeData.heroTitleUr : homeData.heroTitleEn;
-        heroSubtitleEl.textContent = lang === 'ur' ? homeData.heroSubtitleUr : homeData.heroSubtitleEn;
-      }
-      if (aboutData) {
-        aboutTextEl.textContent = lang === 'ur' ? aboutData.aboutTextUr : aboutData.aboutTextEn;
-      }
+      document.getElementById('brandTitle').textContent = t.brandTitle
+      document.getElementById('brandSubtitle').textContent = t.brandSubtitle
+      document.getElementById('navHome').textContent = t.navHome
+      document.getElementById('navAbout').textContent = t.navAbout
+      document.getElementById('navCourses').textContent = t.navCourses
+      document.getElementById('navEvents').textContent = t.navEvents
+      document.getElementById('navGallery').textContent = t.navGallery
+      document.getElementById('navLibrary').textContent = t.navLibrary
+      document.getElementById('navDonation').textContent = t.navDonation
+      document.getElementById('navContact').textContent = t.navContact
+      document.getElementById('openAdmin').textContent = t.navAdmin
       
-      // Render Events
-      const eventsList = document.getElementById('eventsList');
-      eventsList.innerHTML = ''; // Clear
-      if (eventsData.length === 0) eventsList.innerHTML = '<p>No events listed yet.</p>';
-      eventsData.forEach(e => {
-        const title = lang === 'ur' ? e.titleUr : e.titleEn;
-        const desc = lang === 'ur' ? e.descUr : e.descEn;
-        const el = document.createElement('div');
-        el.className = 'col-md-6';
-        el.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${title}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${e.date || ''}</h6>
-              <p class="card-text">${desc}</p>
-            </div>
-          </div>
-        `;
-        eventsList.appendChild(el);
-      });
+      // Hero (Dynamic)
+      renderHomepage();
+      document.getElementById('heroBtn1').textContent = t.heroBtn1;
+      document.getElementById('heroBtn2').textContent = t.heroBtn2;
 
-      // Render Custom Sections
-      const sectionsList = document.getElementById('customSectionsList');
-      sectionsList.innerHTML = ''; // Clear
-      if (sectionsData.length === 0) sectionsList.innerHTML = '<p>No sections added yet.</p>';
-      sectionsData.forEach(s => {
-        const title = lang === 'ur' ? s.titleUr : s.titleEn;
-        const text = lang === 'ur' ? s.textUr : s.textEn;
-        const el = document.createElement('div');
-        el.className = 'row mb-4';
-        // Logic for image left/right or no image
-        if (s.imageData) {
-          el.innerHTML = `
-            <div class="section-title mb-3">
-              <h2>${title}</h2>
-            </div>
-            <div class="col-lg-6">
-              <p>${text}</p>
-            </div>
-            <div class="col-lg-6">
-              <img src="${s.imageData}" alt="${title}" class="img-fluid rounded">
-            </div>
-          `;
-        } else {
-          el.innerHTML = `
-            <div class="section-title mb-3">
-              <h2>${title}</h2>
-            </div>
-            <div class="col-lg-12">
-              <p>${text}</p>
-            </div>
-          `;
-        }
-        sectionsList.appendChild(el);
-      });
+      // Quick Links
+      document.getElementById('qLinkDonation').textContent = t.qLinkDonation
+      document.getElementById('qLinkFatwa').textContent = t.qLinkFatwa
+      document.getElementById('qLinkBooks').textContent = t.qLinkBooks
+      document.getElementById('qLinkGallery').textContent = t.qLinkGallery
 
-      // Page Content (Static)
-      setText('qLinkDonation', 'qLinkDonation');
-      setText('qLinkFatwa', 'qLinkFatwa');
-      setText('qLinkBooks', 'qLinkBooks');
-      setText('qLinkGallery', 'qLinkGallery');
-      setText('aboutHeading', 'aboutHeading');
-      setText('coursesHeading', 'coursesHeading');
-      setText('eventsHeading', 'eventsHeading');
-      setText('galleryHeading', 'galleryHeading');
+      // Dynamic Content
+      renderAbout(); // Renders About Us text in correct language
+      renderSiteConfig(); // Re-applies all config
+      
+      // Static Content
+      document.getElementById('coursesHeading').textContent = t.coursesHeading
+      document.getElementById('eventsHeading').textContent = t.eventsHeading
+      document.getElementById('galleryHeading').textContent = t.galleryHeading
       
       // Library Section
-      setText('libraryHeading', 'libraryHeading');
-      setText('libraryCardTitle', 'libraryCardTitle');
-      setText('libraryCardText', 'libraryCardText');
-      setText('libraryCardButton', 'libraryCardButton');
+      document.getElementById('libraryHeading').textContent = t.libraryHeading
+      document.getElementById('libraryCardTitle').textContent = t.libraryCardTitle
+      document.getElementById('libraryCardText').textContent = t.libraryCardText
+      document.getElementById('libraryCardButton').textContent = t.libraryCardButton
 
       // Donation Section
-      setText('donationHeading', 'donationHeading');
-      setText('lblDonationAmount', 'lblDonationAmount');
-      setText('lblDonationType', 'lblDonationType');
-      setText('optDonationGeneral', 'optDonationGeneral');
-      setText('optDonationZakat', 'optDonationZakat');
-      setText('optDonationSadqa', 'optDonationSadqa');
-      setText('optDonationConstruction', 'optDonationConstruction');
-      setText('optDonationOther', 'optDonationOther');
-      setText('lblOtherDonationType', 'lblOtherDonationType');
-      setText('lblDonationName', 'lblDonationName');
-      setText('lblDonationPhone', 'lblDonationPhone');
-      setText('lblDonationAddress', 'lblDonationAddress');
-      setText('lblDonationEmail', 'lblDonationEmail');
-      setText('lblDonationDocId', 'lblDonationDocId');
-      setText('donationSubmit', 'donationSubmit');
-      setText('donationPaymentTitle', 'donationPaymentTitle');
-      setText('donationPaymentSubtitle', 'donationPaymentSubtitle');
-      setText('copyUpiBtnText', 'copyUpiBtnText');
-      setText('payNowBtnText', 'payNowBtnText');
+      document.getElementById('donationHeading').textContent = t.donationHeading
+      document.getElementById('lblDonationAmount').textContent = t.lblDonationAmount
+      document.getElementById('lblDonationType').textContent = t.lblDonationType
+      document.getElementById('optDonationGeneral').textContent = t.optDonationGeneral
+      document.getElementById('optDonationZakat').textContent = t.optDonationZakat
+      document.getElementById('optDonationSadqa').textContent = t.optDonationSadqa
+      document.getElementById('optDonationConstruction').textContent = t.optDonationConstruction
+      document.getElementById('optDonationOther').textContent = t.optDonationOther
+      document.getElementById('lblOtherDonationType').textContent = t.lblOtherDonationType
+      document.getElementById('lblDonationName').textContent = t.lblDonationName
+      document.getElementById('lblDonationPhone').textContent = t.lblDonationPhone
+      document.getElementById('lblDonationAddress').textContent = t.lblDonationAddress
+      document.getElementById('lblDonationEmail').textContent = t.lblDonationEmail
+      document.getElementById('lblDonationDocId').textContent = t.lblDonationDocId
+      document.getElementById('donationSubmit').textContent = t.donationSubmit
+      document.getElementById('donationPaymentTitle').textContent = t.donationPaymentTitle
+      document.getElementById('donationPaymentSubtitle').textContent = t.donationPaymentSubtitle
+      document.getElementById('copyUpiBtnText').textContent = t.copyUpiBtnText
+      document.getElementById('payNowBtnText').textContent = t.payNowBtnText
 
       // Contact
-      setText('contactHeading', 'contactHeading');
-      setText('lblName', 'lblName');
-      setText('lblEmail', 'lblEmail');
-      setText('lblSubject', 'lblSubject');
-      setText('lblMessage', 'lblMessage');
-      setText('contactSubmit', 'contactSubmit');
-      setText('contactInfoHeading', 'contactInfoHeading');
-      setText('lblAddress', 'lblAddress');
-      setText('lblPhone', 'lblPhone');
-      setText('lblContactEmail', 'lblContactEmail');
-      setText('lblMap', 'lblMap');
-      setText('linkMap', 'linkMap');
+      document.getElementById('contactHeading').textContent = t.contactHeading
+      document.getElementById('lblName').textContent = t.lblName
+      document.getElementById('lblEmail').textContent = t.lblEmail
+      document.getElementById('lblSubject').textContent = t.lblSubject
+      document.getElementById('lblMessage').textContent = t.lblMessage
+      document.getElementById('contactSubmit').textContent = t.contactSubmit
+      document.getElementById('contactInfoHeading').textContent = t.contactInfoHeading
       
-      const contactNote = document.getElementById('contactFormNote');
-      if (contactNote) contactNote.textContent = t.contactFormNote;
-      
+      document.getElementById('lblAddress').textContent = t.lblAddress
+      document.getElementById('lblPhone').textContent = t.lblPhone
+      document.getElementById('lblContactEmail').textContent = t.lblContactEmail
+      document.getElementById('lblMap').textContent = t.lblMap
+      document.getElementById('linkMap').textContent = t.linkMap
+      document.getElementById('contactFormNote').textContent = t.contactFormNote
+
       // Admin panel
-      setText('adminNavDonations', 'adminDonations');
-      const logoAdminBtn = document.querySelector('[data-panel="logo"]');
-      if (logoAdminBtn) logoAdminBtn.textContent = t.adminLogo;
-      setText('adminLogoTitle', 'adminLogo');
-      setText('adminDonationsTitle', 'adminDonations');
+      document.getElementById('adminNavDonations').textContent = t.adminDonations;
+      document.querySelector('[data-panel="logo"]').textContent = t.adminLogo;
+      document.querySelector('[data-panel="hero"]').textContent = t.adminHomepage;
+      document.querySelector('[data-panel="about"]').textContent = t.adminAbout;
+      document.querySelector('[data-panel="donation"]').textContent = t.adminDonationSettings;
+      document.querySelector('[data-panel="events"]').textContent = t.adminEvents;
+      document.querySelector('[data-panel="customSections"]').textContent = t.adminCustomSections;
+      document.querySelector('[data-panel="fonts"]').textContent = t.adminFontSettings;
+      document.getElementById('lblAdminEmail').textContent = t.lblAdminEmail;
+      document.getElementById('lblAdminPass').textContent = t.lblAdminPass;
+      
+      // Re-render dynamic lists with new language
+      renderCourses();
+      renderEvents();
+      renderCustomSections();
     }
 
+    // default language = Urdu
     langSelect.addEventListener('change', ()=> applyLanguage(langSelect.value))
     applyLanguage('ur')
 
     // Smooth scroll for nav links
     document.querySelectorAll('[data-link]').forEach(a=> a.addEventListener('click', function(e){ e.preventDefault(); const id = this.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth'}) }))
 
-    // --- FIX for Modal Accessibility Warning ---
-    const adminModalEl = document.getElementById('adminModal');
-    const openAdminButton = document.getElementById('openAdmin');
-    if (adminModalEl) {
-      adminModalEl.addEventListener('hidden.bs.modal', () => {
-        if (openAdminButton) {
-          openAdminButton.focus();
-        }
-      });
-    }
-
-    // ----------------- Dark Mode Toggle (unchanged) -----------------
+    // ----------------- Dark Mode Toggle -----------------
     const darkModeToggle = document.getElementById('darkModeToggle');
     const sunIcon = darkModeToggle.querySelector('.bi-sun-fill');
     const moonIcon = darkModeToggle.querySelector('.bi-moon-fill');
@@ -1915,74 +2056,43 @@ Features:
       }
     }
 
+    // Initialize theme
     if (currentTheme === 'dark') {
       setDarkMode(true);
     } else if (currentTheme === 'light') {
       setDarkMode(false);
     } else {
+      // No preference saved, use system preference
       setDarkMode(prefersDark.matches);
     }
 
+    // Listen for toggle click
     darkModeToggle.addEventListener('click', () => {
       setDarkMode(!document.body.classList.contains('dark-mode'));
     });
 
+    // Listen for system changes
     prefersDark.addEventListener('change', (e) => {
+      // Only apply if no theme is manually set
       if (!localStorage.getItem('theme')) {
         setDarkMode(e.matches);
       }
     });
 
-    // ----------------- Donation Modal Logic (UPDATED) -----------------
-    let upiId = '9058438854-2@okbizaxis'; // Default fallback
-    let upiLink = '';
-    let qrUrl = '';
-
-    function updateDonationLinks(newUpiId) {
-      upiId = newUpiId;
-      upiLink = `upi://pay?pa=${upiId}&pn=Darut%20Taleem%20Wat%20Tarbiyah&am=&cu=INR&tn=Donation`;
-      qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
-      
-      document.getElementById('donationQR').src = qrUrl;
-      document.getElementById('payNowLink').href = upiLink;
-      document.getElementById('upiIdInput').value = upiId;
+    // ----------------- Initial Data Load -----------------
+    // Load all data from Firestore and render the page
+    function loadAllData() {
+      renderSiteConfig(); // This also calls renderHomepage, renderAbout, etc.
+      renderAnnouncements();
+      renderLogo();
+      renderCourses();
+      renderEvents();
+      renderCustomSections();
+      renderGallery();
     }
-
-    function renderDonationSettings() {
-      onSnapshot(doc(db, "siteConfig", "donations"), (doc) => {
-        let newUpiId = '9058438854-2@okbizaxis'; // Default
-        if (doc.exists() && doc.data().upiId) {
-          newUpiId = doc.data().upiId;
-        }
-        updateDonationLinks(newUpiId);
-      }, (error) => {
-        console.error("Error fetching donation settings: ", error);
-        updateDonationLinks(upiId); // Use default if error
-      });
-    }
-    renderDonationSettings();
-
-    document.getElementById('copyUpiButton').addEventListener('click', function() {
-      const upiInput = document.getElementById('upiIdInput');
-      try {
-        upiInput.select();
-        upiInput.setSelectionRange(0, 99999);
-        document.execCommand('copy');
-        
-        const lang = document.getElementById('langToggle').value;
-        showToast(i18n[lang].copiedToast, 'success');
-
-      } catch (err) {
-        console.error('Failed to copy UPI ID: ', err);
-        showToast('Failed to copy', 'danger');
-      }
-    });
+    
+    loadAllData();
 
   </script>
 </body>
 </html>
-
-
-
-
-
