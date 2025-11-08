@@ -565,17 +565,17 @@ Features:
     import { 
       getFirestore, collection, getDocs, addDoc, 
       deleteDoc, doc, query, onSnapshot, orderBy
-    } from "https_//www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     // Import Auth (Login)
     import { 
       getAuth, signInWithEmailAndPassword, 
       onAuthStateChanged, signOut 
-    } from "https_//www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
     // Import Storage (File Uploads)
     import { 
       getStorage, ref, uploadBytes, getDownloadURL, 
       deleteObject 
-    } from "https_//www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
     // YOUR FIREBASE CONFIG (from the code you provided)
     const firebaseConfig = {
@@ -1425,7 +1425,7 @@ Features:
       setDarkMode(!document.body.classList.contains('dark-mode'));
     });
 
-    prefersDark.addEventListener('change', (e).g., {
+    prefersDark.addEventListener('change', (e) => {
       if (!localStorage.getItem('theme')) {
         setDarkMode(e.matches);
       }
