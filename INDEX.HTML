@@ -1,2004 +1,564 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--
+Madrasa Website (Bilingual: Urdu default + English)
+Single-file frontend demo using Bootstrap 5, localStorage-based admin simulation.
+Features:
+- Urdu default (RTL) with language toggle (Urdu <-> English)
+- Pages: Home, About, Courses, Gallery, Contact (single page sections)
+- Scrolling announcements (admin editable)
+- Admin panel (simple login, manage announcements, courses, gallery uploads, view contact messages)
+- Responsive layout and accessible design
 
+How to use:
+1. Open this file in a browser (index.html).
+2. Click "Admin" -> Login (default credentials: admin / password) to access admin panel.
+3. Add/Edit announcements, courses, upload images (images are saved as data URLs in localStorage), and view contact messages.
+
+Note: This is a frontend-only demo. For production integrate with a Java/Spring Boot backend and a real database.
+-->
+
+<!doctype html>
+<html lang="ur" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bites n' More | A Full-Stack Demo</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter for text, Pacifico for logo, Poppins for new login page -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&family=Poppins:wght@400;600;700&display=swap"
-        rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Ionicons CDN for new login page -->
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <style>
-        /* Base styles for the entire application */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
-            scroll-behavior: smooth;
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>دارالتعلیم والتربیہ - Darut Taleem Wat Tarbiyah</title>
 
-        .logo-font {
-            font-family: 'Pacifico', cursive;
-        }
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .hero-bg {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=2787&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-        }
+  <!-- Google Fonts: Poppins for English, Noto Nastaliq Urdu fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-        .menu-card-image {
-            height: 200px;
-            object-fit: cover;
-        }
+  <style>
+    :root{
+      --primary:#007A3D; /* green */
+      --secondary:#F7C948; /* gold */
+      --bg:#ffffff;
+    }
+    html[dir="rtl"] body{font-family: 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Serif', serif;}
+    html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 
-        .review-image {
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
+    body{background:var(--bg); color:#222}
+    .navbar{background:linear-gradient(90deg,var(--primary), rgba(0,122,61,.9));}
+    .navbar .nav-link, .navbar-brand{color:#fff !important}
+    .hero{background: linear-gradient( rgba(0,0,0,0.25), rgba(0,0,0,0.25) ), url('https://images.unsplash.com/photo-1523942839745-7844d3d58c73?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&s=') center/cover no-repeat; color:#fff; padding:80px 0}
+    .accent{color:var(--primary)}
+    .card-course{border:1px solid #eee}
+    .announcement-bar{background:var(--primary); color:#fff; padding:.25rem .5rem; font-weight:600}
+    .footer{background:#0b5132; color:#fff; padding:20px 0}
 
-        /* Utility classes for login/admin pages */
-        .page-container {
-            min-height: calc(100vh - 8rem);
-        }
+    /* Gallery grid */
+    .gallery-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px}
+    .gallery-grid img{width:100%; height:160px; object-fit:cover; border-radius:8px}
 
-        .menu-category-btn.active {
-            @apply bg-red-600 text-white;
-        }
-        
-        .service-btn.active {
-            @apply ring-4 ring-offset-2 ring-red-500;
-        }
+    /* Admin panel */
+    .admin-panel{min-height:60vh}
 
-        /* Dark Mode styles */
-        body.dark {
-            background-color: #1a202c;
-            color: #e2e8f0;
-        }
+    /* Responsive tweaks */
+    @media(min-width:992px){ .hero{padding:100px 0} }
 
-        body.dark .bg-white {
-            background-color: #2d3748;
-            color: #e2e8f0;
-        }
+    /* RTL friendly card headings */
+    [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end}
+    [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start}
 
-        body.dark .bg-gray-50 {
-            background-color: #4a5568;
-            color: #e2e8f0;
-        }
-
-        body.dark .bg-gray-800 {
-            background-color: #2d3748;
-        }
-
-        body.dark .text-gray-900 {
-            color: #e2e8f0;
-        }
-
-        body.dark .text-gray-600 {
-            color: #a0aec0;
-        }
-
-        body.dark .text-gray-700 {
-            color: #cbd5e0;
-        }
-
-        /* Custom styles for the cart bubble and toast notification */
-        #cart-bubble {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            z-index: 99;
-        }
-
-        #cart-bubble:hover {
-            transform: scale(1.1);
-        }
-
-        #cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 0.75rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            background-color: #ef4444;
-            border: 2px solid white;
-        }
-
-        #toast-message {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2d3748;
-            color: #e2e8f0;
-            padding: 1rem 1.5rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            z-index: 100;
-            white-space: nowrap;
-            display: none; /* Hidden by default */
-        }
-        
-        .toast-show {
-            display: block !important;
-        }
-        
-        .icon-with-text {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-radius: 12px;
-            background-color: #f7f7f7;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.2s;
-        }
-        
-        .icon-with-text:hover {
-            background-color: #ebebeb;
-        }
-
-    </style>
+  </style>
 </head>
+<body>
 
-<body class="bg-gray-50 text-gray-800">
-    <!-- Header -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="#" id="home-link" class="flex items-center space-x-2">
-                <div id="logo-container">
-                    <!-- Custom SVG Logo -->
-                    <svg class="h-10 w-10 text-red-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.83 15.42C16.5 15.75 16.03 16 15.5 16H8.5C7.97 16 7.5 15.75 7.17 15.42C6.55 14.8 6.25 13.97 6.5 13.2L8.28 7.38C8.55 6.56 9.25 6 10.12 6H13.88C14.75 6 15.45 6.56 15.72 7.38L17.5 13.2C17.75 13.97 17.45 14.8 16.83 15.42Z" fill="#EF4444" />
-                        <path d="M12 4C9.79 4 8 5.79 8 8V10H16V8C16 5.79 14.21 4 12 4Z" fill="#FBBF24" />
-                    </svg>
-                </div>
-                <span class="text-2xl font-bold text-red-600 logo-font">BnM</span>
-            </a>
-            <div class="flex items-center space-x-4">
-                <!-- Dark/Light Mode Toggle -->
-                <div class="container-mode">
-                    <input type="checkbox" name="checkbox" id="mode-toggle" class="hidden" />
-                    <label for="mode-toggle"
-                        class="label relative w-12 h-6 bg-gray-200 rounded-full cursor-pointer transition-colors duration-300 flex items-center p-1">
-                        <i class="fas fa-sun text-yellow-500 text-sm"></i>
-                        <div
-                            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 transform"
-                            id="toggle-ball">
-                        </div>
-                        <i class="fas fa-moon text-gray-700 text-sm ml-auto"></i>
-                    </label>
-                </div>
-                <!-- Auth Button (changes based on login status) -->
-                <button id="auth-button"
-                    class="bg-red-600 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-700 transition duration-300">
-                    Login
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Content Container -->
-    <main id="main-content" class="page-container"></main>
-
-    <!-- Floating Cart Bubble -->
-    <div id="cart-bubble" class="hidden bg-red-600 text-white flex-col">
-        <i class="fas fa-shopping-cart fa-lg"></i>
-        <div id="cart-count">0</div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast-message" class="opacity-0 translate-y-4"></div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white">
-        <div class="container mx-auto px-6 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0 text-center md:text-left">
-                    <h3 class="text-xl font-bold">BnM</h3>
-                    <p class="text-gray-400">© 2024 All Rights Reserved.</p>
-                    <p class="text-xs text-gray-500 mt-2">Developed with ❤️ by Nabeel Hussain Akhtar</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
-                    <a href="https://www.instagram.com/bites_n_more_glb/" target="_blank"
-                        class="text-gray-400 hover:text-white"><i class="fab fa-instagram fa-lg"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter fa-lg"></i></a>
-                </div>
-            </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <div style="width:46px; height:46px; background:var(--secondary); border-radius:8px; display:grid; place-items:center; margin-inline-start:.6rem">
+          <span style="font-weight:700; color:var(--primary)">د</span>
         </div>
-    </footer>
-
-    <!-- MODALS AND POPUPS -->
-    <!-- Message Modal (Still used for "login required" and other critical messages) -->
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4"></h3>
-            <p id="modal-message" class="text-gray-700 mb-6"></p>
-            <div class="flex justify-end">
-                <button id="modal-close-btn"
-                    class="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
-                    OK
-                </button>
-            </div>
+        <div>
+          <div style="font-size:18px; line-height:1">دارالتعلیم والتربیہ</div>
+          <small style="opacity:.9; font-size:12px">Darut Taleem Wat Tarbiyah</small>
         </div>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks">
+        <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navLinks">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#home" data-link>صفحہ اول</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about" data-link>ہمارے بارے میں</a></li>
+          <li class="nav-item"><a class="nav-link" href="#courses" data-link>کورسز</a></li>
+          <li class="nav-item"><a class="nav-link" href="#gallery" data-link>گیلری</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact" data-link>رابطہ کریں</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-sm btn-light text-dark ms-2" href="#admin" id="openAdmin">ایڈمن</a></li>
+          <li class="nav-item d-flex align-items-center ms-2">
+            <select id="langToggle" class="form-select form-select-sm" style="width:auto">
+              <option value="ur" selected>اردو</option>
+              <option value="en">English</option>
+            </select>
+          </li>
+        </ul>
+      </div>
     </div>
-    
-    <!-- Password Change Modal -->
-    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
-            <h3 class="text-2xl font-bold mb-4">Change Password</h3>
-            <form id="change-password-form" class="space-y-4">
-                <div>
-                    <input type="password" id="old-password" placeholder="Current Password" required
-                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div>
-                    <input type="password" id="new-password" placeholder="New Password" required
-                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div>
-                    <input type="password" id="confirm-new-password" placeholder="Confirm New Password" required
-                        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div class="flex justify-end space-x-4 mt-6">
-                    <button type="button" id="cancel-password-change-btn"
-                        class="bg-gray-400 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-500 transition">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-                        Change
-                    </button>
-                </div>
+  </nav>
+
+  <!-- Announcement bar -->
+  <div id="announcementBar" class="announcement-bar text-end" role="region" aria-live="polite"></div>
+
+  <!-- Hero -->
+  <header id="home" class="hero text-center">
+    <div class="container">
+      <h1 id="heroTitle" class="display-5 fw-bold">دارالتعلیم والتربیہ میں خوش آمدید</h1>
+      <p id="heroSubtitle" class="lead">تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول</p>
+      <div class="mt-4">
+        <a href="#courses" class="btn btn-outline-light btn-lg me-2">مزید جانیں</a>
+        <a href="#contact" class="btn btn-light btn-lg text-dark">رابطہ کریں</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="py-5">
+    <div class="container">
+
+      <!-- About -->
+      <section id="about" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 style="margin:0" id="aboutHeading">ہمارے بارے میں</h2>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <p id="aboutText">دارالتعلیم والتربیہ ایک معروف مدرسہ ہے جہاں جدید اور دینی تعلیم کو یکجا کیا جاتا ہے۔ ہمارا مقصد طلباء کو علمی اور اخلاقی طور پر مضبوط بنانا ہے۔</p>
+          </div>
+          <div class="col-lg-6">
+            <img src="https://images.unsplash.com/photo-1542736667-069246bdbc6d?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Madrasa" class="img-fluid rounded">
+          </div>
+        </div>
+      </section>
+
+      <!-- Courses -->
+      <section id="courses" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="coursesHeading">کورسز</h2>
+        </div>
+        <div id="coursesList" class="row gy-3">
+          <!-- Course cards injected here -->
+        </div>
+      </section>
+
+      <!-- Gallery -->
+      <section id="gallery" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="galleryHeading">گیلری</h2>
+        </div>
+        <div id="galleryGrid" class="gallery-grid">
+          <!-- images injected here -->
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="contactHeading">رابطہ کریں</h2>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <form id="contactForm">
+              <div class="mb-3">
+                <label class="form-label" id="lblName">نام</label>
+                <input type="text" class="form-control" id="contactName" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" id="lblEmail">ای میل</label>
+                <input type="email" class="form-control" id="contactEmail" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" id="lblSubject">موضوع</label>
+                <input type="text" class="form-control" id="contactSubject">
+              </div>
+              <div class="mb-3">
+                <label class="form-label" id="lblMessage">پیغام</label>
+                <textarea class="form-control" id="contactMessage" rows="4" required></textarea>
+              </div>
+              <button class="btn btn-success" type="submit" id="contactSubmit">ارسال</button>
             </form>
+          </div>
+          <div class="col-lg-6">
+            <h5 id="contactInfoHeading">رابطہ کی معلومات</h5>
+            <p id="contactInfo">پتہ: Madrasa Address<br> فون: +91-88997426<br> ای میل: info@madrasah.example</p>
+          </div>
         </div>
-    </div>
+      </section>
 
-    <!-- Order Summary Modal -->
-    <div id="order-summary-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
-            <h3 id="summary-title" class="text-2xl font-bold mb-4 text-center"></h3>
-            <p id="summary-message" class="text-gray-700 mb-6 text-center"></p>
-            <div id="summary-details" class="space-y-2 mb-6"></div>
-            <p id="summary-quote" class="text-gray-500 text-center italic mb-6"></p>
-            <div class="flex justify-between space-x-4">
-                <button id="print-receipt-btn" class="flex-1 bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition">
-                    <i class="fas fa-print mr-2"></i>Print Receipt
-                </button>
-                <button id="summary-close-btn"
-                    class="flex-1 bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
-                    Close
-                </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer text-center text-white">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-md-end">
+          <p style="margin:0">© <span id="year"></span> دارالتعلیم والتربیہ</p>
+        </div>
+        <div class="col-md-6 text-md-start">
+          <small>Follow us: <a href="#" class="text-white">Facebook</a> | <a href="#" class="text-white">Instagram</a></small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Admin Modal / Panel (single-page simulated) -->
+  <div class="modal fade" id="adminModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">ایڈمن پینل</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Login view -->
+          <div id="adminLoginView">
+            <form id="adminLoginForm">
+              <div class="mb-3">
+                <label>یوزرنیم</label>
+                <input class="form-control" id="adminUser" value="admin">
+              </div>
+              <div class="mb-3">
+                <label>پاسورڈ</label>
+                <input class="form-control" id="adminPass" type="password" value="password">
+              </div>
+              <button class="btn btn-primary">Login</button>
+            </form>
+          </div>
+
+          <!-- Panel view -->
+          <div id="adminPanelView" style="display:none">
+            <div class="row admin-panel">
+              <div class="col-lg-4">
+                <div class="list-group mb-3">
+                  <button class="list-group-item list-group-item-action active" data-panel="ann">Announcements</button>
+                  <button class="list-group-item list-group-item-action" data-panel="courses">Courses</button>
+                  <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
+                  <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
+                </div>
+
+                <div>
+                  <button id="adminLogout" class="btn btn-outline-danger btn-sm">Logout</button>
+                </div>
+              </div>
+
+              <div class="col-lg-8">
+                <div id="panelContent">
+                  <!-- dynamic admin content injected here -->
+                </div>
+              </div>
             </div>
+          </div>
+
         </div>
-    </div>
-    
-    <!-- Damage Report Modal -->
-    <div id="damage-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all">
-            <h3 class="text-2xl font-bold mb-4 text-red-600">Report Damage</h3>
-            <form id="damage-report-form" class="space-y-4">
-                <input type="hidden" id="damage-order-id">
-                <div>
-                    <label for="damage-reason" class="block text-sm font-medium text-gray-700">Reason for damage:</label>
-                    <textarea id="damage-reason" class="w-full px-4 py-2 border rounded-md" rows="4" required></textarea>
-                </div>
-                <div class="flex justify-end space-x-4 mt-6">
-                    <button type="button" id="cancel-damage-report-btn" class="bg-gray-400 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-500 transition">
-                        Cancel
-                    </button>
-                    <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">
-                        Submit Report
-                    </button>
-                </div>
-            </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
         </div>
+      </div>
     </div>
+  </div>
 
 
-    <!-- Simple Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-[100]">
-        <!-- Login Form -->
-        <div id="login-card" class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
-            <h3 id="login-form-title" class="text-3xl font-bold mb-6 text-center text-gray-900">Login</h3>
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" id="username" placeholder="Enter username" required
-                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" placeholder="Enter password" required
-                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div id="login-error" class="hidden text-red-500 text-sm">Invalid username or password.</div>
-                <button type="submit" id="login-submit-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">Login</button>
-            </form>
-            <form id="signup-form" class="space-y-4 hidden">
-                <div>
-                    <label for="signup-username" class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" id="signup-username" placeholder="Enter a username" required
-                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div>
-                    <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="signup-password" placeholder="Enter a password" required
-                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div>
-                    <label for="signup-code" class="block text-sm font-medium text-gray-700">Unique Code (Optional)</label>
-                    <input type="text" id="signup-code" placeholder="Enter a unique code"
-                        class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                </div>
-                <div id="signup-error" class="hidden text-red-500 text-sm"></div>
-                <button type="submit" id="signup-submit-btn" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300">Sign Up</button>
-            </form>
-            
-            <!-- This container holds links that are always visible in the modal -->
-            <div class="mt-4 flex justify-between items-center text-sm">
-                <a href="#" id="forgot-password-link" class="text-blue-600 hover:underline">Forgot Password?</a>
-                <a href="#" id="toggle-auth-link" class="text-blue-600 hover:underline"></a>
+  <!-- Bootstrap + Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ----------------- i18n content -----------------
+    const i18n = {
+      ur: {
+        homeTitle: 'دارالتعلیم والتربیہ میں خوش آمدید',
+        homeSubtitle: 'تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول',
+        aboutHeading: 'ہمارے بارے میں',
+        aboutText: 'دارالتعلیم والتربیہ ایک معروف مدرسہ ہے جہاں جدید اور دینی تعلیم کو یکجا کیا جاتا ہے۔ ہمارا مقصد طلباء کو علمی اور اخلاقی طور پر مضبوط بنانا ہے۔',
+        coursesHeading: 'کورسز',
+        galleryHeading: 'گیلری',
+        contactHeading: 'رابطہ کریں',
+        lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات'
+      },
+      en: {
+        homeTitle: 'Welcome to Darut Taleem Wat Tarbiyah',
+        homeSubtitle: 'A nurturing place for knowledge & character',
+        aboutHeading: 'About Us',
+        aboutText: 'Darut Taleem Wat Tarbiyah is a madrasa combining modern and religious education. Our aim is to build students academically and morally.',
+        coursesHeading: 'Courses',
+        galleryHeading: 'Gallery',
+        contactHeading: 'Contact Us',
+        lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information'
+      }
+    };
+
+    // ----------------- Simple data store (localStorage) -----------------
+    const store = {
+      announcementsKey: 'mad_announcements_v1',
+      coursesKey: 'mad_courses_v1',
+      galleryKey: 'mad_gallery_v1',
+      messagesKey: 'mad_messages_v1',
+
+      getAnnouncements(){ return JSON.parse(localStorage.getItem(this.announcementsKey) || '[]') },
+      saveAnnouncements(a){ localStorage.setItem(this.announcementsKey, JSON.stringify(a)) },
+      getCourses(){ return JSON.parse(localStorage.getItem(this.coursesKey) || '[]') },
+      saveCourses(a){ localStorage.setItem(this.coursesKey, JSON.stringify(a)) },
+      getGallery(){ return JSON.parse(localStorage.getItem(this.galleryKey) || '[]') },
+      saveGallery(a){ localStorage.setItem(this.galleryKey, JSON.stringify(a)) },
+      getMessages(){ return JSON.parse(localStorage.getItem(this.messagesKey) || '[]') },
+      saveMessages(a){ localStorage.setItem(this.messagesKey, JSON.stringify(a)) }
+    }
+
+    // Seed initial data if empty
+    if(store.getAnnouncements().length === 0){
+      store.saveAnnouncements([
+        {id:Date.now(), text: 'نئے داخلے جاری ہیں — مزید معلومات کے لئے رابطہ کریں'}
+      ])
+    }
+    if(store.getCourses().length === 0){
+      store.saveCourses([
+        {id:1, titleUr:'حفظِ قرآن', titleEn:'Hifz of Quran', descUr:'حفظ کے خصوصی کورس کی تفصیل', descEn:'Memorization course for Quran', duration:'2 years'},
+        {id:2, titleUr:'عربی زبان', titleEn:'Arabic Language', descUr:'ابتدائی تا اعلی کورس', descEn:'Beginner to advanced Arabic', duration:'1 year'}
+      ])
+    }
+
+    // ----------------- DOM helpers -----------------
+    const setYear = ()=> document.getElementById('year').textContent = new Date().getFullYear()
+    setYear()
+
+    // Render announcements in bar
+    function renderAnnouncements(){
+      const anns = store.getAnnouncements()
+      const bar = document.getElementById('announcementBar')
+      if(anns.length === 0){ bar.textContent = '' ; return }
+      bar.textContent = anns.map(a=>a.text).join('  •  ')
+    }
+    renderAnnouncements()
+
+    // Render courses
+    function renderCourses(){
+      const container = document.getElementById('coursesList')
+      container.innerHTML = ''
+      const courses = store.getCourses()
+      courses.forEach(c => {
+        const col = document.createElement('div'); col.className = 'col-md-6 col-lg-4'
+        col.innerHTML = `
+          <div class="card card-course h-100">
+            <div class="card-body">
+              <h5 class="card-title">${c.titleUr || c.titleEn}</h5>
+              <p class="card-text">${c.descUr || c.descEn}</p>
             </div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS FOR ALL FUNCTIONALITY -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // =================================================================
-            // CORE APPLICATION STATE
-            // =================================================================
-            let appState = {
-                currentView: '',
-                loggedInUser: null,
-                users: {
-                    'happy': { password: 'burger', role: 'customer' },
-                    'BnM': { password: 'Qwerty@321', role: 'admin' },
-                    'Delivery': { password: 'Burger321', role: 'delivery' }
-                },
-                aboutUsContent: `
-                    <p class="text-lg text-gray-600 mb-6">
-                        Welcome to **Bites n' More**, your go-to spot for delicious, high-quality fast food in Kalaburagi. Our mission is simple: to serve you happiness, one bite at a time. We believe in crafting mouth-watering meals using the freshest ingredients, all prepared with a touch of love.
-                    </p>
-                    <p class="text-lg text-gray-600 mb-6">
-                        From our crispy, loaded French fries to our juicy, perfectly seasoned burgers, every item on our menu is designed to give you a memorable culinary experience. We're proud to offer quick and efficient service, whether you're dining in, taking away, or getting it delivered right to your doorstep within a 3km radius.
-                    </p>
-                    <p class="text-lg text-gray-600">
-                        Join us at Bites n' More and discover why we're more than just a food joint—we're a place where great food meets great times.
-                    </p>
-                `,
-                reviews: [
-                    {
-                        name: 'Anjali Gupta',
-                        rating: 5,
-                        comment: "Absolutely fantastic! The Tandoori Pizza was loaded with toppings and had the perfect cheesy pull. The staff is friendly and the service is quick. A must-visit spot in Kalaburagi!",
-                        image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2960&auto=format&fit=crop'
-                    },
-                    {
-                        name: 'Vikram Singh',
-                        rating: 5,
-                        comment: "Ordered from here for the first time and was super impressed. The delivery was right on time, and the food was packed neatly. The prices are very reasonable for the quality you get. The loaded fries are a game-changer!",
-                        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2787&auto=format&fit=crop'
-                    },
-                    {
-                        name: 'Sneha Patil',
-                        rating: 4.5,
-                        comment: "A great place to hang out with friends. The vibe is very chill and modern. Their Watermelon Mojito is so refreshing! We had a great time and will definitely be back for more.",
-                        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2787&auto=format&fit=crop'
-                    },
-                ],
-                adminCode: 'admin123',
-                deliveryCode: 'delivery456',
-                logoUrl: 'https://placehold.co/100x100/EF4444/ffffff?text=BnM+Logo',
-                categories: [
-                    { id: 'appetizers', name: 'Appetizers' },
-                    { id: 'main-course', name: 'Main Course' },
-                    { id: 'beverages', name: 'Beverages' }
-                ],
-                menuItems: [
-                    {
-                        id: 'f1',
-                        name: 'French Fries',
-                        price: 30,
-                        image: 'https://images.unsplash.com/photo-1585109649234-36639308246a?q=80&w=2787&auto=format&fit=crop',
-                        categoryId: 'appetizers'
-                    },
-                    {
-                        id: 'pt1',
-                        name: 'Potato Twister',
-                        price: 50,
-                        image: 'https://images.unsplash.com/photo-1621852004184-755a4365455d?q=80&w=2787&auto=format&fit=crop',
-                        categoryId: 'appetizers'
-                    },
-                    {
-                        id: 'b1',
-                        name: 'Crispy Chicken Burger',
-                        price: 90,
-                        image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=2942&auto=format&fit=crop',
-                        categoryId: 'main-course'
-                    },
-                    {
-                        id: 'coke',
-                        name: 'Coca-Cola',
-                        price: 20,
-                        image: 'https://images.unsplash.com/photo-1567103482594-b20de4690835?q=80&w=2835&auto=format&fit=crop',
-                        categoryId: 'beverages'
-                    }
-                ],
-                orders: [],
-                cart: [],
-                serviceType: null,
-                tableNumber: null,
-                customerInfo: null,
-                totalEarnings: 0
-            };
-
-            const orderQuotes = [
-                "Life is too short to miss out on a good burger.",
-                "Fries: the most delicious gateway to happiness.",
-                "A balanced diet is a burger in each hand.",
-                "Don't cry because it's over, smile because it happened. And eat more burgers."
-            ];
-
-            // =================================================================
-            // DOM ELEMENTS
-            // =================================================================
-            const mainContent = document.getElementById('main-content');
-            const authButton = document.getElementById('auth-button');
-            const homeLink = document.getElementById('home-link');
-            const mainLogoContainer = document.getElementById('logo-container');
-            const cartBubble = document.getElementById('cart-bubble');
-            const cartCount = document.getElementById('cart-count');
-            const toastMessage = document.getElementById('toast-message');
-
-            const messageModal = document.getElementById('message-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalMessage = document.getElementById('modal-message');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
-
-            const passwordModal = document.getElementById('password-modal');
-            const changePasswordForm = document.getElementById('change-password-form');
-            const cancelPasswordChangeBtn = document.getElementById('cancel-password-change-btn');
-
-            const orderSummaryModal = document.getElementById('order-summary-modal');
-            const summaryTitle = document.getElementById('summary-title');
-            const summaryMessage = document.getElementById('summary-message');
-            const summaryDetails = document.getElementById('summary-details');
-            const summaryQuote = document.getElementById('summary-quote');
-            const summaryCloseBtn = document.getElementById('summary-close-btn');
-            const printReceiptBtn = document.getElementById('print-receipt-btn');
-
-            const damageModal = document.getElementById('damage-modal');
-            const damageReportForm = document.getElementById('damage-report-form');
-            const cancelDamageReportBtn = document.getElementById('cancel-damage-report-btn');
-            
-            const loginModal = document.getElementById('login-modal');
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            const loginFormTitle = document.getElementById('login-form-title');
-            const loginError = document.getElementById('login-error');
-            const signupError = document.getElementById('signup-error');
-            const toggleAuthLink = document.getElementById('toggle-auth-link');
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const signupUsernameInput = document.getElementById('signup-username');
-            const signupPasswordInput = document.getElementById('signup-password');
-            const signupCodeInput = document.getElementById('signup-code');
-            
-            const modeToggle = document.getElementById('mode-toggle');
-            const toggleBall = document.getElementById('toggle-ball');
-
-            // =================================================================
-            // UI & UTILITY FUNCTIONS
-            // =================================================================
-            
-            // Function to show a toast message at the bottom of the screen
-            const showToastMessage = (message) => {
-                toastMessage.textContent = message;
-                toastMessage.classList.add('toast-show', 'opacity-100', 'translate-y-0');
-                setTimeout(() => {
-                    toastMessage.classList.remove('opacity-100', 'translate-y-0');
-                    // Hide the toast after the animation
-                    setTimeout(() => {
-                        toastMessage.classList.remove('toast-show');
-                    }, 300);
-                }, 2000); // Show for 2 seconds
-            };
-            
-            const showMessageModal = (title, message) => {
-                modalTitle.textContent = title;
-                modalMessage.textContent = message;
-                messageModal.classList.remove('hidden');
-                messageModal.classList.add('flex');
-            };
-
-            modalCloseBtn.addEventListener('click', () => {
-                messageModal.classList.remove('flex');
-                messageModal.classList.add('hidden');
-            });
-
-            const showOrderSummaryModal = (title, message, details, quote) => {
-                summaryTitle.textContent = title;
-                summaryMessage.textContent = message;
-                summaryDetails.innerHTML = details;
-                summaryQuote.textContent = quote;
-                orderSummaryModal.classList.remove('hidden');
-                orderSummaryModal.classList.add('flex');
-            };
-
-            summaryCloseBtn.addEventListener('click', () => {
-                orderSummaryModal.classList.remove('flex');
-                orderSummaryModal.classList.add('hidden');
-                renderView('customer-website');
-            });
-            
-            printReceiptBtn.addEventListener('click', () => {
-                const receiptContent = `
-                    <div style="font-family: monospace; padding: 20px; max-width: 400px; margin: auto; border: 1px solid black;">
-                        <h2 style="text-align: center; margin-bottom: 20px;">Bites n' More Receipt</h2>
-                        ${summaryDetails.innerHTML}
-                        <hr style="border-top: 1px dashed black; margin: 10px 0;">
-                        ${appState.cart.map(item => `
-                            <p>${item.name} x${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}</p>
-                        `).join('')}
-                        <hr style="border-top: 1px dashed black; margin: 10px 0;">
-                        <p style="font-weight: bold; text-align: right;">Total: ₹${appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</p>
-                        <p style="text-align: center; margin-top: 20px;">Thank you for your order!</p>
-                    </div>
-                `;
-                const printWindow = window.open('', '', 'height=600,width=400');
-                printWindow.document.write('<html><head><title>Print Receipt</title></head><body>');
-                printWindow.document.write(receiptContent);
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-                printWindow.focus();
-                printWindow.print();
-            });
-
-            const showLoginModal = () => {
-                loginModal.classList.remove('hidden');
-                loginModal.classList.add('flex');
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-                loginFormTitle.textContent = 'Login';
-                toggleAuthLink.textContent = 'Create an account';
-                loginError.classList.add('hidden');
-                signupError.classList.add('hidden');
-            };
-            
-            const hideLoginModal = () => {
-                loginModal.classList.add('hidden');
-                loginModal.classList.remove('flex');
-                usernameInput.value = '';
-                passwordInput.value = '';
-                signupUsernameInput.value = '';
-                signupPasswordInput.value = '';
-                signupCodeInput.value = '';
-            };
-
-            const showDamageModal = (orderId) => {
-                document.getElementById('damage-order-id').value = orderId;
-                damageModal.classList.remove('hidden');
-                damageModal.classList.add('flex');
-            };
-
-            cancelDamageReportBtn.addEventListener('click', () => {
-                damageModal.classList.remove('flex');
-                damageModal.classList.add('hidden');
-                document.getElementById('damage-report-form').reset();
-            });
-
-
-            const saveAppState = () => {
-                localStorage.setItem('bitesNMoreState', JSON.stringify(appState));
-            };
-
-            const loadAppState = () => {
-                const storedState = localStorage.getItem('bitesNMoreState');
-                if (storedState) {
-                    const parsedState = JSON.parse(storedState);
-                    appState = { ...appState, ...parsedState };
-                }
-            };
-            
-            const renderLogo = () => {
-                mainLogoContainer.innerHTML = `<img src="${appState.logoUrl}" alt="BnM Logo" class="h-10 w-10 rounded-full object-cover">`;
-            };
-
-            const setLoggedInUser = (username, role) => {
-                appState.loggedInUser = { username, role };
-                saveAppState();
-                updateUIForUser();
-            };
-
-            const logout = () => {
-                appState.loggedInUser = null;
-                saveAppState();
-                updateUIForUser();
-                renderView('customer-website');
-                showToastMessage('You have been logged out.');
-            };
-
-            const updateUIForUser = () => {
-                const isLoggedIn = appState.loggedInUser !== null;
-                const userRole = isLoggedIn ? appState.loggedInUser.role : null;
-                
-                // Update Auth button text and action
-                if (isLoggedIn) {
-                    authButton.textContent = 'Profile';
-                    authButton.dataset.action = 'profile';
-                } else {
-                    authButton.textContent = 'Login';
-                    authButton.dataset.action = 'login';
-                }
-
-                // Show/hide cart bubble and change its count
-                if (isLoggedIn && userRole === 'customer') {
-                    cartBubble.classList.remove('hidden');
-                    cartCount.textContent = appState.cart.length;
-                } else {
-                    cartBubble.classList.add('hidden');
-                }
-                
-                // Render the correct view based on login state and role
-                if (isLoggedIn && userRole === 'admin') {
-                    renderView('admin-dashboard');
-                } else if (isLoggedIn && userRole === 'delivery') {
-                    renderView('delivery-dashboard');
-                } else {
-                    renderView('customer-website');
-                }
-            };
-            
-            const renderView = (viewName) => {
-                appState.currentView = viewName;
-                mainContent.innerHTML = '';
-                
-                if (!appState.loggedInUser && (viewName === 'admin-dashboard' || viewName === 'delivery-dashboard')) {
-                    renderView('customer-website');
-                    return;
-                }
-
-                const views = {
-                    'customer-website': renderCustomerWebsite,
-                    'admin-dashboard': renderAdminDashboard,
-                    'delivery-dashboard': renderDeliveryDashboard,
-                    'cart': renderCartPage,
-                    'profile-page': renderProfilePage, // New profile page view
-                };
-
-                const renderFunction = views[viewName] || renderCustomerWebsite;
-                renderFunction();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
-
-            // =================================================================
-            // NEW PROFILE VIEW
-            // =================================================================
-            const renderProfilePage = () => {
-                const loggedInUser = appState.loggedInUser;
-                if (!loggedInUser) {
-                    renderView('customer-website');
-                    return;
-                }
-                
-                mainContent.innerHTML = `
-                    <div class="bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen">
-                        <div class="container mx-auto px-4 py-8 max-w-lg">
-                            <div class="flex items-center space-x-4 mb-8">
-                                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                                    <i class="fas fa-user-circle fa-3x"></i>
-                                </div>
-                                <div>
-                                    <h1 class="text-3xl font-bold">${loggedInUser.username.toUpperCase()}</h1>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Your Account</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Quick Links Section -->
-                            <div class="grid grid-cols-3 gap-4 mb-8">
-                                <div id="view-orders-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-                                    <i class="fas fa-box-open text-red-600 text-2xl mb-2"></i>
-                                    <span class="text-center text-sm font-medium">Your Orders</span>
-                                </div>
-                                <div id="help-support-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-                                    <i class="fas fa-headset text-yellow-500 text-2xl mb-2"></i>
-                                    <span class="text-center text-sm font-medium">Help & Support</span>
-                                </div>
-                                <div id="change-password-btn" class="flex flex-col items-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-                                    <i class="fas fa-lock text-blue-600 text-2xl mb-2"></i>
-                                    <span class="text-center text-sm font-medium">Change Password</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Account Information Section -->
-                            <div class="space-y-4 bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg mb-8">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Your Information</h3>
-                                <div class="icon-with-text">
-                                    <i class="fas fa-user text-gray-500 dark:text-gray-400 mr-4"></i>
-                                    <span class="font-medium">Profile</span>
-                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
-                                </div>
-                                <div class="icon-with-text">
-                                    <i class="fas fa-gift text-gray-500 dark:text-gray-400 mr-4"></i>
-                                    <span class="font-medium">Rewards</span>
-                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
-                                </div>
-                                <div class="icon-with-text">
-                                    <i class="fas fa-credit-card text-gray-500 dark:text-gray-400 mr-4"></i>
-                                    <span class="font-medium">Payment Management</span>
-                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
-                                </div>
-                                <div class="icon-with-text">
-                                    <i class="fas fa-map-marker-alt text-gray-500 dark:text-gray-400 mr-4"></i>
-                                    <span class="font-medium">Saved Addresses</span>
-                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
-                                </div>
-                                <div class="icon-with-text">
-                                    <i class="fas fa-bell text-gray-500 dark:text-gray-400 mr-4"></i>
-                                    <span class="font-medium">Notifications</span>
-                                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
-                                </div>
-                            </div>
-
-                            <!-- Logout Button -->
-                            <button id="logout-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">
-                                Log Out
-                            </button>
-                        </div>
-                    </div>
-                `;
-
-                // Add event listeners for the new profile page buttons
-                document.getElementById('logout-btn').addEventListener('click', logout);
-                document.getElementById('view-orders-btn').addEventListener('click', () => {
-                    // This is a placeholder for a real orders page
-                    showToastMessage('This button will show your order history!');
-                });
-                document.getElementById('help-support-btn').addEventListener('click', () => {
-                    // This is a placeholder for a real help page
-                    showToastMessage('This button will open the Help & Support page.');
-                });
-                document.getElementById('change-password-btn').addEventListener('click', () => {
-                    passwordModal.classList.remove('hidden');
-                    passwordModal.classList.add('flex');
-                    changePasswordForm.reset();
-                });
-            };
-
-            // =================================================================
-            // VIEW RENDERING FUNCTIONS (MODIFIED)
-            // =================================================================
-            
-            const renderCustomerWebsite = () => {
-                mainContent.innerHTML = `
-                    <section class="hero-bg text-white">
-                        <div class="container mx-auto px-6 py-24 md:py-32 text-center">
-                            <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">We Serve You Happiness.</h1>
-                            <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Delicious food delivered to your door within a 3km radius. Quick, fresh, and always satisfying!</p>
-                        </div>
-                    </section>
-                    <section id="menu" class="py-16 md:py-24 bg-white">
-                        <div class="container mx-auto px-6">
-                            <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Our Delicious Menu</h2>
-                                <p class="text-gray-600 mt-2">Crafsted with love, just for you.</p>
-                            </div>
-                            <!-- Category Slider -->
-                            <div class="flex space-x-4 overflow-x-auto pb-4 mb-8">
-                                <button data-category-id="all" class="menu-category-btn px-6 py-2 rounded-full border border-gray-300 text-gray-600 font-medium whitespace-nowrap active">All</button>
-                                ${appState.categories.map(cat => `
-                                    <button data-category-id="${cat.id}" class="menu-category-btn px-6 py-2 rounded-full border border-gray-300 text-gray-600 font-medium whitespace-nowrap">${cat.name}</button>
-                                `).join('')}
-                            </div>
-                            <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <!-- Menu items will be dynamically generated here -->
-                            </div>
-                        </div>
-                    </section>
-                    <section id="about" class="py-16 md:py-24 bg-gray-50">
-                        <div class="container mx-auto px-6">
-                            <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">About Bites n' More</h2>
-                                <p class="text-gray-600 mt-2">More than just a food joint.</p>
-                            </div>
-                            <div class="max-w-4xl mx-auto text-center">
-                                ${appState.aboutUsContent}
-                            </div>
-                        </div>
-                    </section>
-                    <section id="contact" class="py-16 md:py-24 bg-white">
-                        <div class="container mx-auto px-6">
-                            <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Get in Touch</h2>
-                                <p class="text-gray-600 mt-2">We'd love to hear from you!</p>
-                            </div>
-                            <div class="grid md:grid-cols-2 gap-12 items-start">
-                                <div class="bg-white p-8 rounded-lg shadow-lg">
-                                    <h3 class="text-2xl font-bold mb-6">Send Us a Message</h3>
-                                    <form id="contact-form" class="space-y-6">
-                                        <div>
-                                            <label for="contact-name" class="block text-sm font-medium text-gray-700">Your Name</label>
-                                            <input type="text" name="contact-name" id="contact-name" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                                        </div>
-                                        <div>
-                                            <label for="contact-email" class="block text-sm font-medium text-gray-700">Your Email</label>
-                                            <input type="email" name="contact-email" id="contact-email" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
-                                        </div>
-                                        <div>
-                                            <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-                                            <textarea name="contact-message" id="contact-message" rows="4" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"></textarea>
-                                        </div>
-                                        <div>
-                                            <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">Send Message</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div>
-                                    <div class="rounded-lg overflow-hidden shadow-lg mb-6">
-                                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.518661858548!2d76.82999931487766!3d17.32700098801938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc901e0b0000001%3A0x8932c8635c2b554b!2sBites%20n'%20More!5e0!3m2!1sen!2sin!4v1663333333333!5m2!1sen!2sin" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                                    </div>
-                                    <div class="bg-white p-8 rounded-lg shadow-lg">
-                                        <div class="space-y-4">
-                                            <p class="flex items-start text-lg"><i class="fas fa-map-marker-alt text-red-500 w-6 mr-2 mt-1"></i> <span>BITES N' MORE, Yadullah Colony Main Rd, Yadulla Colony, Kalaburagi, Karnataka 585104</span></p>
-                                            <div class="flex items-start text-lg"><i class="fas fa-phone-alt text-red-500 w-6 mr-2 mt-1"></i>
-                                                <div>
-                                                    <p>+91 87226 66555</p>
-                                                    <p>+91 72042 84207</p>
-                                                    <p>+91 81977 67686</p>
-                                                </div>
-                                            </div>
-                                            <p class="flex items-start text-lg"><i class="fas fa-envelope text-red-500 w-6 mr-2 mt-1"></i> <span>order@bitesnmore.com</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                `;
-                renderMenuItems();
-            };
-
-            const renderAdminDashboard = () => {
-                mainContent.innerHTML = `
-                    <div class="container mx-auto px-6 py-12">
-                        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
-                            <h2 class="text-4xl font-bold mb-4 text-gray-900">Admin Dashboard</h2>
-                            <p class="text-gray-600 text-lg">Current Earnings: <span class="font-bold text-green-600">₹${appState.totalEarnings.toFixed(2)}</span></p>
-                            <div id="not-implemented-warning" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4" role="alert">
-                                <p class="font-bold">Important Information:</p>
-                                <p>Features like **EZO printing**, **emailing earnings**, and **online payment gateways** require a backend server and are not possible to implement in this browser-based demo. This application uses your browser's local storage for data persistence.</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                            <!-- Section 1: Manage Delivery Partners -->
-                            <div class="bg-white p-8 rounded-xl shadow-lg">
-                                <h3 class="text-2xl font-bold text-red-600 mb-6">Manage Delivery Partners</h3>
-                                <form id="add-delivery-form" class="space-y-4 mb-8">
-                                    <input type="text" id="delivery-username" placeholder="New Partner Username" required class="w-full px-4 py-2 border rounded-md">
-                                    <input type="password" id="delivery-password" placeholder="Password" required class="w-full px-4 py-2 border rounded-md">
-                                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Add Partner</button>
-                                </form>
-                                <div>
-                                    <h4 class="text-xl font-semibold mb-4">Current Partners</h4>
-                                    <ul id="delivery-list" class="space-y-2"></ul>
-                                </div>
-                            </div>
-                            <!-- Section 2: Manage Categories & Menu Items -->
-                            <div class="bg-white p-8 rounded-xl shadow-lg">
-                                <h3 class="text-2xl font-bold text-red-600 mb-6">Manage Menu</h3>
-                                <div class="space-y-4 mb-8">
-                                    <h4 class="text-xl font-semibold">Categories</h4>
-                                    <form id="add-category-form" class="flex space-x-2">
-                                        <input type="text" id="new-category-name" placeholder="New Category Name" required class="flex-grow px-4 py-2 border rounded-md">
-                                        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 transition">Add</button>
-                                    </form>
-                                    <ul id="category-list" class="space-y-2"></ul>
-                                </div>
-                                <div class="space-y-4 mb-8">
-                                    <h4 class="text-xl font-semibold">Menu Items</h4>
-                                    <form id="manage-menu-item-form" class="space-y-4">
-                                        <input type="hidden" id="menu-item-id">
-                                        <select id="item-category" class="w-full px-4 py-2 border rounded-md" required></select>
-                                        <input type="text" id="menu-name" placeholder="Item Name" required class="w-full px-4 py-2 border rounded-md">
-                                        <input type="number" id="menu-price" placeholder="Price" required class="w-full px-4 py-2 border rounded-md">
-                                        <input type="url" id="menu-image" placeholder="Image URL" class="w-full px-4 py-2 border rounded-md">
-                                        <div class="flex space-x-2">
-                                            <button type="submit" id="add-item-btn" class="flex-1 bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Add New Item</button>
-                                            <button type="button" id="update-item-btn" class="flex-1 bg-purple-600 text-white py-2 rounded-md font-semibold hover:bg-purple-700 transition hidden">Update Item</button>
-                                        </div>
-                                    </form>
-                                    <ul id="menu-list" class="space-y-4"></ul>
-                                </div>
-                            </div>
-                            <!-- Section 3: Manage About Us & Reviews -->
-                            <div class="bg-white p-8 rounded-xl shadow-lg">
-                                <h3 class="text-2xl font-bold text-red-600 mb-6">Manage Content</h3>
-                                <div class="mb-8">
-                                    <h4 class="text-xl font-semibold mb-4">About Us Content</h4>
-                                    <textarea id="about-us-textarea" class="w-full p-4 border rounded-md resize-y" rows="8">${appState.aboutUsContent.trim()}</textarea>
-                                    <button id="save-about-us-btn" class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-purple-700 transition">Save About Us</button>
-                                </div>
-                                <div class="mb-8">
-                                    <h4 class="text-xl font-semibold mb-4">Website Logo</h4>
-                                    <form id="logo-form" class="space-y-2">
-                                        <input type="url" id="logo-url" placeholder="Enter new logo URL" class="w-full px-4 py-2 border rounded-md">
-                                        <button type="submit" class="bg-purple-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-purple-700 transition">Update Logo</button>
-                                    </form>
-                                </div>
-                                <div>
-                                    <h4 class="text-xl font-semibold mb-4">Customer Reviews</h4>
-                                    <div id="admin-reviews-list" class="space-y-4"></div>
-                                    <form id="add-review-form" class="mt-8 space-y-4">
-                                        <h5 class="font-semibold">Add New Review</h5>
-                                        <input type="text" id="review-name" placeholder="Customer Name" required class="w-full px-4 py-2 border rounded-md">
-                                        <input type="number" id="review-rating" placeholder="Rating (1-5)" min="1" max="5" step="0.5" required class="w-full px-4 py-2 border rounded-md">
-                                        <textarea id="review-comment" placeholder="Review Comment" required class="w-full p-4 border rounded-md resize-y" rows="3"></textarea>
-                                        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition">Add Review</button>
-                                    </form>
-                                </div>
-                            </div>
-                            <!-- Section 4: View Orders -->
-                            <div class="bg-white p-8 rounded-xl shadow-lg">
-                                <h3 class="text-2xl font-bold text-red-600 mb-6">View All Orders</h3>
-                                <div id="admin-orders-list" class="space-y-4">
-                                    <p class="text-gray-500">No new orders yet.</p>
-                                </div>
-                            </div>
-                            <!-- Section 5: Payment Gateway (Placeholder) -->
-                            <div class="bg-white p-8 rounded-xl shadow-lg">
-                                <h3 class="text-2xl font-bold text-red-600 mb-6">Payment & Email Configuration</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <p class="text-gray-600 font-semibold mb-2">Payment Gateway API (Simulated)</p>
-                                        <p class="text-sm text-gray-500">For a live app, you'd integrate with providers like Stripe or Razorpay here.</p>
-                                        <input type="text" id="api-key" placeholder="Enter API Key" class="mt-2 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm">
-                                        <button class="mt-2 bg-gray-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-600 transition">Update API</button>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-600 font-semibold mb-2">E-mail Configuration (Simulated)</p>
-                                        <p class="text-sm text-gray-500">For a live app, you'd integrate with email services like SendGrid or Mailgun here.</p>
-                                        <input type="email" id="email-config" placeholder="Enter earnings email" class="mt-2 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm">
-                                        <button class="mt-2 bg-gray-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-600 transition">Save Email</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                document.getElementById('add-delivery-form').addEventListener('submit', handleAddDeliveryPartner);
-                document.getElementById('add-category-form').addEventListener('submit', handleAddCategory);
-                document.getElementById('manage-menu-item-form').addEventListener('submit', handleAddOrUpdateMenuItem);
-                document.getElementById('save-about-us-btn').addEventListener('click', handleSaveAboutUs);
-                document.getElementById('add-review-form').addEventListener('submit', handleAddReview);
-                document.getElementById('logo-form').addEventListener('submit', handleUpdateLogo);
-                document.getElementById('update-item-btn').addEventListener('click', handleAddOrUpdateMenuItem);
-                
-                renderDeliveryPartners();
-                renderCategoriesAdmin();
-                renderAdminMenu();
-                renderAdminOrders();
-                renderAdminReviews();
-            };
-
-            const renderDeliveryDashboard = () => {
-                mainContent.innerHTML = `
-                    <div class="container mx-auto px-6 py-12">
-                        <h2 class="text-4xl font-bold mb-8 text-gray-900">Delivery Dashboard</h2>
-                        <div class="bg-white p-8 rounded-xl shadow-lg">
-                            <h3 class="text-2xl font-bold text-red-600 mb-6">Pending Orders</h3>
-                            <div id="delivery-orders-list" class="space-y-4">
-                                <p class="text-gray-500">No pending orders to deliver.</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                renderDeliveryOrders();
-            };
-
-            const renderCartPage = () => {
-                const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                let cartContent = '';
-                if (appState.cart.length === 0) {
-                    cartContent = '<p class="text-gray-500 text-center">Your cart is empty.</p>';
-                } else {
-                    cartContent = appState.cart.map(item => `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-semibold">${item.name}</p>
-                                <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
-                            </div>
-                            <span class="font-bold">₹${(item.price * item.quantity).toFixed(2)}</span>
-                        </div>
-                    `).join('');
-                }
-                
-                mainContent.innerHTML = `
-                    <div class="container mx-auto px-6 py-12">
-                        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-                            <h2 class="text-3xl font-bold mb-8 text-gray-900">Your Cart</h2>
-                            <div id="cart-items-container" class="space-y-4">
-                                ${cartContent}
-                            </div>
-                            <div class="mt-8 pt-4 border-t border-gray-200 flex justify-between items-center text-2xl font-bold">
-                                <span>Total:</span>
-                                <span>₹${total.toFixed(2)}</span>
-                            </div>
-                            <div class="mt-8 space-y-4">
-                                <h3 class="text-xl font-semibold">Choose Service Type:</h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <button id="service-delivery-btn" class="service-btn bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
-                                        <i class="fas fa-motorcycle mr-2"></i>Delivery
-                                    </button>
-                                    <button id="service-takeaway-btn" class="service-btn bg-yellow-400 text-gray-900 font-semibold py-3 rounded-lg hover:bg-yellow-500 transition">
-                                        <i class="fas fa-shopping-bag mr-2"></i>Take Away
-                                    </button>
-                                    <button id="service-dinein-btn" class="service-btn bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition">
-                                        <i class="fas fa-utensils mr-2"></i>Dine In
-                                    </button>
-                                </div>
-                                <div id="service-options-container"></div>
-                                <div class="mt-8 flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4">
-                                    <button id="continue-shopping-btn" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                                        Continue Shopping
-                                    </button>
-                                    <button id="checkout-btn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition">
-                                        Checkout
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.getElementById('continue-shopping-btn').addEventListener('click', () => renderView('customer-website'));
-                document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
-                document.getElementById('service-delivery-btn').addEventListener('click', () => renderServiceOptions('delivery'));
-                document.getElementById('service-takeaway-btn').addEventListener('click', () => renderServiceOptions('takeaway'));
-                document.getElementById('service-dinein-btn').addEventListener('click', () => renderServiceOptions('dinein'));
-            };
-
-            const renderServiceOptions = (serviceType) => {
-                const optionsContainer = document.getElementById('service-options-container');
-                optionsContainer.innerHTML = '';
-                appState.serviceType = serviceType;
-                appState.tableNumber = null;
-                appState.customerInfo = null;
-                
-                document.querySelectorAll('.service-btn').forEach(btn => btn.classList.remove('active'));
-                document.getElementById(`service-${serviceType}-btn`).classList.add('active');
-
-                if (serviceType === 'delivery') {
-                    optionsContainer.innerHTML = `
-                        <div class="mt-6 space-y-4">
-                            <h4 class="text-lg font-semibold">Delivery Details:</h4>
-                            <form id="delivery-details-form" class="space-y-4">
-                                <input type="text" id="customer-name" placeholder="Your Name" required class="w-full px-4 py-2 border rounded-md">
-                                <input type="tel" id="customer-phone" placeholder="Phone Number" required class="w-full px-4 py-2 border rounded-md">
-                                <input type="text" id="customer-address" placeholder="Address" required class="w-full px-4 py-2 border rounded-md">
-                                <input type="text" id="customer-landmark" placeholder="Landmark" required class="w-full px-4 py-2 border rounded-md">
-                                <p class="text-sm text-gray-500">
-                                    Please enter your location on the map below for faster delivery.
-                                </p>
-                                <div class="rounded-lg overflow-hidden shadow-lg mb-6">
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.518661858548!2d76.82999931487766!3d17.32700098801938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc901e0b0000001%3A0x8932c8635c2b554b!2sBites%20n'%20More!5e0!3m2!1sen!2sin!4v1663333333333!5m2!1sen!2sin" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                                </div>
-                            </form>
-                            <div class="space-y-2">
-                                <h4 class="text-lg font-semibold">Payment Option:</h4>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <button id="pay-online-btn" class="pay-btn bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
-                                    <button id="pay-cash-btn" class="pay-btn bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('delivery-details-form').addEventListener('input', (e) => {
-                        appState.customerInfo = {
-                            name: document.getElementById('customer-name').value,
-                            phone: document.getElementById('customer-phone').value,
-                            address: document.getElementById('customer-address').value,
-                            landmark: document.getElementById('customer-landmark').value,
-                            location: 'Simulated Map Pin'
-                        };
-                    });
-                    document.getElementById('pay-online-btn').addEventListener('click', () => {
-                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
-                        document.getElementById('pay-online-btn').classList.add('active');
-                        appState.paymentMethod = 'Online';
-                    });
-                    document.getElementById('pay-cash-btn').addEventListener('click', () => {
-                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
-                        document.getElementById('pay-cash-btn').classList.add('active');
-                        appState.paymentMethod = 'Cash on Delivery';
-                    });
-                } else if (serviceType === 'dinein') {
-                    optionsContainer.innerHTML = `
-                        <div class="mt-6 space-y-4">
-                            <h4 class="text-lg font-semibold">Select a Table:</h4>
-                            <div id="table-grid" class="grid grid-cols-4 gap-4"></div>
-                        </div>
-                    `;
-                    renderTableButtons();
-                } else if (serviceType === 'takeaway') {
-                    optionsContainer.innerHTML = `
-                        <div class="mt-6 space-y-4">
-                            <h4 class="text-lg font-semibold">Payment Option:</h4>
-                            <div class="grid grid-cols-2 gap-4">
-                                <button id="pay-online-btn" class="pay-btn bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Pay Online</button>
-                                <button id="pay-cash-btn" class="pay-btn bg-gray-600 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition">Cash on Delivery</button>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('pay-online-btn').addEventListener('click', () => {
-                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
-                        document.getElementById('pay-online-btn').classList.add('active');
-                        appState.paymentMethod = 'Online';
-                    });
-                    document.getElementById('pay-cash-btn').addEventListener('click', () => {
-                        document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
-                        document.getElementById('pay-cash-btn').classList.add('active');
-                        appState.paymentMethod = 'Cash on Delivery';
-                    });
-                }
-            };
-
-
-            const renderTableButtons = () => {
-                const tableGrid = document.getElementById('table-grid');
-                if (!tableGrid) return;
-                tableGrid.innerHTML = '';
-                for (let i = 1; i <= 7; i++) {
-                    const tableBtn = document.createElement('button');
-                    tableBtn.textContent = `Table ${i}`;
-                    tableBtn.className = "bg-gray-200 text-gray-800 p-3 rounded-lg font-semibold hover:bg-gray-300 transition";
-                    tableBtn.dataset.tableNumber = i;
-                    tableBtn.addEventListener('click', () => {
-                        document.querySelectorAll('#table-grid button').forEach(btn => btn.classList.remove('bg-red-500', 'text-white'));
-                        tableBtn.classList.add('bg-red-500', 'text-white');
-                        appState.tableNumber = i;
-                    });
-                    tableGrid.appendChild(tableBtn);
-                }
-            };
-
-            // =================================================================
-            // AUTHENTICATION LOGIC
-            // =================================================================
-            
-            const handleLogin = (e) => {
-                e.preventDefault();
-                const username = usernameInput.value;
-                const password = passwordInput.value;
-                const user = appState.users[username];
-
-                if (user && user.password === password) {
-                    setLoggedInUser(username, user.role);
-                    hideLoginModal();
-                    loginError.classList.add('hidden');
-                    showToastMessage(`Welcome, ${user.role}!`);
-                } else {
-                    loginError.classList.remove('hidden');
-                }
-            };
-
-            const handleSignup = (e) => {
-                e.preventDefault();
-                const username = signupUsernameInput.value;
-                const password = signupPasswordInput.value;
-                const uniqueCode = signupCodeInput.value;
-
-                if (appState.users[username]) {
-                    signupError.textContent = 'Username already exists.';
-                    signupError.classList.remove('hidden');
-                    return;
-                }
-                
-                let userRole = 'customer';
-                if (uniqueCode === appState.adminCode) {
-                    userRole = 'admin';
-                } else if (uniqueCode === appState.deliveryCode) {
-                    userRole = 'delivery';
-                } else if (uniqueCode) {
-                    signupError.textContent = 'Invalid unique code.';
-                    signupError.classList.remove('hidden');
-                    return;
-                }
-
-                appState.users[username] = { password, role: userRole };
-                saveAppState();
-                showToastMessage('Account created successfully. You can now log in.');
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-                loginFormTitle.textContent = 'Login';
-                toggleAuthLink.textContent = 'Create an account';
-                signupError.classList.add('hidden');
-            };
-
-            const handleAddDeliveryPartner = (e) => {
-                e.preventDefault();
-                const username = document.getElementById('delivery-username').value;
-                const password = document.getElementById('delivery-password').value;
-
-                if (appState.users[username]) {
-                    showMessageModal('Error', 'A user with this username already exists.');
-                    return;
-                }
-
-                appState.users[username] = { password, role: 'delivery' };
-                saveAppState();
-                renderDeliveryPartners();
-                document.getElementById('add-delivery-form').reset();
-                showToastMessage(`${username} has been added as a delivery partner.`);
-            };
-
-            const handleChangePassword = (e) => {
-                e.preventDefault();
-                const oldPassword = document.getElementById('old-password').value;
-                const newPassword = document.getElementById('new-password').value;
-                const confirmNewPassword = document.getElementById('confirm-new-password').value;
-                
-                const loggedInUser = appState.loggedInUser;
-                const currentUser = appState.users[loggedInUser.username];
-
-                if (oldPassword !== currentUser.password) {
-                    showMessageModal('Change Password Failed', 'Incorrect current password.');
-                    return;
-                }
-                
-                if (newPassword !== confirmNewPassword) {
-                    showMessageModal('Change Password Failed', 'New passwords do not match.');
-                    return;
-                }
-                
-                if (newPassword === oldPassword) {
-                    showMessageModal('Change Password Failed', 'New password must be different from the old one.');
-                    return;
-                }
-
-                currentUser.password = newPassword;
-                saveAppState();
-                passwordModal.classList.add('hidden');
-                passwordModal.classList.remove('flex');
-                showToastMessage('Your password has been changed successfully.');
-            };
-
-            // =================================================================
-            // DATA MANAGEMENT & RENDERING FUNCTIONS
-            // =================================================================
-
-            const handleSaveAboutUs = () => {
-                const newContent = document.getElementById('about-us-textarea').value;
-                appState.aboutUsContent = newContent;
-                saveAppState();
-                showToastMessage('About Us content updated successfully!');
-            };
-            
-            const handleUpdateLogo = (e) => {
-                e.preventDefault();
-                const newLogoUrl = document.getElementById('logo-url').value;
-                if(newLogoUrl) {
-                    appState.logoUrl = newLogoUrl;
-                    saveAppState();
-                    renderLogo();
-                    showToastMessage('Website logo updated!');
-                } else {
-                    showMessageModal('Error', 'Please provide a valid image URL.');
-                }
-            };
-
-            const renderAdminReviews = () => {
-                const reviewsList = document.getElementById('admin-reviews-list');
-                if (!reviewsList) return;
-
-                reviewsList.innerHTML = appState.reviews.map((review, index) => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-bold text-lg">${review.name}</p>
-                        <p class="text-sm text-gray-600">Rating: ${'⭐'.repeat(Math.floor(review.rating))} ${review.rating % 1 !== 0 ? '½' : ''} (${review.rating})</p>
-                        <p class="italic text-gray-800">"${review.comment}"</p>
-                        <div class="flex justify-end space-x-2">
-                            <button data-index="${index}" class="edit-review-btn text-blue-500 hover:text-blue-700 transition">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button data-index="${index}" class="delete-review-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.edit-review-btn').forEach(button => {
-                    button.addEventListener('click', handleEditReview);
-                });
-                document.querySelectorAll('.delete-review-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteReview);
-                });
-            };
-            
-            const handleEditReview = (e) => {
-                const indexToEdit = e.currentTarget.dataset.index;
-                const review = appState.reviews[indexToEdit];
-                document.getElementById('review-name').value = review.name;
-                document.getElementById('review-rating').value = review.rating;
-                document.getElementById('review-comment').value = review.comment;
-                document.getElementById('add-review-form').dataset.editIndex = indexToEdit;
-            };
-
-            const handleDeleteReview = (e) => {
-                const indexToDelete = e.currentTarget.dataset.index;
-                appState.reviews.splice(indexToDelete, 1);
-                saveAppState();
-                renderAdminReviews();
-                showToastMessage('Review deleted successfully.');
-            };
-
-            const handleAddReview = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('review-name').value;
-                const rating = parseFloat(document.getElementById('review-rating').value);
-                const comment = document.getElementById('review-comment').value;
-                const editIndex = document.getElementById('add-review-form').dataset.editIndex;
-
-                if (rating < 1 || rating > 5) {
-                    showMessageModal('Error', 'Rating must be between 1 and 5.');
-                    return;
-                }
-
-                if (editIndex !== undefined) {
-                    // Update existing review
-                    appState.reviews[editIndex] = {
-                        name, rating, comment,
-                        image: appState.reviews[editIndex].image
-                    };
-                    delete document.getElementById('add-review-form').dataset.editIndex;
-                    showToastMessage('Review updated successfully!');
-                } else {
-                    // Add new review
-                    appState.reviews.push({
-                        name,
-                        rating,
-                        comment,
-                        image: 'https://placehold.co/100x100/cccccc/ffffff?text=User'
-                    });
-                    showToastMessage('Review added successfully!');
-                }
-                
-                saveAppState();
-                renderAdminReviews();
-                document.getElementById('add-review-form').reset();
-            };
-
-            const renderDeliveryPartners = () => {
-                const deliveryList = document.getElementById('delivery-list');
-                if (!deliveryList) return;
-                const deliveryPartners = Object.keys(appState.users).filter(u => appState.users[u].role === 'delivery');
-                
-                deliveryList.innerHTML = '';
-                deliveryPartners.forEach(partner => {
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center bg-gray-50 p-3 rounded-md";
-                    li.innerHTML = `
-                        <span class="font-medium">${partner}</span>
-                        <div class="space-x-2">
-                            <button data-username="${partner}" class="delete-delivery-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    `;
-                    deliveryList.appendChild(li);
-                });
-
-                document.querySelectorAll('.delete-delivery-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteDeliveryPartner);
-                });
-            };
-
-            const handleDeleteDeliveryPartner = (e) => {
-                const usernameToDelete = e.currentTarget.dataset.username;
-                delete appState.users[usernameToDelete];
-                saveAppState();
-                renderDeliveryPartners();
-                showToastMessage(`${usernameToDelete} has been deleted.`);
-            };
-
-            const handleAddCategory = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('new-category-name').value;
-                const id = name.toLowerCase().replace(/\s/g, '-');
-                
-                if (appState.categories.some(cat => cat.id === id)) {
-                    showMessageModal('Error', 'Category already exists.');
-                    return;
-                }
-                
-                appState.categories.push({ id, name });
-                saveAppState();
-                renderCategoriesAdmin();
-                renderMenuItems();
-                document.getElementById('add-category-form').reset();
-                showToastMessage(`${name} category added.`);
-            };
-
-            const handleDeleteCategory = (e) => {
-                const idToDelete = e.currentTarget.dataset.categoryId;
-                appState.categories = appState.categories.filter(cat => cat.id !== idToDelete);
-                appState.menuItems = appState.menuItems.filter(item => item.categoryId !== idToDelete);
-                saveAppState();
-                renderCategoriesAdmin();
-                renderAdminMenu();
-                renderMenuItems();
-                showToastMessage('Category and its items have been deleted.');
-            };
-
-            const renderCategoriesAdmin = () => {
-                const categorySelect = document.getElementById('item-category');
-                const categoryList = document.getElementById('category-list');
-                
-                if (!categorySelect || !categoryList) return;
-
-                categorySelect.innerHTML = appState.categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
-                
-                categoryList.innerHTML = appState.categories.map(cat => `
-                    <li class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                        <span class="font-medium">${cat.name}</span>
-                        <button data-category-id="${cat.id}" class="delete-category-btn text-red-500 hover:text-red-700 transition">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </li>
-                `).join('');
-
-                document.querySelectorAll('.delete-category-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteCategory);
-                });
-            };
-
-            const handleAddOrUpdateMenuItem = (e) => {
-                e.preventDefault();
-                const isUpdate = document.getElementById('update-item-btn').classList.contains('hidden') === false;
-                const itemId = document.getElementById('menu-item-id').value;
-                const name = document.getElementById('menu-name').value;
-                const price = parseFloat(document.getElementById('menu-price').value);
-                const image = document.getElementById('menu-image').value || 'https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';
-                const categoryId = document.getElementById('item-category').value;
-                
-                if (isUpdate) {
-                    const itemToUpdate = appState.menuItems.find(item => item.id === itemId);
-                    if (itemToUpdate) {
-                        itemToUpdate.name = name;
-                        itemToUpdate.price = price;
-                        itemToUpdate.image = image;
-                        itemToUpdate.categoryId = categoryId;
-                    }
-                    showToastMessage(`${name} has been updated.`);
-                } else {
-                    const newItem = {
-                        id: 'item-' + Date.now(),
-                        name, price, image, categoryId
-                    };
-                    appState.menuItems.push(newItem);
-                    showToastMessage(`${name} has been added to the menu.`);
-                }
-
-                saveAppState();
-                renderAdminMenu();
-                renderMenuItems();
-                document.getElementById('manage-menu-item-form').reset();
-                document.getElementById('add-item-btn').classList.remove('hidden');
-                document.getElementById('update-item-btn').classList.add('hidden');
-            };
-
-            const renderAdminMenu = () => {
-                const menuList = document.getElementById('menu-list');
-                if (!menuList) return;
-
-                menuList.innerHTML = '';
-                appState.menuItems.forEach(item => {
-                    const categoryName = appState.categories.find(cat => cat.id === item.categoryId)?.name || 'N/A';
-                    const li = document.createElement('li');
-                    li.className = "flex justify-between items-center bg-gray-50 p-3 rounded-md";
-                    li.innerHTML = `
-                        <span class="font-medium">${item.name} (${categoryName}) - ₹${item.price}</span>
-                        <div class="space-x-2">
-                            <button data-id="${item.id}" class="edit-menu-item-btn text-blue-500 hover:text-blue-700 transition">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button data-id="${item.id}" class="delete-menu-item-btn text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </div>
-                    `;
-                    menuList.appendChild(li);
-                });
-
-                document.querySelectorAll('.edit-menu-item-btn').forEach(button => {
-                    button.addEventListener('click', handleEditMenuItem);
-                });
-                document.querySelectorAll('.delete-menu-item-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteMenuItem);
-                });
-            };
-            
-            const handleEditMenuItem = (e) => {
-                const itemId = e.currentTarget.dataset.id;
-                const item = appState.menuItems.find(i => i.id === itemId);
-                if (item) {
-                    document.getElementById('menu-item-id').value = item.id;
-                    document.getElementById('menu-name').value = item.name;
-                    document.getElementById('menu-price').value = item.price;
-                    document.getElementById('menu-image').value = item.image;
-                    document.getElementById('item-category').value = item.categoryId;
-                    document.getElementById('add-item-btn').classList.add('hidden');
-                    document.getElementById('update-item-btn').classList.remove('hidden');
-                }
-            };
-
-            const handleDeleteMenuItem = (e) => {
-                const idToDelete = e.currentTarget.dataset.id;
-                appState.menuItems = appState.menuItems.filter(item => item.id !== idToDelete);
-                saveAppState();
-                renderAdminMenu();
-                renderMenuItems();
-                showToastMessage(`Menu item has been deleted.`);
-            };
-
-            const renderMenuItems = () => {
-                const menuGrid = document.getElementById('menu-grid');
-                if (!menuGrid) return;
-                
-                const categoryButtons = document.querySelectorAll('.menu-category-btn');
-                categoryButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        categoryButtons.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        const categoryId = btn.dataset.categoryId;
-                        filterAndRenderMenu(categoryId);
-                    });
-                });
-
-                filterAndRenderMenu('all');
-            };
-
-            const filterAndRenderMenu = (categoryId) => {
-                const menuGrid = document.getElementById('menu-grid');
-                if (!menuGrid) return;
-                
-                let itemsToRender = appState.menuItems;
-                if (categoryId !== 'all') {
-                    itemsToRender = appState.menuItems.filter(item => item.categoryId === categoryId);
-                }
-                
-                menuGrid.innerHTML = itemsToRender.map(item => `
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
-                        <img src="${item.image}" alt="${item.name}" class="w-full menu-card-image" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
-                        <div class="p-6">
-                            <h3 class="text-2xl font-bold mb-4 text-red-600">${item.name}</h3>
-                            <div class="space-y-3 text-gray-700">
-                                <div class="flex justify-between items-center">
-                                    <span>Price - ₹${item.price}</span>
-                                    <button class="add-to-cart-btn bg-red-500 text-white px-3 py-1 rounded-full text-sm" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">Add</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const { id, name, price } = e.target.dataset;
-                        addToCart(id, name, parseFloat(price));
-                    });
-                });
-            };
-
-            const addToCart = (id, name, price) => {
-                if(!appState.loggedInUser || appState.loggedInUser.role !== 'customer') {
-                    showMessageModal('Access Denied', 'Please log in as a customer to add items to your cart.');
-                    return;
-                }
-                const existingItem = appState.cart.find(item => item.id === id);
-                if (existingItem) {
-                    existingItem.quantity++;
-                } else {
-                    appState.cart.push({ id, name, price, quantity: 1 });
-                }
-                saveAppState();
-                cartCount.textContent = appState.cart.length; // Update the floating cart bubble count
-                showToastMessage(`${name} added to cart.`);
-            };
-
-            const handleCheckout = () => {
-                if (appState.cart.length === 0) {
-                    showMessageModal('Empty Cart', 'Please add items to your cart before checking out.');
-                    return;
-                }
-                
-                const serviceType = appState.serviceType;
-                
-                if (!serviceType) {
-                    showMessageModal('Service Required', 'Please select a service type before checking out.');
-                    return;
-                }
-                
-                let orderDetails = {};
-                let summaryDetailsHtml = '';
-                let confirmationMessage = '';
-                
-                const customerName = document.getElementById('customer-name')?.value || 'N/A';
-                const customerPhone = document.getElementById('customer-phone')?.value || 'N/A';
-                const customerAddress = document.getElementById('customer-address')?.value || 'N/A';
-                const customerLandmark = document.getElementById('customer-landmark')?.value || 'N/A';
-                
-                const totalAmount = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const paymentMethod = appState.paymentMethod || 'Cash on Delivery';
-
-                if (serviceType === 'delivery') {
-                    if (!customerName || !customerPhone || !customerAddress) {
-                        showMessageModal('Details Required', 'Please fill in all delivery details.');
-                        return;
-                    }
-                    const orderCode = `BnM-${Math.floor(1000 + Math.random() * 9000)}`;
-                    orderDetails = {
-                        id: `order-${Date.now()}`,
-                        code: orderCode,
-                        customer: appState.loggedInUser.username,
-                        items: appState.cart,
-                        service: 'Delivery',
-                        status: 'Pending',
-                        timestamp: new Date().toLocaleTimeString(),
-                        deliveryInfo: { name: customerName, phone: customerPhone, address: customerAddress, landmark: customerLandmark },
-                        total: totalAmount,
-                        payment: paymentMethod
-                    };
-                    confirmationMessage = 'Thank you! We have received your order. 😊';
-                    summaryDetailsHtml = `
-                        <p><strong>Order Code:</strong> <span class="font-bold">${orderCode}</span></p>
-                        <p><strong>Service:</strong> Delivery</p>
-                        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                        <h4 class="font-semibold mt-4">Delivery Details:</h4>
-                        <p><strong>Name:</strong> ${customerName}</p>
-                        <p><strong>Phone:</strong> ${customerPhone}</p>
-                        <p><strong>Address:</strong> ${customerAddress}, ${customerLandmark}</p>
-                        <p><strong>Location Pin:</strong> Simulated Map Pin</p>
-                    `;
-                } else if (serviceType === 'takeaway') {
-                    const orderCode = `BnM-${Math.floor(1000 + Math.random() * 9000)}`;
-                    orderDetails = {
-                        id: `order-${Date.now()}`,
-                        code: orderCode,
-                        customer: appState.loggedInUser.username,
-                        items: appState.cart,
-                        service: 'Take Away',
-                        status: 'Pending',
-                        timestamp: new Date().toLocaleTimeString(),
-                        total: totalAmount,
-                        payment: paymentMethod
-                    };
-                    confirmationMessage = 'Thank you for your order! It will be ready for pickup shortly. 😊';
-                    summaryDetailsHtml = `
-                        <p><strong>Order Code:</strong> <span class="font-bold">${orderCode}</span></p>
-                        <p><strong>Service:</strong> Take Away</p>
-                        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                    `;
-                } else if (serviceType === 'dinein') {
-                    if (!appState.tableNumber) {
-                        showMessageModal('Table Required', 'Please select a table number for dine-in service.');
-                        return;
-                    }
-                    orderDetails = {
-                        id: `order-${Date.now()}`,
-                        customer: appState.loggedInUser.username,
-                        items: appState.cart,
-                        service: 'Dine In',
-                        table: appState.tableNumber,
-                        status: 'Pending',
-                        timestamp: new Date().toLocaleTimeString(),
-                        total: totalAmount
-                    };
-                    confirmationMessage = `Your order has been placed for Table ${appState.tableNumber}. Enjoy! 😊`;
-                    summaryDetailsHtml = `
-                        <p><strong>Service:</strong> Dine In</p>
-                        <p><strong>Table:</strong> <span class="font-bold">${appState.tableNumber}</span></p>
-                    `;
-                }
-                
-                appState.orders.push(orderDetails);
-                appState.totalEarnings += totalAmount;
-                appState.cart = [];
-                saveAppState();
-                
-                const randomQuote = orderQuotes[Math.floor(Math.random() * orderQuotes.length)];
-                
-                showOrderSummaryModal('Order Placed!', confirmationMessage, summaryDetailsHtml, randomQuote);
-                
-                if (appState.currentView === 'admin-dashboard') {
-                    renderAdminOrders();
-                }
-                if (appState.currentView === 'delivery-dashboard') {
-                    renderDeliveryOrders();
-                }
-            };
-
-            const renderAdminOrders = () => {
-                const ordersList = document.getElementById('admin-orders-list');
-                if (!ordersList) return;
-
-                if (appState.orders.length === 0) {
-                    ordersList.innerHTML = '<p class="text-gray-500">No new orders yet.</p>';
-                    return;
-                }
-
-                ordersList.innerHTML = appState.orders.map(order => `
-                    <div class="bg-gray-50 p-4 rounded-lg shadow space-y-2">
-                        <p class="font-semibold text-lg">Order ID: ${order.id.slice(-4)}</p>
-                        <p><strong>Customer:</strong> ${order.customer}</p>
-                        <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
-                        <p><strong>Total:</strong> ₹${order.total.toFixed(2)}</p>
-                        ${order.code ? `<p><strong>Code:</strong> <span class="font-bold">${order.code}</span></p>` : ''}
-                        ${order.table ? `<p><strong>Table:</strong> <span class="font-bold">${order.table}</span></p>` : ''}
-                        ${order.payment ? `<p><strong>Payment:</strong> ${order.payment}</p>` : ''}
-                        ${order.deliveryInfo ? `
-                            <h4 class="font-semibold mt-4">Delivery Info:</h4>
-                            <p><strong>Name:</strong> ${order.deliveryInfo.name}</p>
-                            <p><strong>Phone:</strong> ${order.deliveryInfo.phone}</p>
-                            <p><strong>Address:</strong> ${order.deliveryInfo.address}, ${order.deliveryInfo.landmark}</p>
-                        ` : ''}
-                        ${order.damageReason ? `<p><strong>Damage Reason:</strong> ${order.damageReason}</p>` : ''}
-                        <div class="mt-2 pt-2 border-t border-gray-200">
-                            <p class="font-semibold">Items:</p>
-                            <ul class="list-disc list-inside">
-                                ${order.items.map(i => `<li>${i.name} (x${i.quantity}) - ₹${i.price * i.quantity}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-                            <p class="font-bold text-lg">Status: <span class="status-${order.status.toLowerCase().replace(/\s/g, '-')}">${order.status}</span></p>
-                            <select data-id="${order.id}" class="admin-status-select bg-white border border-gray-300 rounded-md py-1 px-2">
-                                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-                                <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                                <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.querySelectorAll('.admin-status-select').forEach(select => {
-                    select.addEventListener('change', (e) => handleOrderUpdate(e));
-                });
-            };
-            
-            const handleOrderUpdate = (e) => {
-                const orderId = e.target.dataset.id;
-                const newStatus = e.target.value;
-                const order = appState.orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = newStatus;
-                    saveAppState();
-                    renderAdminOrders();
-                    showToastMessage(`Order ${orderId.slice(-4)} status updated to ${newStatus}.`);
-                }
-            };
-
-
-            const renderDeliveryOrders = () => {
-                const ordersList = document.getElementById('delivery-orders-list');
-                if (!ordersList) return;
-
-                const pendingOrders = appState.orders.filter(order => order.status !== 'Completed' && order.status !== 'Cancelled' && (order.service === 'Delivery' || order.service === 'Take Away'));
-
-                if (pendingOrders.length === 0) {
-                    ordersList.innerHTML = '<p class="text-gray-500">No pending orders to deliver or for takeaway.</p>';
-                    return;
-                }
-
-                ordersList.innerHTML = pendingOrders.map(order => `
-                    <div class="bg-white p-4 rounded-lg shadow space-y-2 flex flex-col md:flex-row md:items-center justify-between">
-                        <div class="flex-grow">
-                            <p class="font-semibold text-lg">Order ID: ${order.id.slice(-4)}</p>
-                            <p><strong>Service:</strong> <span class="font-bold">${order.service}</span></p>
-                            <p class="mt-2"><strong>Items:</strong> ${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</p>
-                            ${order.payment === 'Online' ? `<span class="mt-2 inline-block bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">Online Paid</span>` : ''}
-                            ${order.deliveryInfo ? `
-                                <div class="mt-4">
-                                    <h4 class="font-semibold text-md">Delivery Info:</h4>
-                                    <p><strong>Name:</strong> ${order.deliveryInfo.name}</p>
-                                    <p><strong>Phone:</strong> ${order.deliveryInfo.phone}</p>
-                                    <p><strong>Address:</strong> ${order.deliveryInfo.address}, ${order.deliveryInfo.landmark}</p>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="mt-4 md:mt-0 flex-shrink-0 flex flex-col space-y-2 items-end">
-                            ${order.payment === 'Cash on Delivery' ? `
-                                <button data-id="${order.id}" data-total="${order.total}" class="collect-cash-btn w-full bg-yellow-500 text-gray-900 px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">
-                                    Collect ₹${order.total.toFixed(2)}
-                                </button>
-                            ` : ''}
-                            ${order.service === 'Delivery' ? `
-                                <button data-id="${order.id}" data-address="${order.deliveryInfo.address}" class="start-navigation-btn w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition">
-                                    Start Navigation <i class="fas fa-map-marked-alt ml-2"></i>
-                                </button>
-                            ` : ''}
-                            <button data-id="${order.id}" data-action="arrived" class="delivery-action-btn w-full bg-yellow-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-yellow-600 transition">
-                                Arrived
-                            </button>
-                            <button data-id="${order.id}" data-action="completed" class="delivery-action-btn w-full bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition">
-                                Mark Completed
-                            </button>
-                            <button data-id="${order.id}" class="report-damage-btn w-full bg-red-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-700 transition">
-                                Report Damage
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-                document.querySelectorAll('.collect-cash-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const total = e.target.dataset.total;
-                        showMessageModal('Cash on Delivery', `Please collect **₹${total}** from the customer.`);
-                    });
-                });
-                
-                document.querySelectorAll('.start-navigation-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const address = e.target.dataset.address;
-                        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
-                        window.open(url, '_blank');
-                    });
-                });
-
-                document.querySelectorAll('.delivery-action-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const orderId = e.target.dataset.id;
-                        const action = e.target.dataset.action;
-                        handleDeliveryAction(orderId, action);
-                    });
-                });
-                
-                document.querySelectorAll('.report-damage-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        showDamageModal(e.target.dataset.id);
-                    });
-                });
-            };
-            
-            const handleDeliveryAction = (orderId, action) => {
-                const order = appState.orders.find(o => o.id === orderId);
-                if (!order) return;
-
-                if (action === 'arrived') {
-                    showToastMessage(`Customer has been notified that you have arrived at their location.`);
-                    order.status = 'Arrived';
-                } else if (action === 'completed') {
-                    order.status = 'Completed';
-                    order.completedAt = new Date().toLocaleString();
-                    showToastMessage(`Order ${orderId.slice(-4)} has been marked as completed.`);
-                }
-                saveAppState();
-                renderDeliveryOrders();
-                renderAdminOrders();
-            };
-            
-            damageReportForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const orderId = document.getElementById('damage-order-id').value;
-                const reason = document.getElementById('damage-reason').value;
-                
-                const order = appState.orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = 'Damaged';
-                    order.damageReason = reason;
-                    saveAppState();
-                    showToastMessage(`Damage reported for order ${orderId.slice(-4)}. Reason: ${reason}`);
-                    damageModal.classList.remove('flex');
-                    damageModal.classList.add('hidden');
-                    renderDeliveryOrders();
-                    renderAdminOrders();
-                }
-            });
-            
-            const updateModeToggleUI = (isDark) => {
-                const body = document.body;
-                body.classList.toggle('dark', isDark);
-                if (isDark) {
-                    toggleBall.classList.add('translate-x-[24px]', 'bg-gray-800');
-                    toggleBall.classList.remove('bg-white');
-                } else {
-                    toggleBall.classList.remove('translate-x-[24px]', 'bg-gray-800');
-                    toggleBall.classList.add('bg-white');
-                }
-            };
-            
-            // =================================================================
-            // INITIALIZATION AND EVENT LISTENERS
-            // =================================================================
-            
-            authButton.addEventListener('click', (e) => {
-                if (e.currentTarget.dataset.action === 'login') {
-                    showLoginModal();
-                } else {
-                    renderView('profile-page');
-                }
-            });
-
-            cartBubble.addEventListener('click', () => {
-                if (appState.loggedInUser && appState.loggedInUser.role === 'customer') {
-                    renderView('cart');
-                } else {
-                    showMessageModal('Access Denied', 'Please log in as a customer to view your cart.');
-                }
-            });
-            
-            homeLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                renderView('customer-website');
-            });
-
-            loginForm.addEventListener('submit', handleLogin);
-            signupForm.addEventListener('submit', handleSignup);
-            
-            toggleAuthLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (loginForm.classList.contains('hidden')) {
-                    // Currently on signup form, switch to login
-                    signupForm.classList.add('hidden');
-                    loginForm.classList.remove('hidden');
-                    loginFormTitle.textContent = 'Login';
-                    toggleAuthLink.textContent = 'Create an account';
-                    signupError.classList.add('hidden');
-                } else {
-                    // Currently on login form, switch to signup
-                    loginForm.classList.add('hidden');
-                    signupForm.classList.remove('hidden');
-                    loginFormTitle.textContent = 'Sign Up';
-                    toggleAuthLink.textContent = 'Already have an account?';
-                    loginError.classList.add('hidden');
-                }
-            });
-
-            forgotPasswordLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showMessageModal('Forgot Password', 'This feature is a placeholder. In a real app, we would email a password reset link to your registered email.');
-            });
-            
-            modeToggle.addEventListener('change', (e) => {
-                updateModeToggleUI(e.target.checked);
-            });
-            
-            loadAppState();
-            renderLogo();
-            updateUIForUser();
-            if (!appState.loggedInUser) {
-                renderView('customer-website');
-            }
-        });
-    </script>
+            <div class="card-footer small text-muted">${c.duration || ''}</div>
+          </div>
+        `
+        container.appendChild(col)
+      })
+    }
+    renderCourses()
+
+    // Render gallery
+    function renderGallery(){
+      const grid = document.getElementById('galleryGrid')
+      grid.innerHTML = ''
+      store.getGallery().forEach(img => {
+        const imgEl = document.createElement('img')
+        imgEl.src = img.data
+        imgEl.alt = img.name || 'Gallery'
+        grid.appendChild(imgEl)
+      })
+    }
+    renderGallery()
+
+    // Contact form submission
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault()
+      const msg = {
+        id: Date.now(),
+        name: document.getElementById('contactName').value.trim(),
+        email: document.getElementById('contactEmail').value.trim(),
+        subject: document.getElementById('contactSubject').value.trim(),
+        message: document.getElementById('contactMessage').value.trim(),
+        created: new Date().toISOString()
+      }
+      const msgs = store.getMessages(); msgs.unshift(msg); store.saveMessages(msgs)
+      this.reset(); alert('پیغام موصول ہوگیا — ہم جلد رابطہ کریں گے')
+    })
+
+    // ----------------- Admin interactions -----------------
+    const adminModal = new bootstrap.Modal(document.getElementById('adminModal'))
+    document.getElementById('openAdmin').addEventListener('click',()=>{ adminModal.show() })
+
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e){
+      e.preventDefault()
+      const user = document.getElementById('adminUser').value
+      const pass = document.getElementById('adminPass').value
+      // NOTE: In production authenticate on server side!
+      if(user === 'admin' && pass === 'password'){
+        document.getElementById('adminLoginView').style.display = 'none'
+        document.getElementById('adminPanelView').style.display = 'block'
+        loadAdminPanel('ann')
+      } else {
+        alert('Invalid credentials (demo: admin / password)')
+      }
+    })
+
+    document.getElementById('adminLogout').addEventListener('click', ()=>{
+      document.getElementById('adminLoginView').style.display = 'block'
+      document.getElementById('adminPanelView').style.display = 'none'
+      // keep modal open
+    })
+
+    // Panel nav buttons
+    document.querySelectorAll('[data-panel]').forEach(btn=> btn.addEventListener('click', ()=> loadAdminPanel(btn.dataset.panel) ))
+
+    function loadAdminPanel(panel){
+      const content = document.getElementById('panelContent')
+      if(panel === 'ann'){
+        const anns = store.getAnnouncements()
+        content.innerHTML = `
+          <h5>Announcements</h5>
+          <form id="annForm" class="mb-3">
+            <div class="mb-2"><textarea id="annText" class="form-control" rows="2" placeholder="Add announcement in Urdu or English"></textarea></div>
+            <button class="btn btn-success btn-sm">Add</button>
+          </form>
+          <div id="annsList"></div>
+        `
+        document.getElementById('annForm').addEventListener('submit', function(e){
+          e.preventDefault(); const text = document.getElementById('annText').value.trim(); if(!text) return;
+          const arr = store.getAnnouncements(); arr.unshift({id:Date.now(), text}); store.saveAnnouncements(arr); renderAnnouncements(); loadAdminPanel('ann')
+        })
+        const listDiv = document.getElementById('annsList')
+        listDiv.innerHTML = ''
+        anns.forEach(a=>{
+          const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <div>${a.text}</div>
+              <div><button class="btn btn-sm btn-danger" data-id="${a.id}">Delete</button></div>
+            </div>
+          `
+          listDiv.appendChild(el)
+          el.querySelector('button').addEventListener('click', ()=>{
+            const arr = store.getAnnouncements().filter(x=> x.id !== a.id); store.saveAnnouncements(arr); renderAnnouncements(); loadAdminPanel('ann')
+          })
+        })
+      }
+
+      if(panel === 'courses'){
+        const courses = store.getCourses()
+        content.innerHTML = `
+          <h5>Courses</h5>
+          <form id="courseForm" class="mb-3">
+            <div class="row g-2">
+              <div class="col-md-6"><input id="courseTitleUr" class="form-control" placeholder="Title (Urdu)"></div>
+              <div class="col-md-6"><input id="courseTitleEn" class="form-control" placeholder="Title (English)"></div>
+            </div>
+            <div class="row g-2 mt-2">
+              <div class="col-md-6"><input id="courseDuration" class="form-control" placeholder="Duration"></div>
+              <div class="col-md-6"><input id="courseDescEn" class="form-control" placeholder="Short description (English)"></div>
+            </div>
+            <div class="mt-2"><textarea id="courseDescUr" class="form-control" placeholder="Short description (Urdu)"></textarea></div>
+            <div class="mt-2"><button class="btn btn-success btn-sm">Add Course</button></div>
+          </form>
+          <div id="coursesListAdmin"></div>
+        `
+        document.getElementById('courseForm').addEventListener('submit', function(e){
+          e.preventDefault();
+          const obj = {
+            id: Date.now(),
+            titleUr: document.getElementById('courseTitleUr').value || '',
+            titleEn: document.getElementById('courseTitleEn').value || '',
+            descUr: document.getElementById('courseDescUr').value || '',
+            descEn: document.getElementById('courseDescEn').value || '',
+            duration: document.getElementById('courseDuration').value || ''
+          }
+          const arr = store.getCourses(); arr.unshift(obj); store.saveCourses(arr); renderCourses(); loadAdminPanel('courses')
+        })
+        const out = document.getElementById('coursesListAdmin'); out.innerHTML = ''
+        courses.forEach(c=>{
+          const el = document.createElement('div'); el.className='card mb-2 p-2';
+          el.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><strong>${c.titleUr||c.titleEn}</strong><div class="small text-muted">${c.duration||''}</div></div><div><button class="btn btn-sm btn-danger" data-id="${c.id}">Delete</button></div></div>`
+          out.appendChild(el);
+          el.querySelector('button').addEventListener('click', ()=>{ const arr = store.getCourses().filter(x=> x.id !== c.id); store.saveCourses(arr); renderCourses(); loadAdminPanel('courses') })
+        })
+      }
+
+      if(panel === 'gallery'){
+        const gallery = store.getGallery()
+        content.innerHTML = `
+          <h5>Gallery</h5>
+          <form id="galleryForm" class="mb-3">
+            <div class="mb-2"><input id="galleryFile" type="file" accept="image/*" class="form-control"></div>
+            <div class="mb-2"><input id="galleryName" class="form-control" placeholder="Image name (optional)"></div>
+            <button class="btn btn-success btn-sm">Upload</button>
+          </form>
+          <div id="galleryAdminList" class="d-flex flex-wrap gap-2"></div>
+        `
+        document.getElementById('galleryForm').addEventListener('submit', function(e){
+          e.preventDefault(); const f = document.getElementById('galleryFile').files[0]; if(!f){ alert('Choose image'); return }
+          const reader = new FileReader(); reader.onload = function(ev){
+            const arr = store.getGallery(); arr.unshift({id:Date.now(), name:document.getElementById('galleryName').value || f.name, data: ev.target.result}); store.saveGallery(arr); renderGallery(); loadAdminPanel('gallery')
+          }
+          reader.readAsDataURL(f)
+        })
+        const out = document.getElementById('galleryAdminList'); out.innerHTML = ''
+        gallery.forEach(g=>{
+          const el = document.createElement('div'); el.style.width='120px'; el.innerHTML = `<div style="width:120px"><img src="${g.data}" style="width:100%; height:80px; object-fit:cover; border-radius:6px"><div class="mt-1 d-flex justify-content-between"><small>${g.name}</small><button class="btn btn-sm btn-danger" data-id="${g.id}">Del</button></div></div>`
+          out.appendChild(el)
+          el.querySelector('button').addEventListener('click', ()=>{ const arr = store.getGallery().filter(x=> x.id !== g.id); store.saveGallery(arr); renderGallery(); loadAdminPanel('gallery') })
+        })
+      }
+
+      if(panel === 'messages'){
+        const msgs = store.getMessages()
+        content.innerHTML = `
+          <h5>Messages</h5>
+          <div id="msgsList"></div>
+        `
+        const out = document.getElementById('msgsList')
+        out.innerHTML = ''
+        msgs.forEach(m=>{
+          const el = document.createElement('div'); el.className='card mb-2 p-2'; el.innerHTML = `<div><strong>${m.name} — ${m.email}</strong><div class="small text-muted">${new Date(m.created).toLocaleString()}</div><p>${m.message}</p></div>`
+          out.appendChild(el)
+        })
+      }
+    }
+
+    // Panel switching highlight
+    document.querySelectorAll('.list-group button').forEach(btn=> btn.addEventListener('click', function(){ document.querySelectorAll('.list-group button').forEach(b=>b.classList.remove('active')); this.classList.add('active') }))
+
+    // ----------------- Language switching -----------------
+    const langSelect = document.getElementById('langToggle')
+    function applyLanguage(lang){
+      const root = document.documentElement
+      if(lang === 'ur'){
+        root.lang = 'ur'; root.dir = 'rtl'
+      } else { root.lang = 'en'; root.dir = 'ltr' }
+
+      // apply texts
+      const t = i18n[lang]
+      document.getElementById('heroTitle').textContent = t.homeTitle
+      document.getElementById('heroSubtitle').textContent = t.homeSubtitle
+      document.getElementById('aboutHeading').textContent = t.aboutHeading
+      document.getElementById('aboutText').textContent = t.aboutText
+      document.getElementById('coursesHeading').textContent = t.coursesHeading
+      document.getElementById('galleryHeading').textContent = t.galleryHeading
+      document.getElementById('contactHeading').textContent = t.contactHeading
+      document.getElementById('lblName').textContent = t.lblName
+      document.getElementById('lblEmail').textContent = t.lblEmail
+      document.getElementById('lblSubject').textContent = t.lblSubject
+      document.getElementById('lblMessage').textContent = t.lblMessage
+      document.getElementById('contactSubmit').textContent = t.contactSubmit
+      document.getElementById('contactInfoHeading').textContent = t.contactInfoHeading
+
+      // courses card titles/descriptions can remain as stored (Urdu/English when available)
+    }
+
+    // default language = Urdu
+    langSelect.addEventListener('change', ()=> applyLanguage(langSelect.value))
+    applyLanguage('ur')
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('[data-link]').forEach(a=> a.addEventListener('click', function(e){ e.preventDefault(); const id = this.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth'}) }))
+
+  </script>
 </body>
-
 </html>
