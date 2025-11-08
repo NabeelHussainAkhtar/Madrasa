@@ -8,12 +8,10 @@ Features:
 - Admin panel (simple login, manage announcements, courses, gallery uploads, view contact messages)
 - Responsive layout and accessible design
 
-How to use:
-1. Open this file in a browser (index.html).
-2. Click "Admin" -> Login (default credentials: admin / password) to access admin panel.
-3. Add/Edit announcements, courses, upload images (images are saved as data URLs in localStorage), and view contact messages.
-
-Note: This is a frontend-only demo. For production integrate with a Java/Spring Boot backend and a real database.
+Updates:
+- Prioritized 'Jameel Noori Nastaleeq' font and added 'Noto Nastaliq Urdu' web font.
+- Added specific address, phone, and map link to contact section.
+- Replaced all 'alert()' popups with a non-blocking toast notification system.
 -->
 
 <!doctype html>
@@ -26,8 +24,8 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Google Fonts: Poppins for English, Noto Nastaliq Urdu fallback -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Poppins for English, Noto Nastaliq Urdu for fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
@@ -35,7 +33,8 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
       --secondary:#F7C948; /* gold */
       --bg:#ffffff;
     }
-    html[dir="rtl"] body{font-family: 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Serif', serif;}
+    /* Updated font stack to prioritize user's request */
+    html[dir="rtl"] body{font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Noto Serif', serif;}
     html[dir="ltr"] body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 
     body{background:var(--bg); color:#222}
@@ -60,6 +59,56 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
     /* RTL friendly card headings */
     [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end}
     [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start}
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    body.dark-mode .card,
+    body.dark-mode .modal-content,
+    body.dark-mode .list-group-item {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      border-color: #333;
+    }
+    body.dark-mode .list-group-item-action:hover {
+      background-color: #282828;
+    }
+    body.dark-mode .list-group-item.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    body.dark-mode .form-control {
+      background-color: #222;
+      color: #fff;
+      border-color: #444;
+    }
+    body.dark-mode .form-control:focus {
+      background-color: #222;
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(0,122,61,.25);
+    }
+    /* Override Bootstrap's light text classes */
+    body.dark-mode .text-dark {
+      color: #e0e0e0 !important;
+    }
+    body.dark-mode .text-muted {
+      color: #888 !important;
+    }
+    body.dark-mode .btn-light {
+      background-color: #333;
+      color: #fff;
+      border-color: #444;
+    }
+    body.dark-mode .modal-header,
+    body.dark-mode .modal-footer {
+      border-color: #333;
+    }
+    body.dark-mode .btn-close {
+      filter: invert(1);
+    }
 
   </style>
 </head>
@@ -96,6 +145,18 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
               <option value="en">English</option>
             </select>
           </li>
+          <li class="nav-item d-flex align-items-center ms-2">
+            <button id="darkModeToggle" class="btn btn-sm btn-outline-light" style="padding: 0.25rem 0.5rem; line-height: 1;">
+              <!-- Moon icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
+                <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.27 7.291 7.291 7.291.526 0 1.034-.063 1.518-.178.539-.111.558.611.082.858A.768.768 0 0 1 12.5 12.27a7.21 7.21 0 0 1-6.222-6.222.768.768 0 0 1 .278-.858z"/>
+              </svg>
+              <!-- Sun icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun-fill" viewBox="0 0 16 16" style="display:none;">
+                <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m-5-4a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5M13 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m-2.121 4.879a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.879 4.879a.5.5 0 0 1-.707 0L2.757 3.464a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707m6.242 6.242a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.879 11.121a.5.5 0 0 1-.707 0L2.757 9.707a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707"/>
+              </svg>
+            </button>
+          </li>
         </ul>
       </div>
     </div>
@@ -107,7 +168,7 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
   <!-- Hero -->
   <header id="home" class="hero text-center">
     <div class="container">
-      <h1 id="heroTitle" class="display-5 fw-bold">دارالتعلیم والتربیہ میں خوش آمدید</h1>
+      <h1 id="heroTitle" class="display-5 fw-bold">دارالتعلیم والتربیہ میں خوش آمدید</h1>
       <p id="heroSubtitle" class="lead">تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول</p>
       <div class="mt-4">
         <a href="#courses" class="btn btn-outline-light btn-lg me-2">مزید جانیں</a>
@@ -181,9 +242,15 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
               <button class="btn btn-success" type="submit" id="contactSubmit">ارسال</button>
             </form>
           </div>
+          <!-- Updated Contact Info -->
           <div class="col-lg-6">
             <h5 id="contactInfoHeading">رابطہ کی معلومات</h5>
-            <p id="contactInfo">پتہ: Madrasa Address<br> فون: +91-88997426<br> ای میل: info@madrasah.example</p>
+            <p id="contactInfo" style="line-height: 1.8;">
+              <strong id="lblAddress">پتہ:</strong> H.no: 9, 4-134/5/A/1/1, Raghava Colony, Nadeem Colony, Vali Colony, Toli Chowki, Hyderabad, Telangana 500008<br>
+              <strong id="lblPhone">فون:</strong> <a href="tel:0905843885" class="text-dark" style="text-decoration:none;">090584 3885</a><br>
+              <strong id="lblContactEmail">ای میل:</strong> info@madrasah.example<br>
+              <strong id="lblMap">نقشہ:</strong> <a id="linkMap" href="https://maps.app.goo.gl/X85qiTVBdRNCRn8X7" target="_blank" rel="noopener noreferrer">گوگل میپس پر دیکھیں</a>
+            </p>
           </div>
         </div>
       </section>
@@ -262,6 +329,18 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
     </div>
   </div>
 
+  <!-- Custom Toast Notification -->
+  <div id="customToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div id="toastBody" class="toast-body">
+          Message sent successfully.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Bootstrap + Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -270,14 +349,20 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
     // ----------------- i18n content -----------------
     const i18n = {
       ur: {
-        homeTitle: 'دارالتعلیم والتربیہ میں خوش آمدید',
+        homeTitle: 'دارالتعلیم والتربیہ میں خوش آمدید',
         homeSubtitle: 'تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول',
         aboutHeading: 'ہمارے بارے میں',
         aboutText: 'دارالتعلیم والتربیہ ایک معروف مدرسہ ہے جہاں جدید اور دینی تعلیم کو یکجا کیا جاتا ہے۔ ہمارا مقصد طلباء کو علمی اور اخلاقی طور پر مضبوط بنانا ہے۔',
         coursesHeading: 'کورسز',
         galleryHeading: 'گیلری',
         contactHeading: 'رابطہ کریں',
-        lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات'
+        lblName: 'نام', lblEmail: 'ای میل', lblSubject: 'موضوع', lblMessage: 'پیغام', contactSubmit: 'ارسال', contactInfoHeading: 'رابطہ کی معلومات',
+        // Updated keys
+        lblAddress: 'پتہ:',
+        lblPhone: 'فون:',
+        lblContactEmail: 'ای میل:',
+        lblMap: 'نقشہ:',
+        linkMap: 'گوگل میپس پر دیکھیں'
       },
       en: {
         homeTitle: 'Welcome to Darut Taleem Wat Tarbiyah',
@@ -287,7 +372,13 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
         coursesHeading: 'Courses',
         galleryHeading: 'Gallery',
         contactHeading: 'Contact Us',
-        lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information'
+        lblName: 'Name', lblEmail: 'Email', lblSubject: 'Subject', lblMessage: 'Message', contactSubmit: 'Send', contactInfoHeading: 'Contact Information',
+        // Updated keys
+        lblAddress: 'Address:',
+        lblPhone: 'Phone:',
+        lblContactEmail: 'Email:',
+        lblMap: 'Map:',
+        linkMap: 'View on Google Maps'
       }
     };
 
@@ -324,6 +415,26 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
     // ----------------- DOM helpers -----------------
     const setYear = ()=> document.getElementById('year').textContent = new Date().getFullYear()
     setYear()
+
+    // ----------------- Toast Notification Helper -----------------
+    const customToastEl = document.getElementById('customToast')
+    const customToast = new bootstrap.Toast(customToastEl.querySelector('.toast'))
+    const toastBody = document.getElementById('toastBody')
+    const toastEl = customToastEl.querySelector('.toast')
+
+    function showToast(message, type = 'success') {
+        toastBody.textContent = message
+        
+        // Remove old classes, add new
+        toastEl.classList.remove('bg-success', 'bg-danger')
+        if (type === 'danger') {
+            toastEl.classList.add('bg-danger')
+        } else {
+            toastEl.classList.add('bg-success')
+        }
+        
+        customToast.show()
+    }
 
     // Render announcements in bar
     function renderAnnouncements(){
@@ -380,7 +491,8 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
         created: new Date().toISOString()
       }
       const msgs = store.getMessages(); msgs.unshift(msg); store.saveMessages(msgs)
-      this.reset(); alert('پیغام موصول ہوگیا — ہم جلد رابطہ کریں گے')
+      this.reset(); 
+      showToast('پیغام موصول ہوگیا — ہم جلد رابطہ کریں گے', 'success')
     })
 
     // ----------------- Admin interactions -----------------
@@ -397,7 +509,7 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
         document.getElementById('adminPanelView').style.display = 'block'
         loadAdminPanel('ann')
       } else {
-        alert('Invalid credentials (demo: admin / password)')
+        showToast('Invalid credentials (demo: admin / password)', 'danger')
       }
     })
 
@@ -493,7 +605,11 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
           <div id="galleryAdminList" class="d-flex flex-wrap gap-2"></div>
         `
         document.getElementById('galleryForm').addEventListener('submit', function(e){
-          e.preventDefault(); const f = document.getElementById('galleryFile').files[0]; if(!f){ alert('Choose image'); return }
+          e.preventDefault(); const f = document.getElementById('galleryFile').files[0]; 
+          if(!f){ 
+            showToast('Please choose an image', 'danger'); 
+            return 
+          }
           const reader = new FileReader(); reader.onload = function(ev){
             const arr = store.getGallery(); arr.unshift({id:Date.now(), name:document.getElementById('galleryName').value || f.name, data: ev.target.result}); store.saveGallery(arr); renderGallery(); loadAdminPanel('gallery')
           }
@@ -548,6 +664,13 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
       document.getElementById('lblMessage').textContent = t.lblMessage
       document.getElementById('contactSubmit').textContent = t.contactSubmit
       document.getElementById('contactInfoHeading').textContent = t.contactInfoHeading
+      
+      // Apply new contact info text
+      document.getElementById('lblAddress').textContent = t.lblAddress
+      document.getElementById('lblPhone').textContent = t.lblPhone
+      document.getElementById('lblContactEmail').textContent = t.lblContactEmail
+      document.getElementById('lblMap').textContent = t.lblMap
+      document.getElementById('linkMap').textContent = t.linkMap
 
       // courses card titles/descriptions can remain as stored (Urdu/English when available)
     }
@@ -558,6 +681,50 @@ Note: This is a frontend-only demo. For production integrate with a Java/Spring 
 
     // Smooth scroll for nav links
     document.querySelectorAll('[data-link]').forEach(a=> a.addEventListener('click', function(e){ e.preventDefault(); const id = this.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth'}) }))
+
+    // ----------------- Dark Mode Toggle -----------------
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const sunIcon = darkModeToggle.querySelector('.bi-sun-fill');
+    const moonIcon = darkModeToggle.querySelector('.bi-moon-fill');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+
+    function setDarkMode(isDark) {
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        sunIcon.style.display = 'inline-block';
+        moonIcon.style.display = 'none';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'inline-block';
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // Initialize theme
+    if (currentTheme === 'dark') {
+      setDarkMode(true);
+    } else if (currentTheme === 'light') {
+      setDarkMode(false);
+    } else {
+      // No preference saved, use system preference
+      setDarkMode(prefersDark.matches);
+    }
+
+    // Listen for toggle click
+    darkModeToggle.addEventListener('click', () => {
+      setDarkMode(!document.body.classList.contains('dark-mode'));
+    });
+
+    // Listen for system changes
+    prefersDark.addEventListener('change', (e) => {
+      // Only apply if no theme is manually set
+      if (!localStorage.getItem('theme')) {
+        setDarkMode(e.matches);
+      }
+    });
 
   </script>
 </body>
