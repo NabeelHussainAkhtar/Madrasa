@@ -17,6 +17,8 @@ Updates:
 - Added Admin Logo upload/remove feature.
 - Added Donation button/modal with UPI QR code and copy button.
 - Updated gallery to use square aspect-ratio tiles.
+- Fixed contact info LTR/RTL rendering bug.
+- Replaced non-working library iframe with a link card.
 -->
 
 <!doctype html>
@@ -183,6 +185,17 @@ Updates:
     [dir="ltr"] #brandTitle { font-family: 'Poppins', sans-serif; }
     [dir="rtl"] #brandTitle { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif; }
 
+    /* Library card dark mode fix */
+    body.dark-mode #library .card { 
+      background-color: #222; 
+      border-color: #444; 
+    }
+    
+    /* Contact info LTR fix */
+    #contactInfo span[dir="ltr"] {
+        display: inline-block;
+    }
+
   </style>
 </head>
 <body>
@@ -296,13 +309,18 @@ Updates:
         </div>
       </section>
 
-      <!-- Library Section -->
+      <!-- Library Section - Updated to be a link card -->
       <section id="library" class="mb-5">
         <div class="section-title mb-3">
           <h2 id="libraryHeading">کتب خانہ</h2>
         </div>
-        <iframe id="libraryFrame" src="http://darululoom-deoband.com/books/" style="width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 8px;" title="Online Library"></iframe>
-        <small class="d-block mt-2 text-muted" id="libraryNote">نوٹ: کتب خانہ کا مواد ایک بیرونی ویب سائٹ سے ہے اور اس کا ترجمہ نہیں کیا جا سکتا۔</small>
+        <div class="card text-center p-4" style="border: 1px solid #ccc; background-color: #f8f9fa;">
+          <div class="card-body">
+            <h5 class="card-title" id="libraryCardTitle">Darul Uloom Deoband - Online Books</h5>
+            <p class="card-text" id="libraryCardText">The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.</p>
+            <a href="http://darululoom-deoband.com/books/" id="libraryCardButton" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Visit Library</a>
+          </div>
+        </div>
       </section>
 
       <!-- Contact -->
@@ -334,13 +352,13 @@ Updates:
             <!-- Note about email functionality -->
             <small class="d-block mt-3 text-muted" id="contactFormNote">Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.</small>
           </div>
-          <!-- Updated Contact Info -->
+          <!-- Updated Contact Info with LTR fixes -->
           <div class="col-lg-6">
             <h5 id="contactInfoHeading">رابطہ کی معلومات</h5>
             <p id="contactInfo" style="line-height: 1.8;">
-              <strong id="lblAddress">پتہ:</strong> H.no: 9, 4-134/5/A/1/1, Raghava Colony, Nadeem Colony, Vali Colony, Toli Chowki, Hyderabad, Telangana 500008<br>
-              <strong id="lblPhone">فون:</strong> <a href="tel:0905843885" class="text-dark" style="text-decoration:none;">090584 3885</a><br>
-              <strong id="lblContactEmail">ای میل:</strong> info@madrasah.example<br>
+              <strong id="lblAddress">پتہ:</strong> <span dir="ltr">H.no: 9, 4-134/5/A/1/1, Raghava Colony, Nadeem Colony, Vali Colony, Toli Chowki, Hyderabad, Telangana 500008</span><br>
+              <strong id="lblPhone">فون:</strong> <span dir="ltr"><a href="tel:0905843885" class="text-dark" style="text-decoration:none;">090584 3885</a></span><br>
+              <strong id="lblContactEmail">ای میل:</strong> <span dir="ltr">info@madrasah.example</span><br>
               <strong id="lblMap">نقشہ:</strong> <a id="linkMap" href="https://maps.app.goo.gl/X85qiTVBdRNCRn8X7" target="_blank" rel="noopener noreferrer">گوگل میپس پر دیکھیں</a>
             </p>
           </div>
@@ -427,7 +445,7 @@ Updates:
     <!-- SVG icon -->
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
       <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v1.006c.54.503.885 1.254.964 2.112.098 1.068-.213 2.222-.837 2.846-.696.696-1.54 1.134-2.535 1.254h-1.02a4.01 4.01 0 0 1-3.13 1.134 4.01 4.01 0 0 1-3.13-1.134H4.83c-.996-.12-1.84-.558-2.535-1.254C1.67 8.842 1.36 7.688 1.458 6.62c.079-.858.425-1.61.964-2.112V2.5zm6-1.5a1.5 1.5 0 0 0-3 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a1.5 1.5 0 0 0-3 0V1z"/>
-      <path d="M1 6.62c0 .495.04.98.118 1.443.078.463.18 1.008.36 1.503.182.495.455.99.805 1.443.35.453.784.85 1.28 1.11.498.26.98.347 1.34.37.04.002.078.003.116.003s.076-.001.116-.003c.36-.023.842-.11 1.34-.37.496-.26.93-.657 1.28-1.11.35-.453.623-.948.805-1.443.18-.495.282-1.04.36-1.503C14.96 7.6 15 7.115 15 6.62v-1.42c0-.495-.04-.98-.118-1.443-.078-.463-.18-1.008-.36-1.503C14.34 1.76 14.068 1.266 13.718.813c-.35-.453-.784-.85-1.28-1.11C11.94.26 11.458.173 11.098.15c-.04-.002-.078-.003-.116-.003s-.076.001-.116.003c-.36.023-.842.11-1.34.37-.496.26-.93.657-1.28 1.11-.35.453-.623.948-.805 1.443C1.68 4.257 1.578 4.802 1.5 5.266 1.04 6.24 1 6.125 1 6.62v1.42z"/>
+      <path d="M1 6.62c0 .495.04.98.118 1.443.078.463.18 1.008.36 1.503.182.495.455.99.805 1.443.35.453.784.85 1.28 1.11.498.26.98.347 1.34.37.04.002.078.003.116.003s.076-.001.116-.003c.36-.023.842-.11 1.34-.37.496-.26.93-.657 1.28-1.11.35.453.623-.948.805-1.443.18-.495.282-1.04.36-1.503C14.96 7.6 15 7.115 15 6.62v-1.42c0-.495-.04-.98-.118-1.443-.078-.463-.18-1.008-.36-1.503C14.34 1.76 14.068 1.266 13.718.813c-.35-.453-.784-.85-1.28-1.11C11.94.26 11.458.173 11.098.15c-.04-.002-.078-.003-.116-.003s-.076.001-.116.003c-.36.023-.842.11-1.34.37-.496.26-.93.657-1.28 1.11-.35.453-.623.948-.805 1.443C1.68 4.257 1.578 4.802 1.5 5.266 1.04 6.24 1 6.125 1 6.62v1.42z"/>
     </svg>
     <span id="donationBtnText" class="ms-2">Donation</span>
   </button>
@@ -501,7 +519,9 @@ Updates:
         lblMap: 'نقشہ:',
         linkMap: 'گوگل میپس پر دیکھیں',
         libraryHeading: 'کتب خانہ',
-        libraryNote: 'نوٹ: کتب خانہ کا مواد ایک بیرونی ویب سائٹ سے ہے اور اس کا ترجمہ نہیں کیا جا سکتا۔',
+        libraryCardTitle: 'دارالعلوم دیوبند - آن لائن کتب',
+        libraryCardText: 'درخواست کردہ کتب خانہ کو سیکورٹی پابندیوں کی وجہ سے براہ راست اس صفحہ پر نہیں دکھایا جا سکتا۔ آپ نیچے دیے گئے بٹن پر کلک کر کے مکمل کتب خانہ تک رسائی حاصل کر سکتے ہیں۔',
+        libraryCardButton: 'کتب خانہ پر جائیں',
         contactFormNote: 'نوٹ: یہ ایک ڈیمو ہے۔ پیغامات کو ایڈمن پینل (لوکل اسٹوریج) میں محفوظ کیا جاتا ہے اور ای میل کے ذریعے نہیں بھیجا جاتا۔',
         donationBtnText: 'عطیہ',
         donationModalTitle: 'عطیہ',
@@ -535,7 +555,9 @@ Updates:
         lblMap: 'Map:',
         linkMap: 'View on Google Maps',
         libraryHeading: 'Library',
-        libraryNote: 'Note: The library content is from an external site and cannot be translated.',
+        libraryCardTitle: 'Darul Uloom Deoband - Online Books',
+        libraryCardText: 'The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.',
+        libraryCardButton: 'Visit Library',
         contactFormNote: 'Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.',
         donationBtnText: 'Donation',
         donationModalTitle: 'Donation',
@@ -915,8 +937,13 @@ Updates:
       document.getElementById('aboutText').textContent = t.aboutText
       document.getElementById('coursesHeading').textContent = t.coursesHeading
       document.getElementById('galleryHeading').textContent = t.galleryHeading
+      
+      // Library Section
       document.getElementById('libraryHeading').textContent = t.libraryHeading
-      document.getElementById('libraryNote').textContent = t.libraryNote
+      document.getElementById('libraryCardTitle').textContent = t.libraryCardTitle
+      document.getElementById('libraryCardText').textContent = t.libraryCardText
+      document.getElementById('libraryCardButton').textContent = t.libraryCardButton
+
       document.getElementById('contactHeading').textContent = t.contactHeading
       document.getElementById('lblName').textContent = t.lblName
       document.getElementById('lblEmail').textContent = t.lblEmail
