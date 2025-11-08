@@ -15,10 +15,13 @@ Updates:
 - Added Dark Mode toggle.
 - Added scrolling marquee for announcements.
 - Added Admin Logo upload/remove feature.
-- Added Donation button/modal with UPI QR code and copy button.
 - Updated gallery to use square aspect-ratio tiles.
 - Fixed contact info LTR/RTL rendering bug.
 - Replaced non-working library iframe with a link card.
+- Added new "Quick Links" grid to homepage.
+- Replaced donation modal with a full "Donation" section.
+- Added detailed donation form with types (Zakat, Sadqa, etc.).
+- Added "Donations" tab to Admin Panel to view submissions.
 -->
 
 <!doctype html>
@@ -39,6 +42,7 @@ Updates:
       --primary:#007A3D; /* green */
       --secondary:#F7C948; /* gold */
       --bg:#ffffff;
+      --card-bg: #f8f9fa;
     }
     /* Updated font stack to prioritize user's request */
     html[dir="rtl"] body{font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Noto Serif', serif;}
@@ -103,15 +107,55 @@ Updates:
     [dir="rtl"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-end}
     [dir="ltr"] .section-title{display:flex; align-items:center; gap:.6rem; justify-content:flex-start}
 
+    /* Quick Links Grid */
+    .quick-link-card {
+      background-color: var(--card-bg);
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: all 0.2s ease-in-out;
+      text-decoration: none;
+      color: #333;
+      display: block;
+      height: 100%;
+    }
+    .quick-link-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      color: var(--primary);
+    }
+    .quick-link-card svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+    }
+    .quick-link-card h5 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    [dir="rtl"] .quick-link-card h5 {
+      font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+      font-size: 1.4rem;
+    }
+
+
     /* Dark Mode Styles */
     body.dark-mode {
-      background-color: #121212;
+      --bg: #121212;
+      --card-bg: #1e1e1e;
       color: #e0e0e0;
     }
     body.dark-mode .card,
     body.dark-mode .modal-content,
     body.dark-mode .list-group-item {
       background-color: #1e1e1e;
+      color: #e0e0e0;
+      border-color: #333;
+    }
+    body.dark-mode .quick-link-card {
       color: #e0e0e0;
       border-color: #333;
     }
@@ -152,16 +196,6 @@ Updates:
     body.dark-mode .btn-close {
       filter: invert(1);
     }
-
-    /* Donation Button */
-    #donationButton {
-      position: fixed;
-      bottom: 20px;
-      right: 20px; /* Adjusted for RTL/LTR in script */
-      z-index: 1050;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
     
     #adminLogoPreview, #navbarLogo {
       height: 40px;
@@ -186,7 +220,8 @@ Updates:
     [dir="rtl"] #brandTitle { font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif; }
 
     /* Library card dark mode fix */
-    body.dark-mode #library .card { 
+    body.dark-mode #library .card,
+    body.dark-mode #donationPaymentInfo { 
       background-color: #222; 
       border-color: #444; 
     }
@@ -229,6 +264,7 @@ Updates:
           <li class="nav-item"><a class="nav-link" href="#courses" data-link id="navCourses">کورسز</a></li>
           <li class="nav-item"><a class="nav-link" href="#gallery" data-link id="navGallery">گیلری</a></li>
           <li class="nav-item"><a class="nav-link" href="#library" data-link id="navLibrary">کتب خانہ</a></li>
+          <li class="nav-item"><a class="nav-link" href="#donation" data-link id="navDonation">عطیہ</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact" data-link id="navContact">رابطہ کریں</a></li>
           <li class="nav-item"><a class="nav-link btn btn-sm btn-light text-dark ms-2" href="#admin" id="openAdmin">ایڈمن</a></li>
           <li class="nav-item d-flex align-items-center ms-2">
@@ -270,6 +306,43 @@ Updates:
       </div>
     </div>
   </header>
+
+  <!-- Quick Links Section -->
+  <section id="quick-links" class="py-5">
+    <div class="container">
+      <div class="row gy-4">
+        <!-- Online Donation -->
+        <div class="col-lg-3 col-md-4 col-6">
+          <a href="#donation" class="quick-link-card" data-link>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet-fill" viewBox="0 0 16 16"><path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z"/><path d="M16 6.5h-5.551a2.678 2.678 0 0 1-.443 1.042C9.613 8.088 8.806 8.5 8 8.5s-1.613-.412-2.006-.958A2.679 2.679 0 0 1 5.551 6.5H0v6A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5z"/></svg>
+            <h5 id="qLinkDonation">آن لائن عطیہ</h5>
+          </a>
+        </div>
+        <!-- Online Fatwa -->
+        <div class="col-lg-3 col-md-4 col-6">
+          <a href="#contact" class="quick-link-card" data-link>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16"><path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.622a2.89 2.89 0 0 1 0 4.134l-.622.622a2.89 2.89 0 0 1-4.134 0l-.622-.622a2.89 2.89 0 0 1 0-4.134zM8 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0v-1A.5.5 0 0 0 8 6m0 3a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+            <path d="m10.273 2.513-.921-.921a1.89 1.89 0 0 0-2.672 0l-.921.921c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707M11.39 8.243c.24.18.48.4.707.658.204.23.418.48.658.707.23-.204.48-.418.707-.658.258-.226.48-.46.707-.707l.921.921a1.89 1.89 0 0 1 0 2.672l-.921.921c-.24-.18-.48-.4-.707-.658a4.6 4.6 0 0 0-.658-.707c-.23.204-.48.418-.707.658-.258.226-.48.46-.707.707l-.921-.921a1.89 1.89 0 0 1 0-2.672l.921-.921zm-6.622 0-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418-.48.658-.707.23.204.48.418.707.658.258.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707M4.6 2.513c-.24.18-.48.4-.707.658a4.6 4.6 0 0 0-.658.707c-.23-.204-.48-.418-.707-.658-.258-.226-.48-.46-.707-.707l-.921.921a1.89 1.89 0 0 0 0 2.672l.921.921c.24-.18.48-.4.707-.658.204-.23.418.48.658.707.23.204.48.418.707.658.258.226.48.46.707.707l.921-.921a1.89 1.89 0 0 0 0-2.672l-.921-.921z"/></svg>
+            <h5 id="qLinkFatwa">آن لائن فتویٰ</h5>
+          </a>
+        </div>
+        <!-- Library -->
+        <div class="col-lg-3 col-md-4 col-6">
+          <a href="#library" class="quick-link-card" data-link>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-half" viewBox="0 0 16 16"><path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388 1.17.8-.5 1.6-1.12 2.6-1.55A.5.5 0 0 0 16 1.5v2.083c-1.004.456-2.005.972-3.006 1.577-1.344.803-2.677.803-4.02.0C7.68 4.62 6.35 4.14 5.07 3.657v-2.1a.5.5 0 0 1 .43-.49C6.4 1.006 7.3 1.06 8.5 2.687M8 3.5v10.868c-1.04-.43-2.115-.793-3.182-1.043C3.73 12.9 2.5 12.5 1.5 12.5c-.822 0-1.6.2-2.3.402v-9.6C.367 3.005.86 2.5 1.5 2.5c.822 0 1.6.2 2.3.402C4.867 3.207 5.93 3.5 7 3.5z"/><path d="M5.07 3.657v11.122C4.005 14.345 3.004 13.828 2.003 13.31c-.834-.41-1.63-.48-2.3-.41V2.98C.367 3.005.86 2.5 1.5 2.5c.822 0 1.6.2 2.3.402C4.867 3.207 5.93 3.5 7 3.5a6.97 6.97 0 0 1 1-.035V3.5z"/></svg>
+            <h5 id="qLinkBooks">کتب خانہ</h5>
+          </a>
+        </div>
+        <!-- Gallery -->
+        <div class="col-lg-3 col-md-4 col-6">
+          <a href="#gallery" class="quick-link-card" data-link>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16"><path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/><path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"/></svg>
+            <h5 id="qLinkGallery">گیلری</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <main class="py-5">
     <div class="container">
@@ -314,11 +387,90 @@ Updates:
         <div class="section-title mb-3">
           <h2 id="libraryHeading">کتب خانہ</h2>
         </div>
-        <div class="card text-center p-4" style="border: 1px solid #ccc; background-color: #f8f9fa;">
+        <div class="card text-center p-4" style="background-color: var(--card-bg);">
           <div class="card-body">
             <h5 class="card-title" id="libraryCardTitle">Darul Uloom Deoband - Online Books</h5>
             <p class="card-text" id="libraryCardText">The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.</p>
             <a href="http://darululoom-deoband.com/books/" id="libraryCardButton" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Visit Library</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Donation Section -->
+      <section id="donation" class="mb-5">
+        <div class="section-title mb-3">
+          <h2 id="donationHeading">عطیہ فارم</h2>
+        </div>
+        <div class="row">
+          <div class="col-lg-8">
+            <form id="donationForm">
+              <div class="row">
+                <!-- Donation Amount -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationAmount" class="form-label" id="lblDonationAmount">Donation Amount (Indian Rupees)</label>
+                  <input type="number" class="form-control" id="donationAmount" placeholder="Enter numeric value" required>
+                </div>
+                <!-- Donation Type -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationType" class="form-label" id="lblDonationType">Donation Type</label>
+                  <select class="form-select" id="donationType">
+                    <option value="General" id="optDonationGeneral">General Donation</option>
+                    <option value="Zakat" id="optDonationZakat">Zakat</option>
+                    <option value="Sadqa" id="optDonationSadqa">Sadqa</option>
+                    <option value="Construction" id="optDonationConstruction">Construction</option>
+                    <option value="Other" id="optDonationOther">Other</option>
+                  </select>
+                </div>
+                <!-- Other Donation Type (Hidden by default) -->
+                <div class="col-md-12 mb-3" id="otherDonationTypeContainer" style="display: none;">
+                  <label for="otherDonationType" class="form-label" id="lblOtherDonationType">Other Donation Type</label>
+                  <input type="text" class="form-control" id="otherDonationType" placeholder="Specify, if other donation type">
+                </div>
+                <!-- Name -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationName" class="form-label" id="lblDonationName">Name</label>
+                  <input type="text" class="form-control" id="donationName" placeholder="Enter Full Name" required>
+                </div>
+                <!-- Phone -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationPhone" class="form-label" id="lblDonationPhone">Mobile / Phone No.</label>
+                  <input type="tel" class="form-control" id="donationPhone" placeholder="10 digits only" pattern="[0-9]{10}" required>
+                </div>
+                <!-- Address -->
+                <div class="col-12 mb-3">
+                  <label for="donationAddress" class="form-label" id="lblDonationAddress">Complete Address</label>
+                  <textarea class="form-control" id="donationAddress" rows="3" placeholder="Including Pin within India" required></textarea>
+                </div>
+                <!-- Email -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationEmail" class="form-label" id="lblDonationEmail">Email ID</label>
+                  <input type="email" class="form-control" id="donationEmail" placeholder="Valid Email Address" required>
+                </div>
+                <!-- Document ID -->
+                <div class="col-md-6 mb-3">
+                  <label for="donationDocId" class="form-label" id="lblDonationDocId">Document ID (Aadhaar/PAN) No.</label>
+                  <input type="text" class="form-control" id="donationDocId" placeholder="Valid Document No." required>
+                </div>
+              </div>
+              <button class="btn btn-success btn-lg" type="submit" id="donationSubmit">Donate Now</button>
+            </form>
+          </div>
+          <div class="col-lg-4">
+            <!-- Payment Info Container -->
+            <div id="donationPaymentInfo" class="text-center p-3 rounded" style="background-color: var(--card-bg); border: 1px solid #ddd; display: none;">
+              <h5 id="donationPaymentTitle">Complete Your Donation</h5>
+              <p id="donationPaymentSubtitle">Please support us by donating via UPI.</p>
+              <img id="donationQR" src="" alt="UPI QR Code" class="img-fluid rounded mb-3" style="max-width: 200px;">
+              <div class="input-group mb-3">
+                <input type="text" id="upiIdInput" class="form-control" value="9058438854-2@okbizaxis" readonly>
+                <button class="btn btn-outline-secondary" type="button" id="copyUpiButton">
+                  <span id="copyUpiBtnText">Copy</span>
+                </button>
+              </div>
+              <a id="payNowLink" href="#" class="btn btn-primary" target="_blank">
+                <span id="payNowBtnText">Pay Now</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -417,6 +569,7 @@ Updates:
                   <button class="list-group-item list-group-item-action" data-panel="gallery">Gallery</button>
                   <button class="list-group-item list-group-item-action" data-panel="logo">Logo</button>
                   <button class="list-group-item list-group-item-action" data-panel="messages">Messages</button>
+                  <button class="list-group-item list-group-item-action" data-panel="donations" id="adminNavDonations">Donations</button>
                 </div>
 
                 <div>
@@ -439,42 +592,6 @@ Updates:
       </div>
     </div>
   </div>
-
-  <!-- Donation Button -->
-  <button id="donationButton" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#donationModal">
-    <!-- SVG icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
-      <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v1.006c.54.503.885 1.254.964 2.112.098 1.068-.213 2.222-.837 2.846-.696.696-1.54 1.134-2.535 1.254h-1.02a4.01 4.01 0 0 1-3.13 1.134 4.01 4.01 0 0 1-3.13-1.134H4.83c-.996-.12-1.84-.558-2.535-1.254C1.67 8.842 1.36 7.688 1.458 6.62c.079-.858.425-1.61.964-2.112V2.5zm6-1.5a1.5 1.5 0 0 0-3 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 1 0V.5a.5.5 0 0 1 1 0v.5a1.5 1.5 0 0 0-3 0V1z"/>
-      <path d="M1 6.62c0 .495.04.98.118 1.443.078.463.18 1.008.36 1.503.182.495.455.99.805 1.443.35.453.784.85 1.28 1.11.498.26.98.347 1.34.37.04.002.078.003.116.003s.076-.001.116-.003c.36-.023.842-.11 1.34-.37.496-.26.93-.657 1.28-1.11.35.453.623-.948.805-1.443.18-.495.282-1.04.36-1.503C14.96 7.6 15 7.115 15 6.62v-1.42c0-.495-.04-.98-.118-1.443-.078-.463-.18-1.008-.36-1.503C14.34 1.76 14.068 1.266 13.718.813c-.35-.453-.784-.85-1.28-1.11C11.94.26 11.458.173 11.098.15c-.04-.002-.078-.003-.116-.003s-.076.001-.116.003c-.36.023-.842.11-1.34.37-.496.26-.93.657-1.28 1.11-.35.453-.623.948-.805 1.443C1.68 4.257 1.578 4.802 1.5 5.266 1.04 6.24 1 6.125 1 6.62v1.42z"/>
-    </svg>
-    <span id="donationBtnText" class="ms-2">Donation</span>
-  </button>
-
-  <!-- Donation Modal -->
-  <div class="modal fade" id="donationModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="donationModalTitle">Donation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-center">
-          <p id="donationModalSubtitle">Please support us by donating via UPI.</p>
-          <img id="donationQR" src="" alt="UPI QR Code" class="img-fluid rounded mb-3" style="max-width: 200px;">
-          <div class="input-group mb-3">
-            <input type="text" id="upiIdInput" class="form-control" value="9058438854-2@okbizaxis" readonly>
-            <button class="btn btn-outline-secondary" type="button" id="copyUpiButton">
-              <span id="copyUpiBtnText">Copy</span>
-            </button>
-          </div>
-          <a id="payNowLink" href="#" class="btn btn-primary" target="_blank">
-            <span id="payNowBtnText">Pay Now</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
   <!-- Custom Toast Notification -->
   <div id="customToast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
@@ -503,10 +620,15 @@ Updates:
         navCourses: 'کورسز',
         navGallery: 'گیلری',
         navLibrary: 'کتب خانہ',
+        navDonation: 'عطیہ',
         navContact: 'رابطہ کریں',
         navAdmin: 'ایڈمن',
         homeTitle: 'دارالتعلیم والتربیہ میں خوش آمدید',
         homeSubtitle: 'تعلیم، تربیہ اور دین کی روشنی میں بہترین ماحول',
+        qLinkDonation: 'آن لائن عطیہ',
+        qLinkFatwa: 'آن لائن فتویٰ',
+        qLinkBooks: 'کتب خانہ',
+        qLinkGallery: 'گیلری',
         aboutHeading: 'ہمارے بارے میں',
         aboutText: 'دارالتعلیم والتربیہ ایک معروف مدرسہ ہے جہاں جدید اور دینی تعلیم کو یکجا کیا جاتا ہے۔ ہمارا مقصد طلباء کو علمی اور اخلاقی طور پر مضبوط بنانا ہے۔',
         coursesHeading: 'کورسز',
@@ -523,13 +645,28 @@ Updates:
         libraryCardText: 'درخواست کردہ کتب خانہ کو سیکورٹی پابندیوں کی وجہ سے براہ راست اس صفحہ پر نہیں دکھایا جا سکتا۔ آپ نیچے دیے گئے بٹن پر کلک کر کے مکمل کتب خانہ تک رسائی حاصل کر سکتے ہیں۔',
         libraryCardButton: 'کتب خانہ پر جائیں',
         contactFormNote: 'نوٹ: یہ ایک ڈیمو ہے۔ پیغامات کو ایڈمن پینل (لوکل اسٹوریج) میں محفوظ کیا جاتا ہے اور ای میل کے ذریعے نہیں بھیجا جاتا۔',
-        donationBtnText: 'عطیہ',
-        donationModalTitle: 'عطیہ',
-        donationModalSubtitle: 'برائے مہربانی UPI کے ذریعے عطیہ دے کر ہماری مدد کریں۔',
+        donationHeading: 'عطیہ فارم',
+        lblDonationAmount: 'رقمِ عطیہ (ہندوستانی روپیے)',
+        lblDonationType: 'عطیہ کی قسم',
+        optDonationGeneral: 'عام عطیہ',
+        optDonationZakat: 'زکوٰۃ',
+        optDonationSadqa: 'صدقہ',
+        optDonationConstruction: 'تعمیر',
+        optDonationOther: 'دیگر',
+        lblOtherDonationType: 'دیگر عطیہ کی قسم',
+        lblDonationName: 'نام',
+        lblDonationPhone: 'موبائل / فون نمبر',
+        lblDonationAddress: 'مکمل پتہ',
+        lblDonationEmail: 'ای میل آئی ڈی',
+        lblDonationDocId: 'دستاویز آئی ڈی (آدھار/پین) نمبر',
+        donationSubmit: 'ابھی عطیہ دیں',
+        donationPaymentTitle: 'اپنا عطیہ مکمل کریں۔',
+        donationPaymentSubtitle: 'برائے مہربانی UPI کے ذریعے عطیہ دے کر ہماری مدد کریں۔',
         copyUpiBtnText: 'کاپی',
         payNowBtnText: 'ابھی ادا کریں۔',
         copiedToast: 'UPI ID کاپی ہو گیا!',
-        adminLogo: 'لوگو'
+        adminLogo: 'لوگو',
+        adminDonations: 'عطیات'
       },
       en: {
         brandTitle: 'Darut Taleem Wat Tarbiyah',
@@ -539,10 +676,15 @@ Updates:
         navCourses: 'Courses',
         navGallery: 'Gallery',
         navLibrary: 'Library',
+        navDonation: 'Donation',
         navContact: 'Contact Us',
         navAdmin: 'Admin',
         homeTitle: 'Welcome to Darut Taleem Wat Tarbiyah',
         homeSubtitle: 'A nurturing place for knowledge & character',
+        qLinkDonation: 'Online Donation',
+        qLinkFatwa: 'Online Fatwa',
+        qLinkBooks: 'Library',
+        qLinkGallery: 'Gallery',
         aboutHeading: 'About Us',
         aboutText: 'Darut Taleem Wat Tarbiyah is a madrasa combining modern and religious education. Our aim is to build students academically and morally.',
         coursesHeading: 'Courses',
@@ -559,13 +701,28 @@ Updates:
         libraryCardText: 'The requested library cannot be embedded directly on this page due to security restrictions. You can access the full library by clicking the button below.',
         libraryCardButton: 'Visit Library',
         contactFormNote: 'Note: This is a demo. Messages are saved to the Admin Panel (localStorage) and are not sent via email.',
-        donationBtnText: 'Donation',
-        donationModalTitle: 'Donation',
-        donationModalSubtitle: 'Please support us by donating via UPI.',
+        donationHeading: 'Donation Form',
+        lblDonationAmount: 'Donation Amount (Indian Rupees)',
+        lblDonationType: 'Donation Type',
+        optDonationGeneral: 'General Donation',
+        optDonationZakat: 'Zakat',
+        optDonationSadqa: 'Sadqa',
+        optDonationConstruction: 'Construction',
+        optDonationOther: 'Other',
+        lblOtherDonationType: 'Other Donation Type',
+        lblDonationName: 'Name',
+        lblDonationPhone: 'Mobile / Phone No.',
+        lblDonationAddress: 'Complete Address',
+        lblDonationEmail: 'Email ID',
+        lblDonationDocId: 'Document ID (Aadhaar/PAN) No.',
+        donationSubmit: 'Donate Now',
+        donationPaymentTitle: 'Complete Your Donation',
+        donationPaymentSubtitle: 'Please support us by donating via UPI.',
         copyUpiBtnText: 'Copy',
         payNowBtnText: 'Pay Now',
         copiedToast: 'UPI ID Copied!',
-        adminLogo: 'Logo'
+        adminLogo: 'Logo',
+        adminDonations: 'Donations'
       }
     };
 
@@ -576,6 +733,7 @@ Updates:
       galleryKey: 'mad_gallery_v1',
       messagesKey: 'mad_messages_v1',
       logoKey: 'mad_logo_v1',
+      donationsKey: 'mad_donations_v1',
 
       getAnnouncements(){ return JSON.parse(localStorage.getItem(this.announcementsKey) || '[]') },
       saveAnnouncements(a){ localStorage.setItem(this.announcementsKey, JSON.stringify(a)) },
@@ -587,7 +745,9 @@ Updates:
       saveMessages(a){ localStorage.setItem(this.messagesKey, JSON.stringify(a)) },
       getLogo(){ return localStorage.getItem(this.logoKey) || null },
       saveLogo(data){ localStorage.setItem(this.logoKey, data) },
-      removeLogo(){ localStorage.removeItem(this.logoKey) }
+      removeLogo(){ localStorage.removeItem(this.logoKey) },
+      getDonations(){ return JSON.parse(localStorage.getItem(this.donationsKey) || '[]') },
+      saveDonations(a){ localStorage.setItem(this.donationsKey, JSON.stringify(a)) }
     }
 
     // Seed initial data if empty
@@ -703,6 +863,46 @@ Updates:
       this.reset(); 
       showToast('پیغام موصول ہوگیا — ہم جلد رابطہ کریں گے', 'success')
     })
+
+    // ----------------- Donation Form Logic -----------------
+    const donationTypeSelect = document.getElementById('donationType');
+    const otherDonationTypeContainer = document.getElementById('otherDonationTypeContainer');
+    
+    donationTypeSelect.addEventListener('change', function() {
+      otherDonationTypeContainer.style.display = (this.value === 'Other') ? 'block' : 'none';
+    });
+    
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      let donationType = donationTypeSelect.value;
+      if (donationType === 'Other') {
+        donationType = document.getElementById('otherDonationType').value.trim() || 'Other';
+      }
+
+      const donation = {
+        id: Date.now(),
+        amount: document.getElementById('donationAmount').value,
+        type: donationType,
+        name: document.getElementById('donationName').value.trim(),
+        phone: document.getElementById('donationPhone').value.trim(),
+        address: document.getElementById('donationAddress').value.trim(),
+        email: document.getElementById('donationEmail').value.trim(),
+        docId: document.getElementById('donationDocId').value.trim(),
+        created: new Date().toISOString()
+      };
+      
+      // Save donation request
+      const donations = store.getDonations();
+      donations.unshift(donation);
+      store.saveDonations(donations);
+      
+      // Show payment info
+      document.getElementById('donationPaymentInfo').style.display = 'block';
+      
+      // Show toast
+      showToast('Form submitted. Please complete the payment.', 'success');
+    });
 
     // ----------------- Admin interactions -----------------
     const adminModal = new bootstrap.Modal(document.getElementById('adminModal'))
@@ -898,22 +1098,48 @@ Updates:
           out.appendChild(el)
         })
       }
+      
+      if(panel === 'donations'){
+        const donations = store.getDonations()
+        content.innerHTML = `
+          <h5 id="adminDonationsTitle">Donations</h5>
+          <div id="donationsList"></div>
+        `
+        const out = document.getElementById('donationsList')
+        out.innerHTML = ''
+        if (donations.length === 0) {
+          out.innerHTML = '<p class="text-muted">No donation submissions yet.</p>';
+          return;
+        }
+        donations.forEach(d=>{
+          const el = document.createElement('div'); el.className='card mb-2 p-2'; 
+          el.innerHTML = `
+            <div class="d-flex justify-content-between">
+              <strong>${d.name} (₹${d.amount})</strong>
+              <span class="badge bg-primary">${d.type}</span>
+            </div>
+            <div class="small text-muted">${new Date(d.created).toLocaleString()}</div>
+            <p class="mb-1 mt-2">
+              <strong>Phone:</strong> ${d.phone}<br>
+              <strong>Email:</strong> ${d.email}<br>
+              <strong>Address:</strong> ${d.address}<br>
+              <strong>Doc ID:</strong> ${d.docId}
+            </p>
+          `
+          out.appendChild(el)
+        })
+      }
     }
 
     // ----------------- Language switching -----------------
     const langSelect = document.getElementById('langToggle')
-    const donationButton = document.getElementById('donationButton');
     
     function applyLanguage(lang){
       const root = document.documentElement
       if(lang === 'ur'){
         root.lang = 'ur'; root.dir = 'rtl'
-        donationButton.style.right = '20px';
-        donationButton.style.left = 'auto';
       } else { 
         root.lang = 'en'; root.dir = 'ltr' 
-        donationButton.style.right = 'auto';
-        donationButton.style.left = '20px';
       }
 
       // apply texts
@@ -927,12 +1153,20 @@ Updates:
       document.getElementById('navCourses').textContent = t.navCourses
       document.getElementById('navGallery').textContent = t.navGallery
       document.getElementById('navLibrary').textContent = t.navLibrary
+      document.getElementById('navDonation').textContent = t.navDonation
       document.getElementById('navContact').textContent = t.navContact
       document.getElementById('openAdmin').textContent = t.navAdmin
 
       // Page Content
       document.getElementById('heroTitle').textContent = t.homeTitle
       document.getElementById('heroSubtitle').textContent = t.homeSubtitle
+
+      // Quick Links
+      document.getElementById('qLinkDonation').textContent = t.qLinkDonation
+      document.getElementById('qLinkFatwa').textContent = t.qLinkFatwa
+      document.getElementById('qLinkBooks').textContent = t.qLinkBooks
+      document.getElementById('qLinkGallery').textContent = t.qLinkGallery
+
       document.getElementById('aboutHeading').textContent = t.aboutHeading
       document.getElementById('aboutText').textContent = t.aboutText
       document.getElementById('coursesHeading').textContent = t.coursesHeading
@@ -944,6 +1178,28 @@ Updates:
       document.getElementById('libraryCardText').textContent = t.libraryCardText
       document.getElementById('libraryCardButton').textContent = t.libraryCardButton
 
+      // Donation Section
+      document.getElementById('donationHeading').textContent = t.donationHeading
+      document.getElementById('lblDonationAmount').textContent = t.lblDonationAmount
+      document.getElementById('lblDonationType').textContent = t.lblDonationType
+      document.getElementById('optDonationGeneral').textContent = t.optDonationGeneral
+      document.getElementById('optDonationZakat').textContent = t.optDonationZakat
+      document.getElementById('optDonationSadqa').textContent = t.optDonationSadqa
+      document.getElementById('optDonationConstruction').textContent = t.optDonationConstruction
+      document.getElementById('optDonationOther').textContent = t.optDonationOther
+      document.getElementById('lblOtherDonationType').textContent = t.lblOtherDonationType
+      document.getElementById('lblDonationName').textContent = t.lblDonationName
+      document.getElementById('lblDonationPhone').textContent = t.lblDonationPhone
+      document.getElementById('lblDonationAddress').textContent = t.lblDonationAddress
+      document.getElementById('lblDonationEmail').textContent = t.lblDonationEmail
+      document.getElementById('lblDonationDocId').textContent = t.lblDonationDocId
+      document.getElementById('donationSubmit').textContent = t.donationSubmit
+      document.getElementById('donationPaymentTitle').textContent = t.donationPaymentTitle
+      document.getElementById('donationPaymentSubtitle').textContent = t.donationPaymentSubtitle
+      document.getElementById('copyUpiBtnText').textContent = t.copyUpiBtnText
+      document.getElementById('payNowBtnText').textContent = t.payNowBtnText
+
+      // Contact
       document.getElementById('contactHeading').textContent = t.contactHeading
       document.getElementById('lblName').textContent = t.lblName
       document.getElementById('lblEmail').textContent = t.lblEmail
@@ -959,18 +1215,14 @@ Updates:
       document.getElementById('linkMap').textContent = t.linkMap
       document.getElementById('contactFormNote').textContent = t.contactFormNote
 
-      // Donation texts
-      document.getElementById('donationBtnText').textContent = t.donationBtnText
-      document.getElementById('donationModalTitle').textContent = t.donationModalTitle
-      document.getElementById('donationModalSubtitle').textContent = t.donationModalSubtitle
-      document.getElementById('copyUpiBtnText').textContent = t.copyUpiBtnText
-      document.getElementById('payNowBtnText').textContent = t.payNowBtnText
-
       // Admin panel
+      document.getElementById('adminNavDonations').textContent = t.adminDonations;
       const logoAdminBtn = document.querySelector('[data-panel="logo"]');
       if (logoAdminBtn) logoAdminBtn.textContent = t.adminLogo;
       const logoAdminTitle = document.getElementById('adminLogoTitle');
       if (logoAdminTitle) logoAdminTitle.textContent = t.adminLogo;
+      const adminDonationsTitle = document.getElementById('adminDonationsTitle');
+      if (adminDonationsTitle) adminDonationsTitle.textContent = t.adminDonations;
     }
 
     // default language = Urdu
@@ -1024,8 +1276,7 @@ Updates:
       }
     });
 
-    // ----------------- Donation Modal Logic -----------------
-    const donationModal = new bootstrap.Modal(document.getElementById('donationModal'));
+    // ----------------- Donation Modal Logic (Payment part) -----------------
     const upiId = '9058438854-2@okbizaxis';
     const upiLink = `upi://pay?pa=${upiId}&pn=Darut%20Taleem%20Wat%20Tarbiyah&am=&cu=INR&tn=Donation`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
